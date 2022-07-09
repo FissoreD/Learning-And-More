@@ -2,10 +2,10 @@ export class State {
   isAccepting: boolean;
   isInitial: boolean;
   alphabet: string[];
-  outTransitions: Map<string, State[]>;
-  inTransitions: Map<string, State[]>;
-  successors: Set<State>;
-  predecessor: Set<State>;
+  private outTransitions: Map<string, State[]>;
+  private inTransitions: Map<string, State[]>;
+  private successors: Set<State>;
+  private predecessor: Set<State>;
   name: string;
 
   constructor(name: string, isAccepting: boolean, isInitial: boolean, alphabet: string[] | string) {
@@ -21,11 +21,17 @@ export class State {
       this.outTransitions.set(symbol, []);
       this.inTransitions.set(symbol, []);
     }
+    // console.log({ name });
+
   }
 
   add_transition(symbol: string, state: State) {
+    if (!this.outTransitions.has(symbol)) {
+      this.outTransitions.set(symbol, [state])
+    }
     if (this.outTransitions.get(symbol)!.includes(state)) return
     this.outTransitions.get(symbol)!.push(state);
+
     this.successors.add(state);
     state.predecessor.add(this);
     state.inTransitions.get(symbol)!.push(this);
@@ -40,8 +46,20 @@ export class State {
     return this.inTransitions.get(symbol)!
   }
 
-  clone() {
-    return new State(this.name, this.isAccepting, this.isInitial, this.alphabet)
+  get_out_transition_number(): number {
+    return this.outTransitions.size
+  }
+
+  get_all_successors() {
+    return this.successors
+  }
+
+  get_all_out_transitions() {
+    return this.outTransitions
+  }
+
+  clone(name?: string) {
+    return new State(name || this.name, this.isAccepting, this.isInitial, this.alphabet)
   }
 
   static bottom(alphabet: string[]) {

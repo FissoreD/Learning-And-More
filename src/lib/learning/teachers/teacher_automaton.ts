@@ -19,9 +19,8 @@ export class TeacherAutomaton implements Teacher {
     regex?: string,
     counter_examples?: string[]
   }) {
-    let automaton = params.automaton instanceof Automaton ?
-      params.automaton : Automaton.strToAutomaton(params.automaton)
-    if (!automaton.is_deterministic()) automaton = automaton.determinize()
+    let automaton = (params.automaton instanceof Automaton ?
+      params.automaton : Automaton.strToAutomaton(params.automaton)).minimize()
     this.automaton = automaton.minimize();
     this.alphabet = automaton.alphabet;
     this.regex = params.regex != undefined ? params.regex : "Teacher with automaton"

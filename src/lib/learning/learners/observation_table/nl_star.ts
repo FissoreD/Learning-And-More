@@ -135,7 +135,7 @@ export class NL_star extends LearnerBase {
         let rowNext = this.observation_table[word + symbol]
         for (const [name1, state] of statesMap) {
           if (this.is_covered(name1, rowNext))
-            statesMap.get(name)!.outTransitions.get(symbol)!.push(state)
+            statesMap.get(name)!.getSuccessor(symbol)!.push(state)
         }
       }
     }

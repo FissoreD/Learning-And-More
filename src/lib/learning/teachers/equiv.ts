@@ -1,4 +1,3 @@
-import { debug } from "console";
 import { Automaton } from "../../automaton/fsm/DFA_NFA";
 import { State } from "../../automaton/fsm/state";
 import { boolToString } from "../../tools";
@@ -12,6 +11,7 @@ import { Teacher } from "./teacher";
  * @returns undifined if res = empty else the shortes word in res
  */
 export let equivalenceFunction = (teacher: Teacher, automaton: Automaton): string | undefined => {
+
   if (teacher.counter_examples) {
     for (const counter_example of teacher.counter_examples) {
       if (teacher.member(counter_example) !=
@@ -20,7 +20,7 @@ export let equivalenceFunction = (teacher: Teacher, automaton: Automaton): strin
     }
   } else {
     let counterExemple = (automatonDiff: Automaton): string | undefined => {
-      let stateList = automatonDiff.all_states
+      let stateList = automatonDiff.all_states()
       if (automatonDiff.accepting_states().length == 0) return undefined;
       let toExplore = Array.from(automatonDiff.initialStates)
       let explored: State[] = []
@@ -30,7 +30,7 @@ export let equivalenceFunction = (teacher: Teacher, automaton: Automaton): strin
         const current = toExplore.shift()!
         if (explored.includes(current)) continue;
         explored.push(current)
-        for (const [symbol, states] of current.outTransitions) {
+        for (const [symbol, states] of current.get_all_out_transitions()) {
           if (!explored.includes(states[0])) {
             parent[stateList.indexOf(states[0])] =
               { parent: current, symbol: symbol }
@@ -52,7 +52,6 @@ export let equivalenceFunction = (teacher: Teacher, automaton: Automaton): strin
       return "";
     }
 
-    debug(automaton.toString())
     let autom_minimized = automaton.minimize();
     let diff1 = teacher.automaton!.difference(autom_minimized);
     let counterEx1 = counterExemple(diff1);
@@ -62,6 +61,8 @@ export let equivalenceFunction = (teacher: Teacher, automaton: Automaton): strin
 
     if (counterEx1 == undefined) return counterEx2;
     if (counterEx2 == undefined) return counterEx1;
+    console.log({ counter_ex: JSON.stringify(counterEx1 < counterEx2 ? counterEx1 : counterEx2) });
+
     return counterEx1 < counterEx2 ? counterEx1 : counterEx2;
   }
 }
