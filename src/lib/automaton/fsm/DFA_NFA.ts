@@ -23,7 +23,7 @@ export class Automaton {
       bottom.add_transition(symbol, bottom);
       for (const state of this.states.values()) {
         let transintion = this.findTransition(state, symbol)
-        if (transintion == undefined || transintion.length == 0) {
+        if (transintion === undefined || transintion.length === 0) {
           state.add_transition(symbol, bottom);
           to_add = true;
         }
@@ -36,7 +36,7 @@ export class Automaton {
   }
 
   accept_word(word: string): boolean {
-    if (word.length == 0)
+    if (word.length === 0)
       return this.initialStates.some(e => e.isAccepting);
     let nextStates: Set<State> = new Set(this.initialStates);
     for (let index = 0; index < word.length && nextStates.size > 0; index++) {
@@ -50,7 +50,7 @@ export class Automaton {
         if (next_transition)
           for (const nextState of next_transition) {
             nextStates2.add(nextState)
-            if (index == word.length - 1 && nextState.isAccepting)
+            if (index === word.length - 1 && nextState.isAccepting)
               return true
           }
         // Array.from(this.findTransition(state, symbol)).forEach(e => nextStates2.add(e))
@@ -121,7 +121,7 @@ export class Automaton {
   }
 
   is_deterministic(): boolean {
-    return this.all_states().every(e => this.alphabet.every(l => e.getSuccessor(l).length == 1))
+    return this.all_states().every(e => this.alphabet.every(l => e.getSuccessor(l).length === 1))
   }
 
   /** @returns a fresh Determinized Automaton */
@@ -221,11 +221,10 @@ export class Automaton {
 
         for (const { Y, X_inter_Y, Y_minus_X } of P1) {
           // replace Y in P by the two sets X ∩ Y and Y \ X
-          let del = P.splice(P.indexOf(Y), 1)
-
+          P.splice(P.indexOf(Y), 1)
           P.push(X_inter_Y)
           P.push(Y_minus_X)
-          if (pLength() != stateList.size) throw `Wanted ${stateList.size} had ${pLength()}`
+          if (pLength() !== stateList.size) throw new Error(`Wanted ${stateList.size} had ${pLength()}`);
           if (W.includes(Y)) {
             W.splice(W.indexOf(Y), 1)
             W.push(X_inter_Y)
@@ -255,7 +254,7 @@ export class Automaton {
         for (const letter of aut.alphabet) {
           for (const successor of aut.states.get(oldState)!.getSuccessor(letter)) {
             if (!oldStateToNewState.get(oldState)!.getSuccessor(letter)![0] ||
-              (oldStateToNewState.get(oldState)!.getSuccessor(letter)![0].name != oldStateToNewState.get(successor.name)!.name))
+              (oldStateToNewState.get(oldState)!.getSuccessor(letter)![0].name !== oldStateToNewState.get(successor.name)!.name))
               oldStateToNewState.get(oldState)!.add_transition(letter, oldStateToNewState.get(successor.name)!)
           }
         }
@@ -297,8 +296,7 @@ export class Automaton {
       ))
       // todo()
       this.all_states().forEach((e, pos) => e.getSuccessor(l)?.forEach(succ =>
-        states[pos + aut.all_states().length].
-          add_transition(l, states[this.all_states().indexOf(succ) + aut.all_states().length])
+        states[pos + aut.all_states().length].add_transition(l, states[this.all_states().indexOf(succ) + aut.all_states().length])
       ))
     });
     if (this.is_deterministic() && aut.is_deterministic()) {
@@ -378,10 +376,10 @@ export class Automaton {
       }[] = [],
       statesName: Set<string> = new Set(), alphabetSet: Set<string> = new Set();
     for (const line of sContent) {
-      if (!line.includes("-") && line.length != 0) {
+      if (!line.includes("-") && line.length !== 0) {
         let stateName = line.substring(line.indexOf('[') + 1, line.indexOf(']'));
         statesName.add(stateName)
-        if (statePhase == IN_INITIAL) {
+        if (statePhase === IN_INITIAL) {
           initalState.push(stateName.trim());
         } else {
           statePhase = IN_ACCEPTING;

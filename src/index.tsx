@@ -3,7 +3,7 @@ import "bootstrap/dist/js/bootstrap";
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './reactjs/App';
+import { Main } from "./reactjs/main";
 import reportWebVitals from './reactjs/reportWebVitals';
 
 const root = ReactDOM.createRoot(
@@ -12,7 +12,7 @@ const root = ReactDOM.createRoot(
 
 root.render(
   <React.StrictMode>
-    <App />
+    <Main />
   </React.StrictMode>
 );
 

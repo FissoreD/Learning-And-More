@@ -1,15 +1,11 @@
 import { Automaton } from "../../../automaton/fsm/DFA_NFA";
 import { boolToString, generate_prefix_list, generate_suffix_list } from "../../../tools";
 import { Teacher } from "../../teachers/teacher";
-
-export type ObservationTable = { [key: string]: string };
+import { ObservationTable } from "./observation_table";
 
 export abstract class LearnerBase {
   alphabet: string[];
-  E: string[];
-  S: string[];
-  SA: string[];
-  observation_table: ObservationTable;
+  ot: ObservationTable;
   teacher: Teacher;
   member_number: number;
   equiv_number: number;
@@ -25,24 +21,21 @@ export abstract class LearnerBase {
     this.equiv_number = 0;
     this.closedness_counter = 0;
     this.consistence_counter = 0;
-    this.E = [""];
-    this.S = [""];
-    this.SA = Array.from(this.alphabet);
-    this.observation_table = {};
+    this.ot = new ObservationTable(this.alphabet);
     this.add_row("")
-    this.SA.forEach(elt => this.add_row(elt));
+    this.ot.SA.forEach(elt => this.add_row(elt));
   }
 
   update_observation_table(key: string, value: string) {
-    let old_value = this.observation_table[key];
-    if (old_value != undefined) value = old_value + value
-    this.observation_table[key] = value;
+    let old_value = this.ot.assoc[key];
+    if (old_value !== undefined) value = old_value + value
+    this.ot.assoc[key] = value;
   }
 
   /**
    * 1. Takes s in {@link S} and e in {@link E} which creating a word 
    * 2. Asks to the {@link teacher} if word is accepted  
-   * 3. Updates {@link observation_table} wrt the answer  
+   * 3. Updates {@link ot} wrt the answer  
    * No modification is performed in {@link S}, {@link E} or {@link SA} sets
    */
   make_member(pref: string, suff: string) {
@@ -52,12 +45,12 @@ export abstract class LearnerBase {
     for (let i = 0; i < word.length + 1; i++) {
       let pref1 = word.substring(0, i);
       let suff1 = word.substring(i);
-      if (pref1 == pref) continue;
-      if (this.E.includes(suff1)) {
-        if ((this.S.includes(pref1) || this.SA.includes(pref1)) && this.observation_table[pref1]) {
-          answer = this.observation_table[pref1].charAt(this.E.indexOf(suff1));
+      if (pref1 === pref) continue;
+      if (this.ot.E.includes(suff1)) {
+        if ((this.ot.S.includes(pref1) || this.ot.SA.includes(pref1)) && this.ot.assoc[pref1]) {
+          answer = this.ot.assoc[pref1].charAt(this.ot.E.indexOf(suff1));
           this.update_observation_table(pref, answer)
-          if (answer == undefined) throw 'Parameter is not a number!';
+          if (answer === undefined) throw new Error('Parameter is not a number!');
           return;
         }
       }
@@ -91,25 +84,25 @@ export abstract class LearnerBase {
     let added_list: string[] = [];
     let prefix_list = generate_prefix_list(new_elt);
     for (const prefix of prefix_list) {
-      if (this.S.includes(prefix)) return;
-      if (this.SA.includes(prefix)) {
+      if (this.ot.S.includes(prefix)) return;
+      if (this.ot.SA.includes(prefix)) {
         this.move_from_SA_to_S(prefix);
-        this.alphabet.forEach(a => {
+        for (const a of this.alphabet) {
           const new_word = prefix + a;
-          if (!this.SA.includes(new_word) && !this.S.includes(new_word)) {
+          if (!this.ot.SA.includes(new_word) && !this.ot.S.includes(new_word)) {
             this.add_row(new_word, after_member);
-            this.SA.push(new_word);
+            this.ot.SA.push(new_word);
             added_list.push(new_word);
           }
-        })
+        }
       } else {
-        this.S.push(prefix);
+        this.ot.S.push(prefix);
         this.add_row(prefix, after_member);
         added_list.push(prefix);
         this.alphabet.forEach(a => {
           let new_word = prefix + a;
-          if (!this.SA.includes(new_word) && !this.S.includes(new_word)) {
-            this.SA.push(prefix + a);
+          if (!this.ot.SA.includes(new_word) && !this.ot.S.includes(new_word)) {
+            this.ot.SA.push(prefix + a);
             this.add_row(prefix + a)
             added_list.push(prefix + a)
           }
@@ -129,39 +122,39 @@ export abstract class LearnerBase {
   add_elt_in_E(new_elt: string, after_equiv = false) {
     let suffix_list = generate_suffix_list(new_elt);
     for (const suffix of suffix_list) {
-      if (this.E.includes(suffix)) break;
-      this.SA.forEach(s => {
-        if (s + suffix == new_elt && after_equiv)
+      if (this.ot.E.includes(suffix)) break;
+      this.ot.SA.forEach(s => {
+        if (s + suffix === new_elt && after_equiv)
           this.update_observation_table(s, boolToString(!this.automaton!.accept_word(new_elt)))
         else this.make_member(s, suffix)
       });
-      this.S.forEach(s => {
-        if (s + suffix == new_elt && after_equiv)
+      this.ot.S.forEach(s => {
+        if (s + suffix === new_elt && after_equiv)
           this.update_observation_table(s, boolToString(!this.automaton!.accept_word(new_elt)))
         else this.make_member(s, suffix)
       });
-      this.E.push(suffix);
+      this.ot.E.push(suffix);
     }
   }
 
   /**
    * @param row_name 
-   * adds a row to the {@link observation_table} 
+   * adds a row to the {@link ot} 
    * querying the teacher for all tuple ({@link row_name}, e) where e is in {@link E}
    * @see {@link make_member}
    */
   add_row(row_name: string, after_member = false) {
-    this.E.forEach(e => {
-      if (after_member && e == "")
-        this.observation_table[row_name] = boolToString(!this.automaton!.accept_word(row_name));
+    this.ot.E.forEach(e => {
+      if (after_member && e === "")
+        this.ot.assoc[row_name] = boolToString(!this.automaton!.accept_word(row_name));
       else this.make_member(row_name, e)
     });
   }
 
   move_from_SA_to_S(elt: string) {
-    const index = this.SA.indexOf(elt);
-    if (index != -1) this.SA.splice(index, 1);
-    this.S.push(elt);
+    const index = this.ot.SA.indexOf(elt);
+    if (index !== -1) this.ot.SA.splice(index, 1);
+    this.ot.S.push(elt);
   }
 
   /**
@@ -172,16 +165,16 @@ export abstract class LearnerBase {
     if (this.finish) return;
     var close_rep;
     var consistence_rep;
-    if (close_rep = this.is_close()) {
+    if ((close_rep = this.is_close())) {
       this.add_elt_in_S(close_rep);
-    } else if (consistence_rep = this.is_consistent()) {
+    } else if ((consistence_rep = this.is_consistent())) {
       let new_col = consistence_rep[2]
       this.add_elt_in_E(new_col);
     } else {
       let automaton = this.make_automaton();
       this.automaton = automaton;
       let answer = this.make_equiv(automaton);
-      if (answer != undefined) {
+      if (answer !== undefined) {
         this.table_to_update_after_equiv(answer!, false)
         this.automaton = undefined;
       } else {
@@ -233,6 +226,6 @@ export abstract class LearnerBase {
   abstract is_consistent(): string[] | undefined;
 
   same_row(a: string, b: string) {
-    return this.observation_table[a] == this.observation_table[b];
+    return this.ot.assoc[a] === this.ot.assoc[b];
   }
 }

@@ -14,14 +14,13 @@ export let equivalenceFunction = (teacher: Teacher, automaton: Automaton): strin
 
   if (teacher.counter_examples) {
     for (const counter_example of teacher.counter_examples) {
-      if (teacher.member(counter_example) !=
-        boolToString(automaton.accept_word(counter_example)))
+      if (teacher.member(counter_example) !== boolToString(automaton.accept_word(counter_example)))
         return counter_example;
     }
   } else {
     let counterExemple = (automatonDiff: Automaton): string | undefined => {
       let stateList = automatonDiff.all_states()
-      if (automatonDiff.accepting_states().length == 0) return undefined;
+      if (automatonDiff.accepting_states().length === 0) return undefined;
       let toExplore = Array.from(automatonDiff.initialStates)
       let explored: State[] = []
       type parentChild = { parent: State | undefined, symbol: string }
@@ -59,8 +58,8 @@ export let equivalenceFunction = (teacher: Teacher, automaton: Automaton): strin
     let diff2 = autom_minimized.difference(teacher.automaton!);
     let counterEx2 = counterExemple(diff2);
 
-    if (counterEx1 == undefined) return counterEx2;
-    if (counterEx2 == undefined) return counterEx1;
+    if (counterEx1 === undefined) return counterEx2;
+    if (counterEx2 === undefined) return counterEx1;
     console.log({ counter_ex: JSON.stringify(counterEx1 < counterEx2 ? counterEx1 : counterEx2) });
 
     return counterEx1 < counterEx2 ? counterEx1 : counterEx2;

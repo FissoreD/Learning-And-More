@@ -1,6 +1,6 @@
-import { L_star } from "../../../learning/learners/observation_table/l_star";
-import { TeacherAutomaton } from "../../../learning/teachers/teacher_automaton";
 import { Automaton } from "../../../lib/automaton/fsm/DFA_NFA";
+import { L_star } from "../../../lib/learning/learners/observation_table/l_star";
+import { TeacherAutomaton } from "../../../lib/learning/teachers/teacher_automaton";
 
 test("Learner L-Star Angluin", () => {
   let automaton = Automaton.strToAutomaton(`[0]

@@ -4,11 +4,19 @@ export class ObservationTable {
   private columns: string[];
   private rows: string[];
   private matrix: boolean[][];
+  E: string[];
+  S: string[];
+  SA: string[];
+  assoc: { [key: string]: string }
 
-  constructor() {
+  constructor(alphabet: string[]) {
     this.columns = []
     this.rows = []
     this.matrix = [[]];
+    this.E = [""]
+    this.S = [""]
+    this.SA = [...alphabet]
+    this.assoc = {}
   }
 
   add_column(column_name: string) {
@@ -38,12 +46,12 @@ export class ObservationTable {
   }
 
   /**
-   * @return if row1 == row2
+   * @return if row1 === row2
    */
   same_row(row1: string, row2: string) {
     const r1 = this.get_row(row1);
     const r2 = this.get_row(row2);
-    return r1 != undefined && r2 != undefined &&
+    return r1 !== undefined && r2 !== undefined &&
       same_vector(r1, r2);
   }
 }

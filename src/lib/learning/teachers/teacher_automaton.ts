@@ -23,8 +23,8 @@ export class TeacherAutomaton implements Teacher {
       params.automaton : Automaton.strToAutomaton(params.automaton)).minimize()
     this.automaton = automaton.minimize();
     this.alphabet = automaton.alphabet;
-    this.regex = params.regex != undefined ? params.regex : "Teacher with automaton"
-    this.description = params.description != undefined ? params.description : "Teacher with automaton";
+    this.regex = params.regex !== undefined ? params.regex : "Teacher with automaton"
+    this.description = params.description !== undefined ? params.description : "Teacher with automaton";
     this.counter_examples = params.counter_examples;
   }
 
