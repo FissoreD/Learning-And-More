@@ -8,7 +8,7 @@ type transition = {
   ret: { [letter: string]: { [stack_top: string]: StateVPA[] } }
 }
 
-type transition_type = "INT" | "RET" | "CALL"
+export type transition_type = "INT" | "RET" | "CALL"
 
 export class StateVPA {
   isAccepting: boolean;
@@ -50,45 +50,54 @@ export class StateVPA {
     }
   }
 
-  add_transition(type_trans: transition_type, symbol: string, top_stack: string = "", state: StateVPA) {
-    let succ: StateVPA[], pred: StateVPA[];
+  add_transition(type_trans: transition_type, symbol: string, top_stack: string = "", state: StateVPA | undefined) {
+    let succ: StateVPA[] = [], pred: StateVPA[] = [];
     if (type_trans === "INT") {
       succ = (this.outTransitions.int[symbol] = this.outTransitions.int[symbol] || [])
-      pred = (state.inTransitions.int[symbol] = state.inTransitions.int[symbol] || [])
+      if (state)
+        pred = (state.inTransitions.int[symbol] = state.inTransitions.int[symbol] || [])
     } else {
       let succ1, pred1;
       if (type_trans === "CALL") {
         succ1 = (this.outTransitions.call[symbol] = (this.outTransitions.call[symbol] || {}))
-        pred1 = (state.inTransitions.call[symbol] = (state.inTransitions.call[symbol] || {}))
+        if (state)
+          pred1 = (state.inTransitions.call[symbol] = (state.inTransitions.call[symbol] || {}))
       } else {
-        console.log("Adding RETURN");
-
         succ1 = (this.outTransitions.ret[symbol] = (this.outTransitions.ret[symbol] || {}))
-        pred1 = (state.inTransitions.ret[symbol] = (state.inTransitions.ret[symbol] || {}))
+        if (state)
+          pred1 = (state.inTransitions.ret[symbol] = (state.inTransitions.ret[symbol] || {}))
       }
       succ = (succ1[top_stack] = (succ1[top_stack] || []))
-      pred = (pred1[top_stack] = (pred1[top_stack] || []))
+      if (pred1)
+        pred = (pred1[top_stack] = (pred1[top_stack] || []))
     }
-    if (succ.length === 0 || pred.length === 0) {
-      switch (type_trans) {
-        case "CALL": this.alphabet.CALL.push(symbol); break
-        case "RET": this.alphabet.RET.push(symbol); break;
-        case "INT": this.alphabet.INT.push(symbol); break;
+    if (state) {
+      if (succ.length === 0 || pred?.length === 0) {
+        switch (type_trans) {
+          case "CALL": this.alphabet.CALL.push(symbol); break
+          case "RET": this.alphabet.RET.push(symbol); break;
+          case "INT": this.alphabet.INT.push(symbol); break;
+        }
       }
+      this.successors.add(state)
+      state.predecessor.add(this)
+      succ.push(state)
+      pred.push(this)
     }
-    console.log("Adding ", this.name, " the successor ", state.name, { type_trans, symbol, top_stack });
-
-    this.successors.add(state)
-    state.predecessor.add(this)
-    succ.push(state)
-    pred.push(this)
+    return succ
   }
 
   getSuccessor(type_trans: transition_type, symbol: string, stack_top: string = "") {
-    switch (type_trans) {
-      case "CALL": return this.outTransitions.call[symbol][stack_top]
-      case "RET": return this.outTransitions.ret[symbol][stack_top]
-      case "INT": return this.outTransitions.int[symbol]
+    try {
+      switch (type_trans) {
+        case "CALL": return this.outTransitions.call[symbol][stack_top]
+        case "RET": return this.outTransitions.ret[symbol][stack_top]
+        case "INT": return this.outTransitions.int[symbol]
+      }
+    } catch (e) {
+      if (e instanceof TypeError) {
+        return this.add_transition(type_trans, symbol, stack_top, undefined)
+      } else throw e
     }
   }
 
@@ -97,8 +106,9 @@ export class StateVPA {
       case "CALL": return this.inTransitions.call[symbol][stack_top]
       case "RET": return this.inTransitions.ret[symbol][stack_top]
       case "INT": return this.inTransitions.int[symbol]
-    }
+    };
   }
+
 
   get_out_transition_number(): number {
     return todo()

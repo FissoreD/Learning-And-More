@@ -5,7 +5,6 @@ import { Automaton } from "../../lib/automaton/fsm/DFA_NFA";
 // const Graphviz = dynamic(() => import('graphviz-react'), { ssr: false });
 import Graphviz from "graphviz-react";
 
-
 const options = {
   fit: true,
   height: undefined,
@@ -20,10 +19,13 @@ export class AutomatonC extends Component<Prop, { x: ReactElement | undefined }>
   constructor(prop: Prop) {
     super(prop)
     this.state = { x: undefined }
+    console.log("Creating ");
   }
 
   create_automaton() {
     if (this.state.x === undefined) {
+      console.log(undefined);
+
       this.setState({
         x: <Graphviz className='automaton img-fluid' options={options} dot={this.props.automaton.automatonToDot()} />
       })

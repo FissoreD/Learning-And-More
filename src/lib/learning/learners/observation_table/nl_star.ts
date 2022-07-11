@@ -18,7 +18,7 @@ export class NL_star extends LearnerBase {
 
     let res = "0".repeat(row_value.length)
 
-    Object.values(this.ot).forEach(value => {
+    Object.values(this.ot.assoc).forEach(value => {
       if (value !== row_value && this.is_covered(value, row_value)) {
         res = this.row_union(res, value);
       }
@@ -33,6 +33,8 @@ export class NL_star extends LearnerBase {
    * returns 0111
    */
   row_union(row1: string, row2: string): string {
+    console.log(row1, row2);
+
     return Array.from(row1).map((e, pos) => [e, row2.charAt(pos)].includes("1") ? "1" : "0").join("");
   }
 

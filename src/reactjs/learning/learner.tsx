@@ -1,7 +1,5 @@
 import { Component, ReactElement, ReactNode } from "react";
-import { Automaton } from "../../lib/automaton/fsm/DFA_NFA";
 import { LearnerBase } from "../../lib/learning/learners/observation_table/learner_base";
-import { ObservationTable } from "../../lib/learning/learners/observation_table/observation_table";
 import { AutomatonC } from "../automaton/automaton";
 import { ObservationTableC } from "./observation_table_c";
 
@@ -10,7 +8,7 @@ enum MESSAGE_TYPES { END, CONSISTENCY, CLOSEDNESS, CE, CL_AND_CON }
 interface Prop { learner: LearnerBase, name: String }
 interface State {
   do_next: boolean,
-  memory: { ot: ObservationTable, automaton: Automaton | undefined, message: { type: MESSAGE_TYPES, val: string } }[],
+  memory: { ot: ReactElement, automaton: ReactElement | undefined, message: { type: MESSAGE_TYPES, val: string } }[],
   position: number
 }
 
@@ -22,7 +20,7 @@ export abstract class Learner extends Component<Prop, State>{
       do_next: true,
       memory: [{
         message: { type: MESSAGE_TYPES.CE, val: "Learning with " + prop.name },
-        ot: prop.learner.ot.clone(),
+        ot: <ObservationTableC ot={prop.learner.ot.clone()} />,
         automaton: undefined
       }], position: 0
     };
@@ -75,8 +73,10 @@ export abstract class Learner extends Component<Prop, State>{
         }
       }
       let memory = state.memory;
-      console.log("Message");
-      memory.push({ message, ot: learner.ot.clone(), automaton: learner.automaton?.clone() })
+      memory.push({
+        message, ot: <ObservationTableC ot={learner.ot.clone()} />,
+        automaton: learner.automaton ? <AutomatonC automaton={learner.automaton.clone()} /> : undefined
+      })
       let position = state.position + 1
       state = { position, do_next: !state.do_next, memory }
     } else {
@@ -120,10 +120,8 @@ export abstract class Learner extends Component<Prop, State>{
   render(): ReactNode {
     let position = this.state.position
     let memory_cell = this.state.memory[position]
-    console.log(memory_cell.automaton === undefined);
-
     return <div className="container">
-      <div className="text-end">
+      <div className="text-end sticky-top">
         <div className="btn-group sticky-top " role="group" aria-label="Btn-group8">
           <button type="button" className="btn btn-secondary" onClick={() => this.reload()} >Reload</button >
           <button type="button" className="btn btn-secondary" disabled={position === 0} onClick={() => this.prev_op()} >Previous</button >
@@ -132,10 +130,10 @@ export abstract class Learner extends Component<Prop, State>{
         </div>
       </div>
       <div className="carousel slide">
-        {this.create_card("Language to Learn", this.create_text("TODO"))}
+        {this.create_card("Language to Learn", this.create_text(this.props.name + " TODO"))}
         {this.create_card("Message", this.create_text(memory_cell.message.val))}
-        {memory_cell.automaton ? this.create_card("Automaton", <AutomatonC automaton={memory_cell.automaton!} />) : <></>}
-        {this.create_card("Observation Table", <ObservationTableC ot={memory_cell.ot} />)}
+        {memory_cell.automaton ? this.create_card("Automaton", memory_cell.automaton!) : <></>}
+        {this.create_card("Observation Table", memory_cell.ot)}
       </div>
     </div>
   }
