@@ -1,4 +1,4 @@
-import { Component, ReactNode } from "react";
+import React, { Component, ReactNode } from "react";
 import { Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
 
 interface ChangeCnt { change_cnt: (algo: "L*" | "NL*" | "TTT") => void; }
@@ -15,7 +15,7 @@ export class NavBar extends Component<ChangeCnt> {
               <Nav.Link href="#home">Home</Nav.Link>
               {/* <Nav.Link href="#link">Link</Nav.Link> */}
               <NavDropdown title="Algorithms" id="basic-nav-dropdown">
-                <NavDropdown.Item href="#action/3.3">Learners List</NavDropdown.Item>
+                <NavDropdown.Item onClick={() => this.props.change_cnt("L*")}>L*</NavDropdown.Item>
                 <NavDropdown.Item onClick={() => this.props.change_cnt("L*")}>L*</NavDropdown.Item>
                 <NavDropdown.Item onClick={() => this.props.change_cnt("NL*")}>NL*</NavDropdown.Item>
                 <NavDropdown.Divider />

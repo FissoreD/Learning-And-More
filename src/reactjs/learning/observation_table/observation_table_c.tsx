@@ -1,6 +1,6 @@
-import { Component, ReactNode } from "react";
-import { ObservationTable } from "../../lib/learning/learners/observation_table/observation_table";
-import { to_eps } from "../../lib/tools";
+import React, { Component, ReactNode } from "react";
+import { ObservationTable } from "../../../lib/learning/learners/observation_table/observation_table";
+import { to_eps } from "../../../lib/tools";
 
 interface Prop { ot: ObservationTable; }
 

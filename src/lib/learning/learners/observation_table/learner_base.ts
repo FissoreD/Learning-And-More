@@ -1,9 +1,10 @@
 import { Automaton } from "../../../automaton/fsm/DFA_NFA";
 import { boolToString, generate_prefix_list, generate_suffix_list } from "../../../tools";
 import { Teacher } from "../../teachers/teacher";
+import LearnerInterface from "../learner_inerface";
 import { ObservationTable } from "./observation_table";
 
-export abstract class LearnerBase {
+export abstract class LearnerBase implements LearnerInterface {
   alphabet: string[];
   ot: ObservationTable;
   teacher: Teacher;
@@ -56,7 +57,7 @@ export abstract class LearnerBase {
         }
       }
     }
-    answer = this.teacher.member(word);
+    answer = boolToString(this.teacher.member(word));
     this.update_observation_table(pref, answer)
     this.member_number++;
   }

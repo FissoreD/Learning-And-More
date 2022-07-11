@@ -1,5 +1,4 @@
 import { Automaton } from "../../automaton/fsm/DFA_NFA";
-import { boolToString } from "../../tools";
 import { equivalenceFunction } from "./equiv";
 import { Teacher } from "./teacher";
 
@@ -28,8 +27,8 @@ export class TeacherAutomaton implements Teacher {
     this.counter_examples = params.counter_examples;
   }
 
-  member(sentence: string): string {
-    return boolToString(this.automaton!.accept_word(sentence));
+  member(sentence: string): boolean {
+    return this.automaton!.accept_word(sentence);
   }
 
   equiv(automaton: Automaton): string | undefined {

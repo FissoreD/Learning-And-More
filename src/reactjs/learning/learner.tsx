@@ -1,7 +1,7 @@
-import { Component, ReactElement, ReactNode } from "react";
+import React, { Component, ReactElement, ReactNode } from "react";
 import { LearnerBase } from "../../lib/learning/learners/observation_table/learner_base";
 import { AutomatonC } from "../automaton/automaton";
-import { ObservationTableC } from "./observation_table_c";
+import { ObservationTableC } from "./observation_table/observation_table_c";
 
 enum MESSAGE_TYPES { END, CONSISTENCY, CLOSEDNESS, CE, CL_AND_CON }
 
@@ -122,7 +122,7 @@ export abstract class Learner extends Component<Prop, State>{
     let memory_cell = this.state.memory[position]
     return <div className="container">
       <div className="text-end sticky-top">
-        <div className="btn-group sticky-top " role="group" aria-label="Btn-group8">
+        <div className="btn-group" role="group" aria-label="Btn-group8">
           <button type="button" className="btn btn-secondary" onClick={() => this.reload()} >Reload</button >
           <button type="button" className="btn btn-secondary" disabled={position === 0} onClick={() => this.prev_op()} >Previous</button >
           <button type="button" className="btn btn-secondary" disabled={position === this.state.memory.length - 1 && this.props.learner.finish} onClick={() => this.setState(this.next_op(this.state))}>Next</button>

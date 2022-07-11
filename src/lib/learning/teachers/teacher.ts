@@ -8,9 +8,9 @@ export interface Teacher {
   automaton?: Automaton;
   /**
    * @param sentence the sentence to test the membership
-   * @returns the string "0" if the sentence is accepted else "1"
+   * @returns if the sentence is accepted
    */
-  member(sentence: string): string;
+  member(sentence: string): boolean;
   /**
    * @param automaton
    * @returns undefined if the automaton recognizes the teacher's language, a counter-example otherwise

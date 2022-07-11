@@ -1,4 +1,4 @@
-import { Component, ReactNode } from "react";
+import React, { Component, ReactNode } from "react";
 import aut from "../json/automata.json";
 import { Automaton } from "../lib/automaton/fsm/DFA_NFA";
 import { L_star } from "../lib/learning/learners/observation_table/l_star";
