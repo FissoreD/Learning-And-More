@@ -66,7 +66,7 @@ export class Automaton {
 
   /* istanbul ignore next */
   automatonToDot() {
-    let txt = "digraph {rankdir = LR\n"
+    let txt = "digraph {rankdir = LR\nfixedsize=true\n"
     let triples: { [id: string]: string[] } = {}
     for (const [name, state] of this.states) {
       for (let j = 0; j < this.alphabet.length; j++) {
@@ -85,7 +85,7 @@ export class Automaton {
 
     let shape = all_states[0].name.length > 0 ? "circle" : "box"
 
-    txt = txt.concat(`node [style=rounded, shape=${shape}]\n`);
+    txt = txt.concat(`node [style=rounded, shape=${shape}, width=.5, fixedsize=true]\n`);
 
     txt = txt.concat(Object.keys(triples).map(x => {
       let [states, transition] = [x, triples[x].join(",")]

@@ -47,3 +47,5 @@ export let myLog = ({ a, toLog = false }: { a: any[], toLog?: boolean }) => {
 export const todo = () => {
   throw new Error("Function not implemented.");
 }
+
+export const to_eps = (s: string) => s === "" ? "ε" : s

@@ -12,6 +12,7 @@ export abstract class LearnerBase {
   closedness_counter: number;
   consistence_counter: number;
   finish = false;
+  counter_example: string | undefined = "";
   automaton: undefined | Automaton;
 
   constructor(teacher: Teacher) {
@@ -163,20 +164,21 @@ export abstract class LearnerBase {
    */
   make_next_query() {
     if (this.finish) return;
-    var close_rep;
-    var consistence_rep;
-    if ((close_rep = this.is_close())) {
-      this.add_elt_in_S(close_rep);
-    } else if ((consistence_rep = this.is_consistent())) {
-      let new_col = consistence_rep[2]
+    var proprerty;
+    if ((proprerty = this.is_close())) {
+      this.add_elt_in_S(proprerty);
+    } else if ((proprerty = this.is_consistent())) {
+      let new_col = proprerty[2]
       this.add_elt_in_E(new_col);
-    } else {
+    } else if (this.automaton === undefined) {
       let automaton = this.make_automaton();
       this.automaton = automaton;
-      let answer = this.make_equiv(automaton);
-      if (answer !== undefined) {
-        this.table_to_update_after_equiv(answer!, false)
+      this.counter_example = this.make_equiv(this.automaton);
+    } else {
+      if (this.counter_example !== undefined) {
+        this.table_to_update_after_equiv(this.counter_example!, false)
         this.automaton = undefined;
+        this.counter_example = undefined
       } else {
         this.finish = true;
       }

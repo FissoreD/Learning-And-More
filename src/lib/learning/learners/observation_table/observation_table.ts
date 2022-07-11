@@ -8,6 +8,7 @@ export class ObservationTable {
   S: string[];
   SA: string[];
   assoc: { [key: string]: string }
+  alphabet: string[];
 
   constructor(alphabet: string[]) {
     this.columns = []
@@ -17,6 +18,7 @@ export class ObservationTable {
     this.S = [""]
     this.SA = [...alphabet]
     this.assoc = {}
+    this.alphabet = alphabet;
   }
 
   add_column(column_name: string) {
@@ -53,5 +55,14 @@ export class ObservationTable {
     const r2 = this.get_row(row2);
     return r1 !== undefined && r2 !== undefined &&
       same_vector(r1, r2);
+  }
+
+  clone() {
+    let clone = new ObservationTable(this.alphabet)
+    clone.E = [...this.E]
+    clone.S = [...this.S]
+    clone.SA = [...this.SA]
+    clone.assoc = { ...this.assoc }
+    return clone;
   }
 }
