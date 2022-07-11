@@ -1,3 +1,8 @@
-/* .obs-table-header {
-  background-color: red !important;
-} */
+.automaton {
+  text-align: center;
+}
+
+.automaton svg {
+  max-width: 100%;
+  height: auto;
+}

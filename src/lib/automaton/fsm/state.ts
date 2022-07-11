@@ -21,8 +21,6 @@ export class State {
       this.outTransitions.set(symbol, []);
       this.inTransitions.set(symbol, []);
     }
-    // console.log({ name });
-
   }
 
   add_transition(symbol: string, state: State) {

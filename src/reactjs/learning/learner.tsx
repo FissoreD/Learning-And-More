@@ -120,6 +120,8 @@ export abstract class Learner extends Component<Prop, State>{
   render(): ReactNode {
     let position = this.state.position
     let memory_cell = this.state.memory[position]
+    console.log(memory_cell.automaton === undefined);
+
     return <div className="container">
       <div className="text-end">
         <div className="btn-group sticky-top " role="group" aria-label="Btn-group8">

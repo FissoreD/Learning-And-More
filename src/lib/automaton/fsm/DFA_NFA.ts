@@ -1,7 +1,8 @@
 import { same_vector } from "../../tools";
+import { FSM } from "./FSM_interface";
 import { State } from "./state";
 
-export class Automaton {
+export class Automaton implements FSM<string[], State> {
   states: Map<string, State>;
   initialStates: State[];
   alphabet: string[];
@@ -85,7 +86,7 @@ export class Automaton {
 
     let shape = all_states[0].name.length > 0 ? "circle" : "box"
 
-    txt = txt.concat(`node [style=rounded, shape=${shape}, width=.5, fixedsize=true]\n`);
+    txt = txt.concat(`node [style=rounded, shape=${shape}, fixedsize=true]\n`);
 
     txt = txt.concat(Object.keys(triples).map(x => {
       let [states, transition] = [x, triples[x].join(",")]
@@ -294,7 +295,6 @@ export class Automaton {
       aut.all_states().forEach((e, pos) => e.getSuccessor(l)?.forEach(succ =>
         states[pos].add_transition(l, states[aut.all_states().indexOf(succ)])
       ))
-      // todo()
       this.all_states().forEach((e, pos) => e.getSuccessor(l)?.forEach(succ =>
         states[pos + aut.all_states().length].add_transition(l, states[this.all_states().indexOf(succ) + aut.all_states().length])
       ))
