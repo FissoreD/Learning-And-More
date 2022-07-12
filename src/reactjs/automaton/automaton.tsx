@@ -1,6 +1,6 @@
 // import dynamic from 'next/dynamic';
 import { Component, ReactElement, ReactNode } from "react";
-import { Automaton } from "../../lib/automaton/fsm/DFA_NFA";
+import Automaton from "../../lib/automaton/fsm/DFA_NFA";
 
 // const Graphviz = dynamic(() => import('graphviz-react'), { ssr: false });
 import Graphviz from "graphviz-react";

@@ -1,6 +1,6 @@
 import { same_vector } from "../../../tools";
 
-export class ObservationTable {
+export default class ObservationTable {
   private columns: string[];
   private rows: string[];
   private matrix: boolean[][];

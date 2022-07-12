@@ -1,4 +1,4 @@
-export class State {
+export default class State {
   isAccepting: boolean;
   isInitial: boolean;
   alphabet: string[];

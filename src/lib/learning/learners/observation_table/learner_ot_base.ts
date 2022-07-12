@@ -1,43 +1,31 @@
-import { Automaton } from "../../../automaton/fsm/DFA_NFA";
 import { boolToString, generate_prefix_list, generate_suffix_list } from "../../../tools";
-import { Teacher } from "../../teachers/teacher";
-import LearnerInterface from "../learner_inerface";
-import { ObservationTable } from "./observation_table";
+import Teacher from "../../teachers/teacher";
+import LearnerFather from "../learner_father";
+import ObservationTable from "./observation_table";
 
-export abstract class LearnerBase implements LearnerInterface {
-  alphabet: string[];
-  ot: ObservationTable;
-  teacher: Teacher;
-  member_number: number;
-  equiv_number: number;
+export default abstract class LearnerOTBase extends LearnerFather<ObservationTable> {
   closedness_counter: number;
   consistence_counter: number;
-  finish = false;
   counter_example: string | undefined = "";
-  automaton: undefined | Automaton;
 
   constructor(teacher: Teacher) {
-    this.alphabet = Array.from(teacher.alphabet);
-    this.teacher = teacher;
-    this.member_number = 0;
-    this.equiv_number = 0;
+    super(teacher, new ObservationTable([...teacher.alphabet]))
     this.closedness_counter = 0;
     this.consistence_counter = 0;
-    this.ot = new ObservationTable(this.alphabet);
     this.add_row("")
-    this.ot.SA.forEach(elt => this.add_row(elt));
+    this.data_structure.SA.forEach(elt => this.add_row(elt));
   }
 
   update_observation_table(key: string, value: string) {
-    let old_value = this.ot.assoc[key];
+    let old_value = this.data_structure.assoc[key];
     if (old_value !== undefined) value = old_value + value
-    this.ot.assoc[key] = value;
+    this.data_structure.assoc[key] = value;
   }
 
   /**
    * 1. Takes s in {@link S} and e in {@link E} which creating a word 
    * 2. Asks to the {@link teacher} if word is accepted  
-   * 3. Updates {@link ot} wrt the answer  
+   * 3. Updates {@link data_structure} wrt the answer  
    * No modification is performed in {@link S}, {@link E} or {@link SA} sets
    */
   make_member(pref: string, suff: string) {
@@ -48,9 +36,9 @@ export abstract class LearnerBase implements LearnerInterface {
       let pref1 = word.substring(0, i);
       let suff1 = word.substring(i);
       if (pref1 === pref) continue;
-      if (this.ot.E.includes(suff1)) {
-        if ((this.ot.S.includes(pref1) || this.ot.SA.includes(pref1)) && this.ot.assoc[pref1]) {
-          answer = this.ot.assoc[pref1].charAt(this.ot.E.indexOf(suff1));
+      if (this.data_structure.E.includes(suff1)) {
+        if ((this.data_structure.S.includes(pref1) || this.data_structure.SA.includes(pref1)) && this.data_structure.assoc[pref1]) {
+          answer = this.data_structure.assoc[pref1].charAt(this.data_structure.E.indexOf(suff1));
           this.update_observation_table(pref, answer)
           if (answer === undefined) throw new Error('Parameter is not a number!');
           return;
@@ -63,20 +51,6 @@ export abstract class LearnerBase implements LearnerInterface {
   }
 
   /**
-   * Takes in parameter an {@link Automaton} and ask 
-   * to the teacher if the automaton knows the language.
-   * If so : the Learner has learnt the language
-   * Else : it appends the counter-example to {@link S}
-   * @param a an Automaton
-   * @returns undefined if {@link a} recognize the teacher's language, a counter-example (as a string) otherwise.
-   */
-  make_equiv(a: Automaton) {
-    let answer = this.teacher.equiv(a);
-    this.equiv_number++;
-    return answer;
-  }
-
-  /**
    * For all prefix p of {@link new_elt} if p is not in {@link S} :
    * remove p from {@link SA} and add it to {@link S}
    * @param new_elt the {@link new_elt} to add in {@link S}
@@ -86,25 +60,25 @@ export abstract class LearnerBase implements LearnerInterface {
     let added_list: string[] = [];
     let prefix_list = generate_prefix_list(new_elt);
     for (const prefix of prefix_list) {
-      if (this.ot.S.includes(prefix)) return;
-      if (this.ot.SA.includes(prefix)) {
+      if (this.data_structure.S.includes(prefix)) return;
+      if (this.data_structure.SA.includes(prefix)) {
         this.move_from_SA_to_S(prefix);
         for (const a of this.alphabet) {
           const new_word = prefix + a;
-          if (!this.ot.SA.includes(new_word) && !this.ot.S.includes(new_word)) {
+          if (!this.data_structure.SA.includes(new_word) && !this.data_structure.S.includes(new_word)) {
             this.add_row(new_word, after_member);
-            this.ot.SA.push(new_word);
+            this.data_structure.SA.push(new_word);
             added_list.push(new_word);
           }
         }
       } else {
-        this.ot.S.push(prefix);
+        this.data_structure.S.push(prefix);
         this.add_row(prefix, after_member);
         added_list.push(prefix);
         this.alphabet.forEach(a => {
           let new_word = prefix + a;
-          if (!this.ot.SA.includes(new_word) && !this.ot.S.includes(new_word)) {
-            this.ot.SA.push(prefix + a);
+          if (!this.data_structure.SA.includes(new_word) && !this.data_structure.S.includes(new_word)) {
+            this.data_structure.SA.push(prefix + a);
             this.add_row(prefix + a)
             added_list.push(prefix + a)
           }
@@ -124,39 +98,39 @@ export abstract class LearnerBase implements LearnerInterface {
   add_elt_in_E(new_elt: string, after_equiv = false) {
     let suffix_list = generate_suffix_list(new_elt);
     for (const suffix of suffix_list) {
-      if (this.ot.E.includes(suffix)) break;
-      this.ot.SA.forEach(s => {
+      if (this.data_structure.E.includes(suffix)) break;
+      this.data_structure.SA.forEach(s => {
         if (s + suffix === new_elt && after_equiv)
           this.update_observation_table(s, boolToString(!this.automaton!.accept_word(new_elt)))
         else this.make_member(s, suffix)
       });
-      this.ot.S.forEach(s => {
+      this.data_structure.S.forEach(s => {
         if (s + suffix === new_elt && after_equiv)
           this.update_observation_table(s, boolToString(!this.automaton!.accept_word(new_elt)))
         else this.make_member(s, suffix)
       });
-      this.ot.E.push(suffix);
+      this.data_structure.E.push(suffix);
     }
   }
 
   /**
    * @param row_name 
-   * adds a row to the {@link ot} 
+   * adds a row to the {@link data_structure} 
    * querying the teacher for all tuple ({@link row_name}, e) where e is in {@link E}
    * @see {@link make_member}
    */
   add_row(row_name: string, after_member = false) {
-    this.ot.E.forEach(e => {
+    this.data_structure.E.forEach(e => {
       if (after_member && e === "")
-        this.ot.assoc[row_name] = boolToString(!this.automaton!.accept_word(row_name));
+        this.data_structure.assoc[row_name] = boolToString(!this.automaton!.accept_word(row_name));
       else this.make_member(row_name, e)
     });
   }
 
   move_from_SA_to_S(elt: string) {
-    const index = this.ot.SA.indexOf(elt);
-    if (index !== -1) this.ot.SA.splice(index, 1);
-    this.ot.S.push(elt);
+    const index = this.data_structure.SA.indexOf(elt);
+    if (index !== -1) this.data_structure.SA.splice(index, 1);
+    this.data_structure.S.push(elt);
   }
 
   /**
@@ -186,18 +160,18 @@ export abstract class LearnerBase implements LearnerInterface {
     }
   }
 
-  make_all_queries() {
-    while (!this.finish) {
-      this.make_next_query();
-    }
-  }
+  /**
+   * Every learner can update differently the observation table according to its implementation
+   * @param answer the answer of teacher after equiv question
+   */
+  abstract table_to_update_after_equiv(answer: string, after_equiv: boolean): void;
 
-  get_member_number() {
-    return this.member_number;
-  }
+  abstract is_close(): string | undefined;
 
-  get_equiv_number() {
-    return this.equiv_number;
+  abstract is_consistent(): string[] | undefined;
+
+  same_row(a: string, b: string) {
+    return this.data_structure.assoc[a] === this.data_structure.assoc[b];
   }
 
   get_consistent_counter() {
@@ -206,29 +180,5 @@ export abstract class LearnerBase implements LearnerInterface {
 
   get_closedness_counter() {
     return this.closedness_counter;
-  }
-
-  get_state_number() {
-    return this.automaton!.state_number()
-  }
-
-  get_transition_number() {
-    return this.automaton!.transition_number()
-  }
-
-  /**
-   * Every learner can update differently the observation table according to its implementation
-   * @param answer the answer of teacher after equiv question
-   */
-  abstract table_to_update_after_equiv(answer: string, after_equiv: boolean): void;
-
-  abstract make_automaton(): Automaton;
-
-  abstract is_close(): string | undefined;
-
-  abstract is_consistent(): string[] | undefined;
-
-  same_row(a: string, b: string) {
-    return this.ot.assoc[a] === this.ot.assoc[b];
   }
 }

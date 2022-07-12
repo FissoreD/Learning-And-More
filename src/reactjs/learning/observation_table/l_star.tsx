@@ -1,7 +1,13 @@
+import LearnerOTBase from "../../../lib/learning/learners/observation_table/learner_ot_base";
 import { to_eps } from "../../../lib/tools";
-import { Learner } from "../learnerSection";
+import { PropReact } from "../learner_sectionC";
+import LearnerOTBaseC from "./learner_OT_baseC";
 
-export class LStarC extends Learner {
+export default class LStarC extends LearnerOTBaseC {
+  constructor(prop: PropReact<LearnerOTBase>) {
+    super(prop, "S")
+  }
+
   close_message(close_rep: string) {
     return `The table is not closed since row(${close_rep}) is not present in S.
     "${close_rep}" will be moved from SA to S.`

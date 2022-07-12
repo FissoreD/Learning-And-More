@@ -1,6 +1,6 @@
-import { Automaton } from "../../automaton/fsm/DFA_NFA";
-import { State } from "../../automaton/fsm/state";
-import { Teacher } from "./teacher";
+import Automaton from "../../automaton/fsm/DFA_NFA";
+import State from "../../automaton/fsm/state";
+import Teacher from "./teacher";
 
 /**
  * let A = teacher.automaton, B = automaton

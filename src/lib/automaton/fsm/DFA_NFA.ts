@@ -1,8 +1,8 @@
 import { same_vector } from "../../tools";
 import { FSM } from "./FSM_interface";
-import { State } from "./state";
+import State from "./state";
 
-export class Automaton implements FSM<string[], State> {
+export default class Automaton implements FSM<string[], State> {
   states: Map<string, State>;
   initialStates: State[];
   alphabet: string[];

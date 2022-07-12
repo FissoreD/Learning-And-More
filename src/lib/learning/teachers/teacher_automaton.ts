@@ -1,6 +1,6 @@
-import { Automaton } from "../../automaton/fsm/DFA_NFA";
+import Automaton from "../../automaton/fsm/DFA_NFA";
 import { equivalenceFunction } from "./equiv";
-import { Teacher } from "./teacher";
+import Teacher from "./teacher";
 
 /**
  * This Teacher takes an Automaton Instance as parameter

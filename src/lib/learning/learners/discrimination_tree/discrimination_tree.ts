@@ -1,5 +1,6 @@
-import { to_eps } from "../../../tools";
-import { Teacher } from "../../teachers/teacher";
+import { todo, to_eps } from "../../../tools";
+import Teacher from "../../teachers/teacher";
+import LearningDataStructure from "../learning_data_structure";
 
 class InnerNode {
   name: string;
@@ -62,7 +63,7 @@ class Leaf {
 
 type TreeElt = InnerNode | Leaf
 
-export default class DiscriminationTree {
+export default class DiscriminationTree implements LearningDataStructure {
   private root: InnerNode;
   private leaves: Map<string, Leaf>;
   private innerNodes: Set<InnerNode>;
@@ -84,7 +85,7 @@ export default class DiscriminationTree {
   lowest_common_anchestor(te1: TreeElt, te2: TreeElt) {
     while (te1.depth > te2.depth) te1 = te1.parent!
     while (te1.depth < te2.depth) te2 = te2.parent!
-    while (te1 != te2) {
+    while (te1 !== te2) {
       te1 = te1.parent!
       te2 = te2.parent!
     }
@@ -160,5 +161,33 @@ export default class DiscriminationTree {
       }
     }
     return a;
+  }
+
+  clone(): DiscriminationTree {
+    // let res = new DiscriminationTree(this.root.name)
+    return todo()
+  }
+
+  toDot(): string {
+    let a = `digraph DT {`
+    const nodes = new Map([...this.innerNodes].map((e, pos) => [e, pos]))
+    const leaves = new Map([...this.leaves].map(([_, e], pos) => [e, pos + nodes.size]))
+    let to_explore: (InnerNode | Leaf)[] = [this.root]
+    let add_to_str = (c: InnerNode, e: Leaf | InnerNode | undefined) => a = a + `\n${nodes.get(c)} -> ${e ? (e instanceof InnerNode ? nodes.get(e) : leaves.get(e)) : "point"}`
+    while (to_explore.length > 0) {
+      let current = to_explore.shift()!
+      if (current instanceof InnerNode) {
+        add_to_str(current, current.left)
+        add_to_str(current, current.right)
+        if (current.left) to_explore.push(current.left)
+        if (current.right) to_explore.push(current.right)
+      }
+    }
+    nodes.forEach((_e, f) => a = a + `\n${nodes.get(f)}[label = "${to_eps(f.name)}"]`)
+    leaves.forEach((_e, f) => a = a + `\n${leaves.get(f)}[label = "${to_eps(f.name)}"]`)
+    a = a + "\npoint[shape=point];}";
+    console.log(a);
+    return a;
+
   }
 }

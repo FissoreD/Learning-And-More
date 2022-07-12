@@ -1,9 +1,9 @@
-import { Automaton } from "../../../automaton/fsm/DFA_NFA";
-import { State } from "../../../automaton/fsm/state";
-import { Teacher } from "../../teachers/teacher";
-import { LearnerBase } from "./learner_base";
+import Automaton from "../../../automaton/fsm/DFA_NFA";
+import State from "../../../automaton/fsm/state";
+import Teacher from "../../teachers/teacher";
+import LearnerOTBase from "./learner_ot_base";
 
-export class NL_star extends LearnerBase {
+export class NL_star extends LearnerOTBase {
   prime_lines: string[];
 
   constructor(teacher: Teacher) {
@@ -13,12 +13,12 @@ export class NL_star extends LearnerBase {
 
   is_prime(row_key: string): boolean {
     if (this.prime_lines === undefined) this.prime_lines = []
-    let row_value = this.ot.assoc[row_key];
+    let row_value = this.data_structure.assoc[row_key];
     if (row_value.length < 2 || parseInt(row_value) === 0) return true;
 
     let res = "0".repeat(row_value.length)
 
-    Object.values(this.ot.assoc).forEach(value => {
+    Object.values(this.data_structure.assoc).forEach(value => {
       if (value !== row_value && this.is_covered(value, row_value)) {
         res = this.row_union(res, value);
       }
@@ -50,7 +50,7 @@ export class NL_star extends LearnerBase {
   }
 
   check_prime_lines() {
-    this.prime_lines = [...this.ot.S, ...this.ot.SA].filter(l => this.is_prime(l));
+    this.prime_lines = [...this.data_structure.S, ...this.data_structure.SA].filter(l => this.is_prime(l));
   }
 
   add_elt_in_S(new_elt: string, after_equiv = false) {
@@ -70,7 +70,7 @@ export class NL_star extends LearnerBase {
    * `s` is not in {@link S}
    */
   is_close(): string | undefined {
-    let res = this.ot.SA.find(t => !this.ot.S.some(s => this.same_row(s, t)) && this.prime_lines.includes(t));
+    let res = this.data_structure.SA.find(t => !this.data_structure.S.some(s => this.same_row(s, t)) && this.prime_lines.includes(t));
     this.closedness_counter += res === undefined ? 0 : 1
     return res
   }
@@ -82,18 +82,18 @@ export class NL_star extends LearnerBase {
    */
   is_consistent(): string[] | undefined {
     let testCovering = (s1: string, s2: string): string[] | undefined => {
-      let value_s1 = this.ot.assoc[s1];
-      let value_s2 = this.ot.assoc[s2];
+      let value_s1 = this.data_structure.assoc[s1];
+      let value_s2 = this.data_structure.assoc[s2];
       if (this.is_covered(value_s1, value_s2)) {
         for (const a of this.alphabet) {
-          let value_s1_p = this.ot.assoc[s1 + a]
-          let value_s2_p = this.ot.assoc[s2 + a]
+          let value_s1_p = this.data_structure.assoc[s1 + a]
+          let value_s2_p = this.data_structure.assoc[s2 + a]
           if (!this.is_covered(value_s1_p, value_s2_p)) {
-            for (let i = 0; i < this.ot.E.length; i++) {
-              if (this.ot.assoc[s1 + a][i] >
-                this.ot.assoc[s2 + a][i] && !this.ot.E.includes(a + this.ot.E[i])) {
+            for (let i = 0; i < this.data_structure.E.length; i++) {
+              if (this.data_structure.assoc[s1 + a][i] >
+                this.data_structure.assoc[s2 + a][i] && !this.data_structure.E.includes(a + this.data_structure.E[i])) {
                 this.consistence_counter++;
-                return [s1, s2, a + this.ot.E[i]]
+                return [s1, s2, a + this.data_structure.E[i]]
               }
             }
           }
@@ -102,10 +102,10 @@ export class NL_star extends LearnerBase {
       }
     }
 
-    for (let s1_ind = 0; s1_ind < this.ot.S.length; s1_ind++) {
-      for (let s2_ind = s1_ind + 1; s2_ind < this.ot.S.length; s2_ind++) {
-        let s1 = this.ot.S[s1_ind];
-        let s2 = this.ot.S[s2_ind];
+    for (let s1_ind = 0; s1_ind < this.data_structure.S.length; s1_ind++) {
+      for (let s2_ind = s1_ind + 1; s2_ind < this.data_structure.S.length; s2_ind++) {
+        let s1 = this.data_structure.S[s1_ind];
+        let s2 = this.data_structure.S[s2_ind];
         let test1 = testCovering(s1, s2);
         if (test1) return test1;
         let test2 = testCovering(s2, s1);
@@ -119,10 +119,10 @@ export class NL_star extends LearnerBase {
     let wordForState: string[] = [], statesMap: Map<string, State> = new Map(),
       acceptingStates: State[] = [], initialStates: State[] = [], stateSet: Set<State> = new Set();
     this.prime_lines.forEach(s => {
-      if (this.ot.S.includes(s)) {
-        let name = this.ot.assoc[s];
+      if (this.data_structure.S.includes(s)) {
+        let name = this.data_structure.assoc[s];
         if (!statesMap.get(name)) {
-          let state = new State(name, name[0] === "1", this.is_covered(name, this.ot.assoc[""]), this.alphabet);
+          let state = new State(name, name[0] === "1", this.is_covered(name, this.data_structure.assoc[""]), this.alphabet);
           wordForState.push(s);
           if (state.isAccepting) acceptingStates.push(state)
           if (state.isInitial) initialStates.push(state)
@@ -132,9 +132,9 @@ export class NL_star extends LearnerBase {
       }
     })
     for (const word of wordForState) {
-      let name = this.ot.assoc[word]
+      let name = this.data_structure.assoc[word]
       for (const symbol of this.alphabet) {
-        let rowNext = this.ot.assoc[word + symbol]
+        let rowNext = this.data_structure.assoc[word + symbol]
         for (const [name1, state] of statesMap) {
           if (this.is_covered(name1, rowNext))
             statesMap.get(name)!.getSuccessor(symbol)!.push(state)

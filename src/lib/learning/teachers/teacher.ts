@@ -1,6 +1,6 @@
-import { Automaton } from "../../automaton/fsm/DFA_NFA";
+import Automaton from "../../automaton/fsm/DFA_NFA";
 
-export interface Teacher {
+export default interface Teacher {
   description: string;
   alphabet: string[];
   counter_examples?: string[];
