@@ -1,4 +1,5 @@
-import React, { Component, ReactElement, ReactNode } from "react";
+import { Component, ReactElement, ReactNode } from "react";
+import { Container } from "react-bootstrap";
 import { LearnerBase } from "../../lib/learning/learners/observation_table/learner_base";
 import { AutomatonC } from "../automaton/automaton";
 import { ObservationTableC } from "./observation_table/observation_table_c";
@@ -120,7 +121,7 @@ export abstract class Learner extends Component<Prop, State>{
   render(): ReactNode {
     let position = this.state.position
     let memory_cell = this.state.memory[position]
-    return <div className="container">
+    return <Container className="body-container">
       <div className="text-end sticky-top">
         <div className="btn-group" role="group" aria-label="Btn-group8">
           <button type="button" className="btn btn-secondary" onClick={() => this.reload()} >Reload</button >
@@ -129,12 +130,10 @@ export abstract class Learner extends Component<Prop, State>{
           <button type="button" className="btn btn-secondary" onClick={() => this.all_steps()}>Run all algo</button>
         </div>
       </div>
-      <div className="carousel slide">
-        {this.create_card("Language to Learn", this.create_text(this.props.name + " TODO"))}
-        {this.create_card("Message", this.create_text(memory_cell.message.val))}
-        {memory_cell.automaton ? this.create_card("Automaton", memory_cell.automaton!) : <></>}
-        {this.create_card("Observation Table", memory_cell.ot)}
-      </div>
-    </div>
+      {this.create_card("Language to Learn", this.create_text(this.props.name + " TODO"))}
+      {this.create_card("Message", this.create_text(memory_cell.message.val))}
+      {memory_cell.automaton ? this.create_card("Automaton", memory_cell.automaton!) : <></>}
+      {this.create_card("Observation Table", memory_cell.ot)}
+    </Container>
   }
 }

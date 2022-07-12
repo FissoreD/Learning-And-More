@@ -18,7 +18,7 @@ export class ObservationTableC extends Component<Prop>{
 
 
   render(): ReactNode {
-    return <table className="table table-striped align-middle text-center table-responsive">
+    return <div className="table-responsive"> <table className="table table-striped align-middle text-center">
       <thead>
         <tr>
           <th key={"EmtpyCell"}></th>
@@ -31,5 +31,6 @@ export class ObservationTableC extends Component<Prop>{
         {this.create_table("SA", this.props.ot.SA)}
       </tbody>
     </table>
+    </div>
   }
 }

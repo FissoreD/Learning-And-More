@@ -30,6 +30,8 @@ export class AutomatonC extends Component<Prop, { x: ReactElement | undefined }>
         x: <Graphviz className='automaton img-fluid' options={options} dot={this.props.automaton.automatonToDot()} />
       })
     }
+    console.log(this.props.automaton);
+
   }
 
   render(): ReactNode {

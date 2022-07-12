@@ -10,3 +10,7 @@
 .dropdown-menu {
   z-index: 1200;
 }
+
+.card {
+  margin: 10px 0;
+}

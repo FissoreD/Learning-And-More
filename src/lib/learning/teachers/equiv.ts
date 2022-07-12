@@ -50,9 +50,9 @@ export let equivalenceFunction = (teacher: Teacher, automaton: Automaton): strin
   let diff2 = autom_minimized.difference(teacher.automaton!);
   let counterEx2 = counterExemple(diff2);
 
-  console.log({ counterEx1, counterEx2 });
+  // console.log({ counterEx1, counterEx2 });
   if (counterEx1 === undefined) return counterEx2;
   if (counterEx2 === undefined) return counterEx1;
 
-  return counterEx1 < counterEx2 ? counterEx1 : counterEx2;
+  return counterEx1.length < counterEx2.length ? counterEx1 : counterEx2;
 }

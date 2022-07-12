@@ -1,4 +1,4 @@
-import React, { Component, ReactNode } from "react";
+import { Component, ReactNode } from "react";
 import aut from "../json/automata.json";
 import { Automaton } from "../lib/automaton/fsm/DFA_NFA";
 import { L_star } from "../lib/learning/learners/observation_table/l_star";
@@ -15,7 +15,7 @@ export class Main extends Component<{}, State> {
     super(prop)
     this.state = {
       cnt: <LStarC name={"L-Star"} learner={new L_star(new TeacherAutomaton({
-        automaton: Automaton.strToAutomaton(aut.a1)
+        automaton: Automaton.strToAutomaton(aut["(a+b)*a(a+b)^4"])
       }))} />
     }
   }
@@ -24,10 +24,10 @@ export class Main extends Component<{}, State> {
     let cnt: ReactNode;
     switch (algo) {
       case "L*": cnt = <LStarC name={"L-Star"} learner={new L_star(new TeacherAutomaton({
-        automaton: Automaton.strToAutomaton(aut.a1)
+        automaton: Automaton.strToAutomaton(aut["(a+b)*a(a+b)^4"])
       }))} />; break
       case "NL*": cnt = <NLStarC name={"NL-Star"} learner={new NL_star(new TeacherAutomaton({
-        automaton: Automaton.strToAutomaton(aut.a1)
+        automaton: Automaton.strToAutomaton(aut["(a+b)*a(a+b)^4"])
       }))} />
     }
     console.log(123)
@@ -37,7 +37,6 @@ export class Main extends Component<{}, State> {
   render(): ReactNode {
     return <>
       <NavBar change_cnt={(e) => this.change_cnt(e)} />
-      <div className="container"></div>
       {this.state.cnt}
     </>
   }

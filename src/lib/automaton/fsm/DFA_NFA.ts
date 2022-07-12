@@ -36,15 +36,15 @@ export class Automaton implements FSM<string[], State> {
     return this
   }
 
-  accept_word(word: string): boolean {
+  read_word(word: string): [State | undefined, boolean] {
     if (word.length === 0)
-      return this.initialStates.some(e => e.isAccepting);
+      return [this.initialStates.find(e => e.isAccepting) || this.initialStates[0], this.initialStates.some(e => e.isAccepting)];
     let nextStates: Set<State> = new Set(this.initialStates);
     for (let index = 0; index < word.length && nextStates.size > 0; index++) {
       let nextStates2: Set<State> = new Set();
       const symbol = word[index];
       if (!this.alphabet.includes(symbol)) {
-        return false
+        return [undefined, false]
       }
       for (const state of nextStates) {
         let next_transition = this.findTransition(state, symbol)
@@ -52,13 +52,21 @@ export class Automaton implements FSM<string[], State> {
           for (const nextState of next_transition) {
             nextStates2.add(nextState)
             if (index === word.length - 1 && nextState.isAccepting)
-              return true
+              return [nextState, true]
           }
         // Array.from(this.findTransition(state, symbol)).forEach(e => nextStates2.add(e))
       }
       nextStates = nextStates2;
     }
-    return false;
+    return [nextStates.values().next().value, false];
+  }
+
+  give_state(word: string): State | undefined {
+    return this.read_word(word)[0]
+  }
+
+  accept_word(word: string): boolean {
+    return this.read_word(word)[1]
   }
 
   findTransition(state: State, symbol: string) {

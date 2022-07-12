@@ -28,7 +28,7 @@ test("Learner NL-Star Bollig et al", () => {
 })
 
 test("Learner L-Star Angluin", () => {
-  let automaton = Automaton.strToAutomaton(aut.a1)
+  let automaton = Automaton.strToAutomaton(aut["(a+b)*a(a+b)^4"])
   console.log(automaton.minimize().toString())
   let teacher = new TeacherAutomaton({ automaton })
   let learner = new L_star(teacher)

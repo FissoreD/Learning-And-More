@@ -1,3 +1,4 @@
+import { to_eps } from "../../../tools";
 import { Teacher } from "../../teachers/teacher";
 
 class InnerNode {
@@ -18,16 +19,44 @@ class InnerNode {
     this.parent = p.parent
     this.depth = p.parent?.depth || 0
   }
+
+  add_right_leaf(l: Leaf) {
+    this.right = l
+    l.set_parent(this, true)
+  }
+
+  add_left_leaf(l: Leaf) {
+    this.left = l
+    l.set_parent(this, false)
+  }
 }
 
 class Leaf {
   name: string
   parent: InnerNode
   depth: number
+  is_accepting: boolean | undefined;
   constructor(p: { name: string, parent: InnerNode }) {
     this.name = p.name;
     this.parent = p.parent;
     this.depth = p.parent.depth + 1;
+  }
+
+  set_parent(i: InnerNode, is_right: boolean) {
+    this.parent = i;
+    this.is_accepting = this.is_accepting_m(i, is_right)
+  }
+
+  is_accepting_m(parent: InnerNode, is_right: boolean): boolean {
+    if (this.is_accepting !== undefined) return this.is_accepting
+    if (is_right && parent.parent === undefined)
+      return true
+    while (parent.parent?.parent !== undefined) {
+      parent = parent.parent
+    }
+    if (parent?.parent?.right === parent)
+      return true
+    return false
   }
 }
 
@@ -35,14 +64,12 @@ type TreeElt = InnerNode | Leaf
 
 export default class DiscriminationTree {
   private root: InnerNode;
-  private leaves: Set<Leaf>;
+  private leaves: Map<string, Leaf>;
   private innerNodes: Set<InnerNode>;
-  private acceptingLeaves: Set<Leaf>
 
   constructor(root_name: string) {
     this.root = new InnerNode({ name: root_name })
-    this.leaves = new Set()
-    this.acceptingLeaves = new Set()
+    this.leaves = new Map()
     this.innerNodes = new Set([this.root])
   }
 
@@ -64,57 +91,43 @@ export default class DiscriminationTree {
     return te1
   }
 
-  split_leaf(p: { leaf_to_split: Leaf, new_discriminator: string, name_leaf_to_add: string, is_top: boolean }) {
-    let parent = p.leaf_to_split.parent;
+  split_leaf(p: { leaf_name: string, new_discriminator: string, name_leaf_to_add: string, is_top: boolean }) {
+    let leaf_to_split = this.leaves.get(p.leaf_name)!
+    let parent = leaf_to_split.parent;
     let new_inner_node = new InnerNode({ name: p.new_discriminator, parent })
     this.innerNodes.add(new_inner_node)
 
     // Set new child's parent after split
-    if (parent.right === p.leaf_to_split) parent.right = new_inner_node
+    if (parent.right === leaf_to_split) parent.right = new_inner_node
     else parent.left = new_inner_node
 
     let new_leaf = new Leaf({ name: p.name_leaf_to_add, parent: new_inner_node })
-    if (this.acceptingLeaves.has(p.leaf_to_split)) this.acceptingLeaves.add(new_leaf)
 
-    let old_leaf = p.leaf_to_split
+    let old_leaf = leaf_to_split
 
-    this.leaves.add(new_leaf)
+    this.leaves.set(new_leaf.name, new_leaf)
     if (p.is_top) {
-      new_inner_node.right = new_leaf
-      new_inner_node.left = old_leaf
+      new_inner_node.add_right_leaf(new_leaf)
+      new_inner_node.add_left_leaf(old_leaf)
     } else {
-      new_inner_node.left = new_leaf
-      new_inner_node.right = old_leaf
+      new_inner_node.add_left_leaf(new_leaf)
+      new_inner_node.add_right_leaf(old_leaf)
     }
 
     return new_inner_node;
   }
 
-  is_accepting(parent: InnerNode) {
-    while (parent.parent?.parent !== undefined) {
-      parent = parent.parent
-    }
-    if (parent?.parent?.right === parent)
-      return true
-    return false
-  }
-
   add_right_child(p: { parent: InnerNode, name: string }) {
     let new_leaf = new Leaf(p)
-    p.parent.right = new_leaf
-    this.leaves.add(new_leaf)
-
-    let parent = p.parent
-    if (parent.parent === undefined || this.is_accepting(parent)) this.acceptingLeaves.add(new_leaf)
+    p.parent.add_right_leaf(new_leaf)
+    this.leaves.set(new_leaf.name, new_leaf)
     return new_leaf
   }
 
   add_left_child(p: { parent: InnerNode, name: string }) {
     let new_leaf = new Leaf(p)
-    p.parent.left = new_leaf
-    this.leaves.add(new_leaf)
-
-    if (this.is_accepting(p.parent)) this.acceptingLeaves.add(new_leaf)
+    p.parent.add_left_leaf(new_leaf)
+    this.leaves.set(new_leaf.name, new_leaf)
     return new_leaf
   }
 
@@ -126,14 +139,26 @@ export default class DiscriminationTree {
     return this.leaves
   }
 
-  get_accepting_leaves() {
-    return this.acceptingLeaves;
-  }
-
   add_root(s: string): Leaf {
     if (this.root.right === undefined)
       return this.add_right_child({ parent: this.root, name: s })
     else
       return this.add_left_child({ parent: this.root, name: s })
+  }
+
+  toString() {
+    let a = "";
+    let to_explore: (InnerNode | Leaf)[] = [this.root]
+    let add_to_str = (c: InnerNode, e: Leaf | InnerNode | undefined) => a = a + `\n${to_eps(c.name)} -> ${e ? to_eps(e.name) : "null"}`
+    while (to_explore.length > 0) {
+      let current = to_explore.shift()!
+      if (current instanceof InnerNode) {
+        add_to_str(current, current.left)
+        add_to_str(current, current.right)
+        if (current.left) to_explore.push(current.left)
+        if (current.right) to_explore.push(current.right)
+      }
+    }
+    return a;
   }
 }

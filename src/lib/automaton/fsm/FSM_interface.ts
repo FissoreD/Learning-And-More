@@ -21,6 +21,7 @@ export interface FSM<Alphabet, State> {
 
   same_language(aut: FSM<Alphabet, State>): boolean;
   accept_word(word: string): boolean;
+  give_state(word: string): State | undefined;
   is_empty(): boolean;
   /** @returns if the automaton is the universal automaton */
   is_full(): boolean;

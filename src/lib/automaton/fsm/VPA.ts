@@ -22,6 +22,10 @@ export class VPA implements FSM<AlphabetVPA, StateVPA> {
     };
   }
 
+  give_state(word: string): StateVPA | undefined {
+    return todo()
+  }
+
   complete(bottom?: StateVPA | undefined): VPA {
     throw todo();
   }

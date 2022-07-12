@@ -1,5 +1,5 @@
 import { to_eps } from "../../../lib/tools";
-import { Learner } from "../learner";
+import { Learner } from "../learnerSection";
 
 export class LStarC extends Learner {
   close_message(close_rep: string) {
