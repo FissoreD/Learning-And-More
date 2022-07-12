@@ -1,4 +1,4 @@
-import { same_vector } from "../../tools";
+import { same_vector, to_eps } from "../../tools";
 import { FSM } from "./FSM_interface";
 import State from "./state";
 
@@ -90,9 +90,9 @@ export default class Automaton implements FSM<string[], State> {
       }
     }
 
-    let all_states = this.all_states()
+    let all_states = this.all_states();
 
-    let shape = all_states[0].name.length > 0 ? "circle" : "box"
+    let shape = "circle"
 
     txt = txt.concat(`node [style=rounded, shape=${shape}, fixedsize=true]\n`);
 
@@ -100,17 +100,17 @@ export default class Automaton implements FSM<string[], State> {
       let [states, transition] = [x, triples[x].join(",")]
       let split = states.split("&");
       let A = split[0], B = split[1];
-      return `${A} -> ${B} [label = "${transition}"]`
+      return `${to_eps(A)} -> ${to_eps(B)} [label = "${transition}"]`
     }).join("\n"));
 
     this.initialStates.forEach(s => {
-      txt = txt.concat(`\nI${s.name} [label="", style=invis, width=0]\nI${s.name} -> ${s.name}`);
+      txt = txt.concat(`\nI${to_eps(s.name)} [label="", style=invis, width=0]\nI${to_eps(s.name)} -> ${to_eps(s.name)}`);
     });
 
     // Accepting states
     all_states.forEach(s => {
       if (s.isAccepting)
-        txt = txt.concat(`\n${s.name} [peripheries=2]`)
+        txt = txt.concat(`\n${to_eps(s.name)} [peripheries=2]`)
     })
 
     txt += "\n}"

@@ -27,6 +27,7 @@ export default class TTT extends LearnerFather<DiscriminationTree> {
         added_left = true;
       }
     }
+    this.make_automaton()
   }
 
   to_stabilize_hypothesis(): boolean {
@@ -83,7 +84,7 @@ export default class TTT extends LearnerFather<DiscriminationTree> {
         states.get(state)!.add_transition(symbol, states.get(res.name)!)
       }
     }
-    return new Automaton([...states.values()])
+    return (this.automaton = new Automaton([...states.values()]))
   }
 
   split_ce_in_uav(ce: string) {

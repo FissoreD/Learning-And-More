@@ -173,7 +173,8 @@ export default class DiscriminationTree implements LearningDataStructure {
       let matched = map.get(current)
       if (current instanceof InnerNode) {
         if (current.left instanceof InnerNode) {
-          let newN = new InnerNode({ name: current.left.name, parent: matched as InnerNode })
+          let newN = new InnerNode({ name: current.left.name, parent: matched as InnerNode });
+          (matched as InnerNode).left = newN
           map.set(current.left, newN)
           to_explore.push(current.left)
           res.innerNodes.add(newN)
@@ -181,7 +182,8 @@ export default class DiscriminationTree implements LearningDataStructure {
           res.add_left_child({ parent: matched as InnerNode, name: current.left.name });
         }
         if (current.right instanceof InnerNode) {
-          let newN = new InnerNode({ name: current.right.name, parent: matched as InnerNode })
+          let newN = new InnerNode({ name: current.right.name, parent: matched as InnerNode });
+          (matched as InnerNode).right = newN
           map.set(current.right, newN)
           to_explore.push(current.right)
           res.innerNodes.add(newN)
@@ -190,6 +192,11 @@ export default class DiscriminationTree implements LearningDataStructure {
         }
       }
     }
+    console.log(this.toString());
+    console.log(res.toString());
+    console.log("-".repeat(30));
+
+
     return res
   }
 
@@ -210,8 +217,9 @@ export default class DiscriminationTree implements LearningDataStructure {
     }
     nodes.forEach((_e, f) => a = a + `\n${nodes.get(f)}[label = "${to_eps(f.name)}"]`)
     leaves.forEach((_e, f) => a = a + `\n${leaves.get(f)}[label = "${to_eps(f.name)}"]`)
-    a = a + "\npoint[shape=point];}";
-    console.log(a);
+    if (this.root.left === undefined || this.root.right === undefined)
+      a = a + "\npoint[shape=point]";
+    a = a + "\n}";
     return a;
   }
 }

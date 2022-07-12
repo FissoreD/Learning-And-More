@@ -1,17 +1,22 @@
 import { ReactElement } from "react";
+import Automaton from "../../../lib/automaton/fsm/DFA_NFA";
 import TTT from "../../../lib/learning/learners/discrimination_tree/TTT";
-import { todo } from "../../../lib/tools";
+import { TeacherAutomaton } from "../../../lib/learning/teachers/teacher_automaton";
 import { AutomatonC } from "../../automaton/automaton";
 import { LearnerSection, MessageType, StateReact } from "../learner_sectionC";
 import DiscriminationTreeC from "./discrimination_tree_c";
 
 export default class TTTC extends LearnerSection<TTT> {
-  dataStructureToNodeElement(): ReactElement {
-    return <DiscriminationTreeC dt={this.props.learner.data_structure} />
+  create_new_learner(regex: string): TTT {
+    return new TTT(new TeacherAutomaton({ automaton: Automaton.strToAutomaton(regex) }))
   }
 
-  next_op_child(state: StateReact): StateReact {
-    let learner = this.props.learner
+  dataStructureToNodeElement(learner: TTT): ReactElement {
+    return <DiscriminationTreeC dt={learner.data_structure.clone()} />
+  }
+
+  next_op_child(state: StateReact<TTT>): StateReact<TTT> {
+    let learner = this.state.learner
     if (learner.finish) return state;
     var message: { type: MessageType, val: string };
     if (state.do_next) {
@@ -21,15 +26,12 @@ export default class TTTC extends LearnerSection<TTT> {
         message = { type: "SEND-HYP", val: "The automaton is stable and will be sent to the teacher" }
       }
     } else {
-      todo()
-      this.props.learner.make_next_query()
+      this.state.learner.make_next_query()
       let old_msg = state.memory[state.position].message
       message = { ...old_msg };
       switch (old_msg.type) {
-        case "CLOSEDNESS":
+        case "HYP-STAB":
           message.val = "The table has been modified"; break;
-        case "CE":
-          message.val = "The counter-example has been added in the discrimination tree"; break;
         case "SEND-HYP":
           message.val = "The conjecture has been sent to the Teacher"; break;
         case "END":
@@ -37,13 +39,15 @@ export default class TTTC extends LearnerSection<TTT> {
         default: throw new Error("You should not be here")
       }
     }
+    console.log("Learner automaton", learner.automaton);
+
     let memory = state.memory;
     memory.push({
       message, dataStructure: <DiscriminationTreeC dt={learner.data_structure.clone()} />,
       automaton: learner.automaton ? <AutomatonC automaton={learner.automaton.clone()} /> : undefined
     })
     let position = state.position + 1
-    state = { position, do_next: !state.do_next, memory }
+    state = { position, do_next: !state.do_next, memory, learner: state.learner }
     return state
   }
 }

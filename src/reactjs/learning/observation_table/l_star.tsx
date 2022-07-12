@@ -1,9 +1,16 @@
+import Automaton from "../../../lib/automaton/fsm/DFA_NFA";
 import LearnerOTBase from "../../../lib/learning/learners/observation_table/learner_ot_base";
+import { L_star } from "../../../lib/learning/learners/observation_table/l_star";
+import { TeacherAutomaton } from "../../../lib/learning/teachers/teacher_automaton";
 import { to_eps } from "../../../lib/tools";
 import { PropReact } from "../learner_sectionC";
 import LearnerOTBaseC from "./learner_OT_baseC";
 
 export default class LStarC extends LearnerOTBaseC {
+  create_new_learner(regex: string): L_star {
+    return new L_star(new TeacherAutomaton({ automaton: Automaton.strToAutomaton(regex) }))
+  }
+
   constructor(prop: PropReact<LearnerOTBase>) {
     super(prop, "S")
   }

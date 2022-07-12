@@ -11,15 +11,15 @@ export default abstract class LearnerOTBaseC extends LearnerSection<LearnerOTBas
     this.table_to_modify_after_ce = table_to_modif
 
   }
-  dataStructureToNodeElement(): ReactElement {
-    return <ObservationTableC data_structure={this.props.learner.data_structure} />
+  dataStructureToNodeElement(learner: LearnerOTBase): ReactElement {
+    return <ObservationTableC data_structure={learner.data_structure.clone()} />
   }
 
   abstract close_message(close_rep: string): string;
   abstract consistent_message(s1: string, s2: string, new_col: string): string;
 
-  next_op_child(state: StateReact): StateReact {
-    let learner = this.props.learner;
+  next_op_child(state: StateReact<LearnerOTBase>): StateReact<LearnerOTBase> {
+    let learner = this.state.learner;
     if (learner.finish) return state
     var message: { type: MessageType, val: string };
     if (state.do_next) {
@@ -44,7 +44,7 @@ export default abstract class LearnerOTBaseC extends LearnerSection<LearnerOTBas
         }
       }
     } else {
-      this.props.learner.make_next_query()
+      this.state.learner.make_next_query()
 
       let old_msg = state.memory[state.position].message
       message = { ...old_msg };
@@ -67,7 +67,7 @@ export default abstract class LearnerOTBaseC extends LearnerSection<LearnerOTBas
       automaton: learner.automaton ? <AutomatonC automaton={learner.automaton.clone()} /> : undefined
     })
     let position = state.position + 1
-    state = { position, do_next: !state.do_next, memory }
+    state = { position, do_next: !state.do_next, memory, learner: state.learner }
     return state
   }
 }

@@ -19,18 +19,15 @@ export class AutomatonC extends Component<Prop, { x: ReactElement | undefined }>
   constructor(prop: Prop) {
     super(prop)
     this.state = { x: undefined }
-    console.log("Creating ");
   }
 
   create_automaton() {
     if (this.state.x === undefined) {
-      console.log(undefined);
-
+      console.log(this.props.automaton.automatonToDot());
       this.setState({
         x: <Graphviz className='automaton img-fluid' options={options} dot={this.props.automaton.automatonToDot()} />
       })
     }
-    console.log(this.props.automaton);
 
   }
 
