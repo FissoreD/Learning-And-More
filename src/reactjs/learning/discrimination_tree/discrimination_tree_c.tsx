@@ -12,8 +12,6 @@ const options = {
 
 export default class DiscriminationTreeC extends Component<{ dt: DiscriminationTree }>{
   render(): ReactNode {
-    console.log(JSON.stringify(this.props.dt.toString()));
-
     return <div className='text-center'>
       {/* <button type="button" className="btn btn-primary" onClick={(e) => { e.currentTarget.style.display = "none"; this.create_automaton() }}>Show automaton</button> */}
       <Graphviz className='automaton img-fluid' options={options} dot={this.props.dt.toDot()} />

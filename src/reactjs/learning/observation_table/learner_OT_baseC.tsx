@@ -40,7 +40,7 @@ export default abstract class LearnerOTBaseC extends LearnerSection<LearnerOTBas
         }
       } else {
         message = {
-          type: "CL_AND_CON", val: "The table is closed and consistent"
+          type: "SEND-HYP", val: "The table is closed and consistent"
         }
       }
     } else {
@@ -54,10 +54,11 @@ export default abstract class LearnerOTBaseC extends LearnerSection<LearnerOTBas
           message.val = "The table has been modified"; break;
         case "CE":
           message.val = "The counter-example has been added in " + this.table_to_modify_after_ce; break;
-        case "CL_AND_CON":
+        case "SEND-HYP":
           message.val = "The conjecture has been sent to the Teacher"; break;
         case "END":
           return state
+        default: throw new Error("You should not be here")
       }
     }
     let memory = state.memory;

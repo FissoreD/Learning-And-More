@@ -6,7 +6,6 @@ import DiscriminationTree from "./discrimination_tree";
 
 export default class TTT extends LearnerFather<DiscriminationTree> {
   finish = false;
-  counter_example: string | undefined = "";
   last_ce: { value: string, accepted: boolean } | undefined;
 
   constructor(teacher: Teacher) {
@@ -30,13 +29,17 @@ export default class TTT extends LearnerFather<DiscriminationTree> {
     }
   }
 
+  to_stabilize_hypothesis(): boolean {
+    return this.last_ce !== undefined &&
+      this.automaton!.accept_word(this.last_ce.value) !== this.last_ce.accepted
+  }
+
   make_next_query() {
     if (this.finish) return
     this.automaton = this.make_automaton()
     let ce: string | undefined;
-    if (this.last_ce &&
-      this.automaton.accept_word(this.last_ce.value) !== this.last_ce.accepted) {
-      ce = this.last_ce.value;
+    if (this.to_stabilize_hypothesis()) {
+      ce = this.last_ce!.value;
     } else {
       ce = this.teacher.equiv(this.automaton)
     }

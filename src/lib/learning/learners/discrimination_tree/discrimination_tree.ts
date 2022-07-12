@@ -1,4 +1,4 @@
-import { todo, to_eps } from "../../../tools";
+import { to_eps } from "../../../tools";
 import Teacher from "../../teachers/teacher";
 import LearningDataStructure from "../learning_data_structure";
 
@@ -164,8 +164,33 @@ export default class DiscriminationTree implements LearningDataStructure {
   }
 
   clone(): DiscriminationTree {
-    // let res = new DiscriminationTree(this.root.name)
-    return todo()
+    let res = new DiscriminationTree(this.root.name)
+    let map = new Map<TreeElt, TreeElt>();
+    map.set(this.root, res.root)
+    let to_explore: TreeElt[] = [this.root];
+    while (to_explore.length > 0) {
+      let current = to_explore.pop()!;
+      let matched = map.get(current)
+      if (current instanceof InnerNode) {
+        if (current.left instanceof InnerNode) {
+          let newN = new InnerNode({ name: current.left.name, parent: matched as InnerNode })
+          map.set(current.left, newN)
+          to_explore.push(current.left)
+          res.innerNodes.add(newN)
+        } else if (current.left instanceof Leaf) {
+          res.add_left_child({ parent: matched as InnerNode, name: current.left.name });
+        }
+        if (current.right instanceof InnerNode) {
+          let newN = new InnerNode({ name: current.right.name, parent: matched as InnerNode })
+          map.set(current.right, newN)
+          to_explore.push(current.right)
+          res.innerNodes.add(newN)
+        } else if (current.right instanceof Leaf) {
+          res.add_right_child({ parent: matched as InnerNode, name: current.right.name });
+        }
+      }
+    }
+    return res
   }
 
   toDot(): string {
@@ -188,6 +213,5 @@ export default class DiscriminationTree implements LearningDataStructure {
     a = a + "\npoint[shape=point];}";
     console.log(a);
     return a;
-
   }
 }

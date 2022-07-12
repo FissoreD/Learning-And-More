@@ -5,7 +5,7 @@ import LearningDataStructure from "../../lib/learning/learners/learning_data_str
 
 export interface PropReact<Learner extends LearnerFather<LearningDataStructure>> { learner: Learner, name: String }
 
-export type MessageType = "END" | "CL_AND_CON" | "CE" | "CONSISTENCY" | "CLOSEDNESS"
+export type MessageType = "END" | "SEND-HYP" | "CE" | "CONSISTENCY" | "CLOSEDNESS" | "DISC-REF" | "HYP-STAB"
 
 export interface StateReact {
   do_next: boolean,
