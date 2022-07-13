@@ -1,4 +1,5 @@
 import { same_vector, to_eps } from "../../tools";
+import regexToAutomaton from "../regex_parser";
 import { FSM } from "./FSM_interface";
 import State from "./state";
 
@@ -424,6 +425,10 @@ export default class Automaton implements FSM<string[], State> {
     )
 
     return new Automaton(stateSet);
+  }
+
+  static regex_to_automaton(regex: string) {
+    return regexToAutomaton(regex)
   }
 
   all_states() {

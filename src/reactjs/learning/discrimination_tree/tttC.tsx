@@ -1,5 +1,4 @@
-import { ReactElement } from "react";
-import Automaton from "../../../lib/automaton/fsm/DFA_NFA";
+import React, { ReactElement } from "react";
 import DiscriminationTree from "../../../lib/learning/learners/discrimination_tree/discrimination_tree";
 import TTT from "../../../lib/learning/learners/discrimination_tree/TTT";
 import LearningDataStructure from "../../../lib/learning/learners/learning_data_structure";
@@ -9,7 +8,7 @@ import DiscriminationTreeC from "./discrimination_tree_c";
 
 export default class TTTC extends LearnerSection<TTT> {
   create_new_learner(regex: string): TTT {
-    return new TTT(new TeacherAutomaton({ automaton: Automaton.strToAutomaton(regex) }))
+    return new TTT(new TeacherAutomaton({ type: "Regex", automaton: regex }))
   }
 
   dataStructureToNodeElement(ds: LearningDataStructure): ReactElement {
@@ -46,7 +45,7 @@ export default class TTTC extends LearnerSection<TTT> {
       automaton: learner.automaton!.clone()
     })
     let position = state.position + 1
-    state = { position, do_next: !state.do_next, memory, learner: state.learner }
+    state = { position, do_next: !state.do_next, memory, learner: state.learner, show_regex_dialog: false }
     return state
   }
 }

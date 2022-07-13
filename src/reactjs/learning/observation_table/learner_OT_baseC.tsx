@@ -1,4 +1,4 @@
-import { ReactElement } from "react";
+import React, { ReactElement } from "react";
 import LearningDataStructure from "../../../lib/learning/learners/learning_data_structure";
 import LearnerOTBase from "../../../lib/learning/learners/observation_table/learner_ot_base";
 import ObservationTable from "../../../lib/learning/learners/observation_table/observation_table";
@@ -7,6 +7,7 @@ import { ObservationTableC } from "./observation_table_c";
 
 export default abstract class LearnerOTBaseC extends LearnerSection<LearnerOTBase>{
   table_to_modify_after_ce: string;
+
   constructor(prop: PropReact<LearnerOTBase>, table_to_modif: string) {
     super(prop)
     this.table_to_modify_after_ce = table_to_modif
@@ -37,7 +38,7 @@ export default abstract class LearnerOTBaseC extends LearnerSection<LearnerOTBas
         }
       } else if (learner.finish || learner.automaton !== undefined) {
         message = {
-          type: "END", val: "The teacher has accepted the laste conjecture"
+          type: "END", val: "The teacher has accepted the last conjecture"
         }
       } else {
         message = {
@@ -68,7 +69,7 @@ export default abstract class LearnerOTBaseC extends LearnerSection<LearnerOTBas
       automaton: learner.automaton ? learner.automaton.clone() : undefined
     })
     let position = state.position + 1
-    state = { position, do_next: !state.do_next, memory, learner: state.learner }
+    state = { position, do_next: !state.do_next, memory, learner: state.learner, show_regex_dialog: false }
     return state
   }
 }

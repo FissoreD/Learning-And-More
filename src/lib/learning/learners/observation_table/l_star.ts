@@ -2,7 +2,7 @@ import Automaton from "../../../automaton/fsm/DFA_NFA";
 import State from "../../../automaton/fsm/state";
 import LearnerOTBase from "./learner_ot_base";
 
-export class L_star extends LearnerOTBase {
+export default class L_star extends LearnerOTBase {
   make_automaton(): Automaton {
     const
       word_for_state: string[] = [],

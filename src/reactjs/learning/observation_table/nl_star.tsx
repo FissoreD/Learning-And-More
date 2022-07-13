@@ -1,4 +1,3 @@
-import Automaton from "../../../lib/automaton/fsm/DFA_NFA";
 import LearnerOTBase from "../../../lib/learning/learners/observation_table/learner_ot_base";
 import { NL_star } from "../../../lib/learning/learners/observation_table/nl_star";
 import { TeacherAutomaton } from "../../../lib/learning/teachers/teacher_automaton";
@@ -6,9 +5,9 @@ import { to_eps } from "../../../lib/tools";
 import { PropReact } from "../learner_sectionC";
 import LearnerOTBaseC from "./learner_OT_baseC";
 
-export class NLStarC extends LearnerOTBaseC {
+export default class NLStarC extends LearnerOTBaseC {
   create_new_learner(regex: string): NL_star {
-    return new NL_star(new TeacherAutomaton({ automaton: Automaton.strToAutomaton(regex) }))
+    return new NL_star(new TeacherAutomaton({ type: "Regex", automaton: regex }))
   }
 
   constructor(prop: PropReact<LearnerOTBase>) {

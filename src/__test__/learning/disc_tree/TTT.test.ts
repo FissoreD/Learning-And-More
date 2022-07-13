@@ -4,7 +4,7 @@ import TTT from "../../../lib/learning/learners/discrimination_tree/TTT"
 import { TeacherAutomaton } from "../../../lib/learning/teachers/teacher_automaton"
 
 test("TTT learn a+bb", () => {
-  let t = new TeacherAutomaton({ automaton: Automaton.strToAutomaton(aut.a_or_bb) })
+  let t = new TeacherAutomaton({ type: "Dot", automaton: Automaton.strToAutomaton(aut.a_or_bb) })
   let learner = new TTT(t);
 
   expect(learner.data_structure.sift("aaa", t)?.name).toBe("")
@@ -29,7 +29,7 @@ test("TTT learn a+bb", () => {
 })
 
 test("TTT learn (a+b)*a(a+b)^5", () => {
-  let t = new TeacherAutomaton({ automaton: Automaton.strToAutomaton(aut["(a+b)*a(a+b)^4"]) })
+  let t = new TeacherAutomaton({ type: "Dot", automaton: aut["(a+b)*a(a+b)^4"] })
   let learner = new TTT(t)
   learner.make_all_queries()
   expect(t.automaton.same_language(learner.automaton!)).toBeTruthy()

@@ -13,18 +13,26 @@ export class TeacherAutomaton implements Teacher {
   counter_examples?: string[];
 
   constructor(params: {
-    automaton: Automaton | string,
-    description?: string,
-    regex?: string,
-    counter_examples?: string[]
+    type: "Automaton" | "Regex" | "Dot",
+    automaton: Automaton | string
   }) {
-    let automaton = (params.automaton instanceof Automaton ?
-      params.automaton : Automaton.strToAutomaton(params.automaton)).minimize()
+    let automaton: Automaton;
+    switch (params.type) {
+      case "Automaton":
+        automaton = (params.automaton as Automaton).minimize()
+        break;
+      case "Regex":
+        automaton = Automaton.regex_to_automaton(params.automaton as string).minimize()
+        break;
+      case "Dot":
+        automaton = Automaton.strToAutomaton(params.automaton as string).minimize()
+        break;
+    }
     this.automaton = automaton.minimize();
     this.alphabet = [...automaton.alphabet];
-    this.regex = params.regex !== undefined ? params.regex : "Teacher with automaton"
-    this.description = params.description !== undefined ? params.description : "Teacher with automaton";
-    this.counter_examples = params.counter_examples;
+    this.regex = params.type === "Regex" ? params.automaton as string : "Teacher with automaton"
+    this.description = this.regex;
+    this.counter_examples = [];
   }
 
   member(sentence: string): boolean {

@@ -1,13 +1,13 @@
-import { Component, ReactElement } from "react";
-import { Dropdown } from "react-bootstrap";
+import React, { Component, ReactElement } from "react";
+import { Button } from "react-bootstrap";
 import { ArrowClockwise, ArrowCounterclockwise, CaretLeftFill, CaretRightFill } from "react-bootstrap-icons";
-import aut from "../../json/automata.json";
 import Automaton from "../../lib/automaton/fsm/DFA_NFA";
 import LearnerFather from "../../lib/learning/learners/learner_father";
 import LearningDataStructure from "../../lib/learning/learners/learning_data_structure";
 import { AutomatonC } from "../automaton/automaton";
+import Dialog from "../dialog";
 
-export interface PropReact<Learner extends LearnerFather<LearningDataStructure>> { learner: Learner, name: String }
+export interface PropReact<Learner extends LearnerFather<LearningDataStructure>> { learner: Learner, name: String, change_regex_container: (regex: string) => void }
 
 export type MessageType = "END" | "SEND-HYP" | "CE" | "CONSISTENCY" | "CLOSEDNESS" | "DISC-REF" | "HYP-STAB"
 
@@ -15,7 +15,8 @@ export interface StateReact<Learner extends LearnerFather<LearningDataStructure>
   do_next: boolean,
   memory: { dataStructure: LearningDataStructure, automaton: Automaton | undefined, message: { type: MessageType, val: string } }[],
   position: number,
-  learner: Learner
+  learner: Learner,
+  show_regex_dialog: boolean
 }
 
 
@@ -28,7 +29,8 @@ export abstract class LearnerSection<LearnerT extends LearnerFather<LearningData
         message: { type: "CE", val: "Learning with " + prop.name },
         dataStructure: prop.learner.data_structure.clone(),
         automaton: undefined
-      }], position: 0, learner: prop.learner
+      }], position: 0, learner: prop.learner,
+      show_regex_dialog: false
     };
   }
 
@@ -74,6 +76,17 @@ export abstract class LearnerSection<LearnerT extends LearnerFather<LearningData
     </div>
   }
 
+  change_learner(regex: string | undefined) {
+    if (regex) {
+      let learner = this.create_new_learner(regex)
+      let newState = this.create_new_state(regex)
+      // this.props.change_teacher(regex)
+      this.setState({ ...newState, learner })
+      this.props.change_regex_container(regex)
+    }
+    this.setState({ show_regex_dialog: false })
+  }
+
   create_text(msg: string) {
     return <p className="text-center m-0">{msg}</p>
   }
@@ -88,7 +101,8 @@ export abstract class LearnerSection<LearnerT extends LearnerFather<LearningData
         message: { type: "CE", val: "Learning with " + this.props.name },
         dataStructure: learner.data_structure.clone(),
         automaton: undefined
-      }], position: 0, learner: learner
+      }], position: 0, learner: learner,
+      show_regex_dialog: false
     }
   }
 
@@ -97,35 +111,32 @@ export abstract class LearnerSection<LearnerT extends LearnerFather<LearningData
     let memory_cell = this.state.memory[position]
 
     return <div className="body-container">
+      <Dialog show={this.state.show_regex_dialog} fn={this.change_learner.bind(this)} />
       <div className="text-end sticky-top text-end sticky-top d-flex justify-content-between">
         <div className="d-flex">
-          <Dropdown>
-            <Dropdown.Toggle variant="primary" id="dropdown-basic">
-              Choose your Regexp
-            </Dropdown.Toggle>
-            <Dropdown.Menu>
-              <Dropdown.Item onClick={() => this.setState(this.create_new_state(aut.a_or_bb))}>a+bb</Dropdown.Item>
-              <Dropdown.Item onClick={() => this.setState(this.create_new_state(aut["(a+b)*a(a+b)^4"]))}>(a+b)*a(a+b)^4</Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
+          <Button className="btn-secondary" onClick={() => {
+            this.setState({ show_regex_dialog: true })
+          }}>
+            Enter Regex
+          </Button>
         </div>
 
         <div className="btn-group" role="group" aria-label="Btn-group8">
-          <button type="button" className="btn btn-secondary" onClick={() => this.reload()} >           <ArrowCounterclockwise/></button >
-          <button type="button" className="btn btn-secondary" disabled={position === 0} onClick={() => this.prev_op()} ><CaretLeftFill/></button >
+          <button type="button" className="btn btn-secondary" onClick={() => this.reload()} >           <ArrowCounterclockwise /></button >
+          <button type="button" className="btn btn-secondary" disabled={position === 0} onClick={() => this.prev_op()} ><CaretLeftFill /></button >
           <button type="button" className="btn btn-secondary" disabled={position === this.state.memory.length - 1 && this.state.learner.finish} onClick={() => {
             let n = this.next_op(this.state);
             this.setState(n)
             position = n.position
             memory_cell = n.memory[position]
-          }}><CaretRightFill/></button>
-          <button type="button" className="btn btn-secondary" onClick={() => this.all_steps()}><ArrowClockwise/></button>
+          }}><CaretRightFill /></button>
+          <button type="button" className="btn btn-secondary" onClick={() => this.all_steps()}><ArrowClockwise /></button>
         </div>
       </div>
-      {this.create_card("Language to Learn", this.create_text(this.props.name + " TODO"))}
+      {this.create_card("Language to Learn", this.create_text(this.state.learner.teacher.regex))}
       {this.create_card("Message", this.create_text(memory_cell.message.val))}
       {memory_cell.automaton ? this.create_card("Automaton", <AutomatonC automaton={memory_cell.automaton!} />) : <></>}
       {this.create_card("Observation Table", this.dataStructureToNodeElement(memory_cell.dataStructure))}
-    </div>
+    </div >
   }
 }

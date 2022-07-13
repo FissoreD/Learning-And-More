@@ -1,5 +1,5 @@
 // import dynamic from 'next/dynamic';
-import { Component, ReactElement } from "react";
+import React, { Component, ReactElement } from "react";
 import Automaton from "../../lib/automaton/fsm/DFA_NFA";
 
 // const Graphviz = dynamic(() => import('graphviz-react'), { ssr: false });
@@ -28,8 +28,6 @@ export class AutomatonC extends Component<Prop, State>{
   }
 
   render(): ReactElement {
-    console.log(this.props.automaton.toDot());
-
     return <div className='text-center'>
       <ButtonGroup aria-label="...">
         <Button onClick={_ => { this.create_automaton(true) }}> Show</Button>

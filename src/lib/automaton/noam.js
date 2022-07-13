@@ -32,10 +32,6 @@
     exports.noam = noam; // CommonJs
   }
 
-  if (typeof define === "function" && define.amd) {
-    define('noam', [], function () { return noam; }); // AMD
-  }
-
   if (typeof window !== 'undefined') {
     window.noam = noam;  // <script>
   }
@@ -816,7 +812,7 @@
           throw new Error("called iterator.each with iterator_func === undefined");
         }
 
-        for (var i = 0, it = this; this.hasNext(); i++) {
+        for (var i = 0; this.hasNext(); i++) {
           iterator_func.call(context, this.next(), i, this.H);
         }
       }
@@ -1270,83 +1266,83 @@
   };
 
   // pretty print the fsm transition function and accepting states as a table
-  noam.fsm.printTable = function (fsm) {
-    var Table = require('cli-table');
-    var colHeads = [""].concat(fsm.alphabet);
+  // noam.fsm.printTable = function (fsm) {
+  //   var Table = require('cli-table');
+  //   var colHeads = [""].concat(fsm.alphabet);
 
-    if (noam.fsm.determineType(fsm) === noam.fsm.enfaType) {
-      colHeads.push(noam.fsm.epsilonSymbol);
-    }
+  //   if (noam.fsm.determineType(fsm) === noam.fsm.enfaType) {
+  //     colHeads.push(noam.fsm.epsilonSymbol);
+  //   }
 
-    colHeads.push("");
+  //   colHeads.push("");
 
-    var table = new Table({
-      head: colHeads,
-      chars: {
-        'top': '-',
-        'top-mid': '+',
-        'top-left': '+',
-        'top-right': '+',
-        'bottom': '-',
-        'bottom-mid': '+',
-        'bottom-left': '+',
-        'bottom-right': '+',
-        'left': '|',
-        'left-mid': '+',
-        'mid': '-',
-        'mid-mid': '+',
-        'right': '|',
-        'right-mid': '+'
-      },
-      truncate: '~'
-    });
+  //   var table = new Table({
+  //     head: colHeads,
+  //     chars: {
+  //       'top': '-',
+  //       'top-mid': '+',
+  //       'top-left': '+',
+  //       'top-right': '+',
+  //       'bottom': '-',
+  //       'bottom-mid': '+',
+  //       'bottom-left': '+',
+  //       'bottom-right': '+',
+  //       'left': '|',
+  //       'left-mid': '+',
+  //       'mid': '-',
+  //       'mid-mid': '+',
+  //       'right': '|',
+  //       'right-mid': '+'
+  //     },
+  //     truncate: '~'
+  //   });
 
-    var tableRows = [], i, j;
-    for (i = 0; i < fsm.states.length; i++) {
-      tableRows.push(new Array(colHeads.length));
-      for (j = 0; j < colHeads.length; j++) {
-        tableRows[i][j] = "";
-      }
-      tableRows[i][0] = fsm.states[i].toString();
-      tableRows[i][colHeads.length - 1] =
-        noam.util.contains(fsm.acceptingStates, fsm.states[i]) ?
-          "1" : "0";
-      table.push(tableRows[i]);
-    }
+  //   var tableRows = [], i, j;
+  //   for (i = 0; i < fsm.states.length; i++) {
+  //     tableRows.push(new Array(colHeads.length));
+  //     for (j = 0; j < colHeads.length; j++) {
+  //       tableRows[i][j] = "";
+  //     }
+  //     tableRows[i][0] = fsm.states[i].toString();
+  //     tableRows[i][colHeads.length - 1] =
+  //       noam.util.contains(fsm.acceptingStates, fsm.states[i]) ?
+  //         "1" : "0";
+  //     table.push(tableRows[i]);
+  //   }
 
-    for (i = 0; i < fsm.transitions.length; i++) {
-      var transition = fsm.transitions[i];
+  //   for (i = 0; i < fsm.transitions.length; i++) {
+  //     var transition = fsm.transitions[i];
 
-      var colNum = null;
-      var rowNum = null;
+  //     var colNum = null;
+  //     var rowNum = null;
 
-      for (j = 0; j < fsm.states.length; j++) {
-        if (noam.util.areEquivalent(fsm.states[j], transition.fromState)) {
-          rowNum = j;
-          break;
-        }
-      }
+  //     for (j = 0; j < fsm.states.length; j++) {
+  //       if (noam.util.areEquivalent(fsm.states[j], transition.fromState)) {
+  //         rowNum = j;
+  //         break;
+  //       }
+  //     }
 
-      if (transition.symbol === noam.fsm.epsilonSymbol) {
-        colNum = colHeads.length - 2;
-      } else {
-        for (j = 0; j < fsm.alphabet.length; j++) {
-          if (noam.util.areEquivalent(fsm.alphabet[j], transition.symbol)) {
-            colNum = j + 1;
-            break;
-          }
-        }
-      }
+  //     if (transition.symbol === noam.fsm.epsilonSymbol) {
+  //       colNum = colHeads.length - 2;
+  //     } else {
+  //       for (j = 0; j < fsm.alphabet.length; j++) {
+  //         if (noam.util.areEquivalent(fsm.alphabet[j], transition.symbol)) {
+  //           colNum = j + 1;
+  //           break;
+  //         }
+  //       }
+  //     }
 
-      if (typeof tableRows[rowNum][colNum].text === "undefined") {
-        tableRows[rowNum][colNum] = { text: [] };
-      }
+  //     if (typeof tableRows[rowNum][colNum].text === "undefined") {
+  //       tableRows[rowNum][colNum] = { text: [] };
+  //     }
 
-      tableRows[rowNum][colNum].text.push(transition.toStates);
-    }
+  //     tableRows[rowNum][colNum].text.push(transition.toStates);
+  //   }
 
-    return table.toString();
-  };
+  //   return table.toString();
+  // };
 
   noam.fsm.serializeFsmToString = function (fsm) {
     var lines = [];
@@ -1363,19 +1359,19 @@
 
     lines.push("#accepting");
 
-    for (var i = 0; i < fsm.acceptingStates.length; i++) {
+    for (i = 0; i < fsm.acceptingStates.length; i++) {
       lines.push(fsm.acceptingStates[i].toString());
     }
 
     lines.push("#alphabet");
 
-    for (var i = 0; i < fsm.alphabet.length; i++) {
+    for (i = 0; i < fsm.alphabet.length; i++) {
       lines.push(fsm.alphabet[i].toString());
     }
 
     lines.push("#transitions");
 
-    for (var i = 0; i < fsm.transitions.length; i++) {
+    for (i = 0; i < fsm.transitions.length; i++) {
       lines.push(fsm.transitions[i].fromState.toString() + ":" +
         fsm.transitions[i].symbol.toString() + ">" +
         fsm.transitions[i].toStates.join(","));
@@ -1413,8 +1409,7 @@
 
         if (typeof parseCounts[parseState] === 'undefined') {
           throw new Error('Line ' + (i + 1).toString() + ': invalid section name ' +
-            parseState + '. Must be one of: states, initial, \
-                           accepting, alphabet, transitions.');
+            parseState + '. Must be one of: states, initial, accepting, alphabet, transitions.');
         } else {
           parseCounts[parseState] += 1;
 
@@ -1424,22 +1419,20 @@
           }
         }
       } else {
-        if (parseState == null) {
-          throw new Error('Line ' + (i + 1).toString() + ': no #section declared. \
-                          Add one section: states, initial, accepting, \
-                          alphabet, transitions.');
+        if (parseState === null) {
+          throw new Error('Line ' + (i + 1).toString() + ': no #section declared. Add one section: states, initial, accepting, alphabet, transitions.');
         } else if (parseState === 'states') {
           var st = line.split(";");
           states = states.concat(st);
-        } else if (parseState == 'initial') {
+        } else if (parseState === 'initial') {
           initial = line;
-        } else if (parseState == 'accepting') {
+        } else if (parseState === 'accepting') {
           var ac = line.split(";");
           accepting = accepting.concat(ac);
-        } else if (parseState == 'alphabet') {
+        } else if (parseState === 'alphabet') {
           var al = line.split(";");
           alphabet = alphabet.concat(al);
-        } else if (parseState == 'transitions') {
+        } else if (parseState === 'transitions') {
           var state_rest = line.split(':');
 
           var state = state_rest[0].split(',');
@@ -1465,25 +1458,25 @@
 
     var fsm = noam.fsm.makeNew();
 
-    for (var i = states.length - 1; i >= 0; i--) {
+    for (i = states.length - 1; i >= 0; i--) {
       noam.fsm.addState(fsm, states[i]);
     }
 
-    for (var i = alphabet.length - 1; i >= 0; i--) {
+    for (i = alphabet.length - 1; i >= 0; i--) {
       noam.fsm.addSymbol(fsm, alphabet[i]);
     }
 
-    for (var i = 0; i < accepting.length; i++) {
+    for (i = 0; i < accepting.length; i++) {
       noam.fsm.addAcceptingState(fsm, accepting[i]);
     }
 
     noam.fsm.setInitialState(fsm, initial);
 
-    for (var i = 0; i < transitions.length; i++) {
+    for (i = 0; i < transitions.length; i++) {
       var transition = transitions[i];
 
-      for (var j = 0; j < transition[0].length; j++) {
-        for (var k = 0; k < transition[1].length; k++) {
+      for (j = 0; j < transition[0].length; j++) {
+        for (k = 0; k < transition[1].length; k++) {
           if (transition[1][k] === noam.fsm.epsilonSymbol) {
             noam.fsm.addEpsilonTransition(fsm, transition[0][j], transition[2]);
           } else {
@@ -1737,7 +1730,7 @@
     }
 
     var unprocessedPairs = [[stateA, stateB]];
-    var processedPairs = [], i, j;
+    var processedPairs = [], j;
 
     while (unprocessedPairs.length !== 0) {
       var currentPair = unprocessedPairs.pop();
@@ -1919,7 +1912,7 @@
 
       return retStr;
     }
-
+    let len;
     newFsm.states = [];
     for (i = 0, len = numStates.toString().length; i < numStates; i++) {
       newFsm.states.push("s" + prefix("0", len, i.toString()));
@@ -2012,7 +2005,6 @@
     }
 
     var newStates = [];
-    var multiStates = [];
 
     for (i = 0; i < fsm.transitions.length; i++) {
       transition = noam.util.clone(fsm.transitions[i]);
@@ -2908,7 +2900,7 @@
   noam.grammar.printAscii = function (grammar) {
     var str = [];
 
-    str.push("Initial nonterminal: " + "<" + grammar.initialNonterminal + ">");
+    str.push("Initial nonterminal: <" + JSON.stringify(grammar.initialNonterminal) + ">");
 
     var slimProds = [], i, j, k;
 
@@ -3115,7 +3107,6 @@
       // (a+b*)* => (a+b)*
       function _regex_simplify_5(tree, fsmCache) {
         if (tree.tag === tags.KSTAR && tree.expr.tag === tags.ALT) {
-          var changed = false;
           for (var i = 0; i < tree.expr.choices.length; i++) {
             if (tree.expr.choices[i].tag === tags.KSTAR) {
               tree.expr.choices[i] = tree.expr.choices[i].expr;
@@ -3671,15 +3662,15 @@
                   }
                 }
               } else if (i < tree.elements.length - 1 && tree.elements[i + 1].tag === tags.ALT && tree.elements[i + 1].choices.length > 1) {
-                var index_eps = noam.util.index(tree.elements[i + 1].choices, makeEps());
+                index_eps = noam.util.index(tree.elements[i + 1].choices, makeEps());
 
                 if (index_eps >= 0) {
-                  var eps = tree.elements[i + 1].choices.splice(index_eps, 1)[0];
+                  eps = tree.elements[i + 1].choices.splice(index_eps, 1)[0];
 
-                  var fsm_kstar = getFromCacheOrCreateFsm(tree.elements[i], fsmCache);
-                  var fsm_other = getFromCacheOrCreateFsm(tree.elements[i + 1], fsmCache);
+                  fsm_kstar = getFromCacheOrCreateFsm(tree.elements[i], fsmCache);
+                  fsm_other = getFromCacheOrCreateFsm(tree.elements[i + 1], fsmCache);
 
-                  var found = false;
+                  found = false;
 
                   try {
                     if (noam.fsm.isSubset(fsm_kstar, fsm_other)) {
@@ -4134,7 +4125,7 @@
       function _randomExpr(numSymbols, alphabet, altp, kleenep, epsp) {
         if (numSymbols === 0) {
           return makeEps();
-        } else if (numSymbols == 1) {
+        } else if (numSymbols === 1) {
           return makeLit(alphabet[noam.util.randint(0, alphabet.length - 1)]);
         } else if (Math.random() <= epsp) {
           return makeAlt([makeEps(),
@@ -4207,7 +4198,7 @@
        *              was found (note that this might not be where the error actually is, i.e.
        *              this number is a hint rather than a definite answer)
        */
-      function RegexError(message, position) {
+      var RegexError = (message, position) => {
         this.name = "RegexError";
         this.message = message;
         this.position = position;
@@ -4447,7 +4438,7 @@
         for (var i = 0; i < str.length; ++i) {
           if (escaped) {
             if (escapable.indexOf(str[i]) === -1) {
-              throw new RegexError("Malformed string regex: illegal escape sequence \\" + str[i], i);
+              throw new Error("Malformed string regex: illegal escape sequence \\" + str[i]);
             }
             arr.push(str[i]); // the result of the escape sequence is the escaped character itself
             escaped = false;
@@ -4461,12 +4452,13 @@
               case "*": chr = specials.KSTAR; break;
               case "(": chr = specials.LEFT_PAREN; break;
               case ")": chr = specials.RIGHT_PAREN; break;
+              default: break;
             }
             arr.push(chr);
           }
         }
         if (escaped) {
-          throw new RegexError("Malformed string regex: unfinished escape sequence at end of string", str.length - 1);
+          throw new Error("Malformed string regex: unfinished escape sequence at end of string");
         }
 
         return arr;

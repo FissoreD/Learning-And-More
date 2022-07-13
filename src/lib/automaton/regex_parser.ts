@@ -20,8 +20,8 @@ function HisAutomaton2Mine(aut: HisAutomaton): Automaton {
   let states: State[] = aut.states.map(
     e => new State(
       e + "",
-      aut.acceptingStates.some(x => x + "" == e + ""),
-      (typeof aut.initialState == "number" ? aut.initialState + "" == e + "" : aut.initialState?.some(x => x + "" == e + "")) || false,
+      aut.acceptingStates.some(x => x + "" === e + ""),
+      (typeof aut.initialState === "number" ? aut.initialState + "" === e + "" : aut.initialState?.some(x => x + "" === e + "")) || false,
       aut.alphabet))
 
   let statesMap: Map<string, State> = new Map(),
@@ -40,35 +40,6 @@ function HisAutomaton2Mine(aut: HisAutomaton): Automaton {
   }
 
   return new Automaton(statesSet);
-}
-
-function MyAutomatonToHis(aut: Automaton): HisAutomaton {
-  let stateList = Array.from(aut.states).map(e => e[1]);
-  let state2int = (state: State) => stateList.indexOf(state);
-  let states = stateList.map(e => state2int(e))
-  let startState = states.length;
-  let transitions: HisTransition[] = stateList.map(state => Array.from(state.get_all_out_transitions()).map(transition =>
-  ({
-    fromState: state2int(state),
-    symbol: transition[0],
-    toStates: transition[1].map(e => state2int(e))
-  })).flat()).flat();
-  if (aut.initialStates.length > 1) {
-    transitions.push(({
-      fromState: startState,
-      symbol: "$",
-      toStates: aut.initialStates.map(e => state2int(e))
-    }));
-    states.push(startState)
-  } else startState = state2int(aut.initialStates[0])
-  let res: HisAutomaton = {
-    acceptingStates: aut.accepting_states().map(e => state2int(e)),
-    alphabet: Array.from(aut.alphabet),
-    states: states,
-    initialState: startState,
-    transitions: transitions
-  }
-  return res;
 }
 
 /** Return the mDFA for a regex */
