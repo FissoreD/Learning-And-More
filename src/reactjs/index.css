@@ -11,6 +11,12 @@
   z-index: 1200;
 }
 
-.card {
+/* .card {
   margin: 10px 0;
+} */
+
+.btn:focus,
+label {
+  outline: none !important;
+  box-shadow: none !important;
 }

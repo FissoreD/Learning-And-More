@@ -1,4 +1,4 @@
-import { Component, ReactNode } from "react";
+import { Component, ReactElement } from "react";
 import ObservationTable from "../../../lib/learning/learners/observation_table/observation_table";
 import { to_eps } from "../../../lib/tools";
 
@@ -17,7 +17,7 @@ export class ObservationTableC extends Component<Prop>{
   }
 
 
-  render(): ReactNode {
+  render(): ReactElement {
     return <div className="table-responsive"> <table className="table table-striped align-middle text-center">
       <thead>
         <tr>

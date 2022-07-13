@@ -74,7 +74,7 @@ export default class Automaton implements FSM<string[], State> {
   }
 
   /* istanbul ignore next */
-  automatonToDot() {
+  toDot() {
     let txt = "digraph {rankdir = LR\nfixedsize=true\n"
     let triples: { [id: string]: string[] } = {}
     for (const [name, state] of this.states) {

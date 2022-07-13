@@ -30,6 +30,6 @@ export interface FSM<Alphabet, State> {
   accepting_states(): State[];
   all_states(): State[];
 
-  automatonToDot(): String;
+  toDot(): String;
   toString(): String;
 }

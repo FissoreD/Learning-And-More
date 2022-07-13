@@ -1,11 +1,11 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.js';
-import "./reactjs/index.css";
-
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import "./reactjs/index.css";
 import { Main } from "./reactjs/main";
 import reportWebVitals from './reactjs/reportWebVitals';
+
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -22,11 +22,11 @@ root.render(
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
 
-if (window) {
-  window.addEventListener('click', evt => {
-    let target = evt.target
-    if (target instanceof HTMLButtonElement) {
-      target.blur()
-    }
-  })
-}
+// if (window) {
+//   window.addEventListener('click', evt => {
+//     let target = evt.target
+//     if (target instanceof HTMLButtonElement || target instanceof HTMLLabelElement || target instanceof HTMLInputElement) {
+//       target.blur()
+//     }
+//   })
+// }

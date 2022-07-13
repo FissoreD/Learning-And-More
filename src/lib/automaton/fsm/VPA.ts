@@ -130,7 +130,7 @@ export class VPA implements FSM<AlphabetVPA, StateVPA> {
     return [...this.states.values()]
   }
 
-  automatonToDot(): String {
+  toDot(): String {
     throw todo();
   }
 

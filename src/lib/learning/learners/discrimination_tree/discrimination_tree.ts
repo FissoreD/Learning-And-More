@@ -192,11 +192,6 @@ export default class DiscriminationTree implements LearningDataStructure {
         }
       }
     }
-    console.log(this.toString());
-    console.log(res.toString());
-    console.log("-".repeat(30));
-
-
     return res
   }
 

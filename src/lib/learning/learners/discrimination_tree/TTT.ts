@@ -47,7 +47,6 @@ export default class TTT extends LearnerFather<DiscriminationTree> {
     if (ce === undefined) this.finish = true
     else {
       let { a, v, ua_state, u_state } = this.split_ce_in_uav(ce)
-      // console.log({ leaf_to_split });
 
       this.last_ce = { value: a + v, accepted: this.teacher.member(a + v) }
 
@@ -65,18 +64,14 @@ export default class TTT extends LearnerFather<DiscriminationTree> {
     let states = new Map([...this.data_structure.get_leaves().values()].map(e => [e.name, new State(e.name, e.is_accepting!, e === initial_state, this.alphabet)]))
 
     let L = [...states.keys()]
-    // console.log(this.disc_tree.toString());
-
 
     while (L.length > 0) {
       const state = L.pop()!
       for (const symbol of this.alphabet) {
         let new_word = state + symbol
         let res = this.data_structure.sift(new_word, this.teacher)
-        // console.log({ res });
 
         if (res === undefined) {
-          console.log("Found undefined");
           res = this.data_structure.add_root(new_word)
           L.push(res.name)
           states.set(new_word, new State(new_word, res.is_accepting!, false, this.alphabet))

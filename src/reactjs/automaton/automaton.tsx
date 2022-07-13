@@ -1,9 +1,10 @@
 // import dynamic from 'next/dynamic';
-import { Component, ReactElement, ReactNode } from "react";
+import { Component, ReactElement } from "react";
 import Automaton from "../../lib/automaton/fsm/DFA_NFA";
 
 // const Graphviz = dynamic(() => import('graphviz-react'), { ssr: false });
 import Graphviz from "graphviz-react";
+import { Button, ButtonGroup } from "react-bootstrap";
 
 const options = {
   fit: true,
@@ -13,28 +14,28 @@ const options = {
 }
 
 interface Prop { automaton: Automaton }
+interface State { show_aut: boolean }
 
-export class AutomatonC extends Component<Prop, { x: ReactElement | undefined }>{
+export class AutomatonC extends Component<Prop, State>{
 
   constructor(prop: Prop) {
     super(prop)
-    this.state = { x: undefined }
+    this.state = { show_aut: false }
   }
 
-  create_automaton() {
-    if (this.state.x === undefined) {
-      console.log(this.props.automaton.automatonToDot());
-      this.setState({
-        x: <Graphviz className='automaton img-fluid' options={options} dot={this.props.automaton.automatonToDot()} />
-      })
-    }
-
+  create_automaton(bool: boolean) {
+    this.setState((_state) => { return { show_aut: bool } })
   }
 
-  render(): ReactNode {
+  render(): ReactElement {
+    console.log(this.props.automaton.toDot());
+
     return <div className='text-center'>
-      <button type="button" className="btn btn-primary" onClick={(e) => { e.currentTarget.style.display = "none"; this.create_automaton() }}>Show automaton</button>
-      {this.state.x}
+      <ButtonGroup aria-label="...">
+        <Button onClick={_ => { this.create_automaton(true) }}> Show</Button>
+        <Button onClick={_ => { this.create_automaton(false) }}> Hide</Button>
+      </ButtonGroup>
+      {this.state.show_aut && <Graphviz className='automaton img-fluid' options={options} dot={this.props.automaton.toDot()} />}
     </div>
   }
 }

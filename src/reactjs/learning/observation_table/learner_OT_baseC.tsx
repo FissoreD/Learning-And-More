@@ -1,6 +1,7 @@
 import { ReactElement } from "react";
+import LearningDataStructure from "../../../lib/learning/learners/learning_data_structure";
 import LearnerOTBase from "../../../lib/learning/learners/observation_table/learner_ot_base";
-import { AutomatonC } from "../../automaton/automaton";
+import ObservationTable from "../../../lib/learning/learners/observation_table/observation_table";
 import { LearnerSection, MessageType, PropReact, StateReact } from "../learner_sectionC";
 import { ObservationTableC } from "./observation_table_c";
 
@@ -11,8 +12,8 @@ export default abstract class LearnerOTBaseC extends LearnerSection<LearnerOTBas
     this.table_to_modify_after_ce = table_to_modif
 
   }
-  dataStructureToNodeElement(learner: LearnerOTBase): ReactElement {
-    return <ObservationTableC data_structure={learner.data_structure.clone()} />
+  dataStructureToNodeElement(ds: LearningDataStructure): ReactElement {
+    return <ObservationTableC data_structure={ds.clone() as ObservationTable} />
   }
 
   abstract close_message(close_rep: string): string;
@@ -63,8 +64,8 @@ export default abstract class LearnerOTBaseC extends LearnerSection<LearnerOTBas
     }
     let memory = state.memory;
     memory.push({
-      message, dataStructure: <ObservationTableC data_structure={learner.data_structure.clone()} />,
-      automaton: learner.automaton ? <AutomatonC automaton={learner.automaton.clone()} /> : undefined
+      message, dataStructure: learner.data_structure.clone(),
+      automaton: learner.automaton ? learner.automaton.clone() : undefined
     })
     let position = state.position + 1
     state = { position, do_next: !state.do_next, memory, learner: state.learner }
