@@ -42,10 +42,45 @@ function HisAutomaton2Mine(aut: HisAutomaton): Automaton {
   return new Automaton(statesSet);
 }
 
+export function MyAutomatonToHis(aut: Automaton): HisAutomaton {
+  let stateList = Array.from(aut.states).map(e => e[1]);
+  let state2int = (state: State) => stateList.indexOf(state);
+  let states = stateList.map(e => state2int(e))
+  let startState = states.length;
+  let transitions: HisTransition[] = stateList.map(state => Array.from(state.get_all_out_transitions()).map(transition =>
+  ({
+    fromState: state2int(state),
+    symbol: transition[0],
+    toStates: transition[1].map(e => state2int(e))
+  })).flat()).flat();
+  if (aut.initialStates.length > 1) {
+    transitions.push(({
+      fromState: startState,
+      symbol: "$",
+      toStates: aut.initialStates.map(e => state2int(e))
+    }));
+    states.push(startState)
+  } else startState = state2int(aut.initialStates[0])
+  let res: HisAutomaton = {
+    acceptingStates: aut.accepting_states().map(e => state2int(e)),
+    alphabet: Array.from(aut.alphabet),
+    states: states,
+    initialState: startState,
+    transitions: transitions
+  }
+  return res;
+}
+
 /** Return the mDFA for a regex */
 export default function regexToAutomaton(regex: string): Automaton {
   let res = noam.re.string.toAutomaton(regex);
   return minimizeAutomaton(res);
+}
+
+export function automatonToRegex(automaton: Automaton): string {
+  // let res = noam.re.tree.toString(noam.re.tree.simplify((noam.fsm.toRegex(MyAutomatonToHis(automaton)))))
+  // console.log(res);
+  return ""
 }
 
 function minimizeAutomaton(automatonInput: HisAutomaton): Automaton {
@@ -57,6 +92,8 @@ function minimizeAutomaton(automatonInput: HisAutomaton): Automaton {
   let minimized = aa.minimize()
   return minimized
 }
+
+
 
 // import { todo } from "../tools";
 // import Automaton from "./fsm/DFA_NFA";

@@ -9,6 +9,7 @@ const options = {
   fit: true,
   height: undefined,
   width: undefined,
+  useWorker: false,
   zoom: false,
 }
 

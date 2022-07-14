@@ -1,5 +1,5 @@
 import React from "react";
-import { Button } from "react-bootstrap";
+import { Button, Card } from "react-bootstrap";
 import { ArrowClockwise, ArrowCounterclockwise, CaretLeftFill, CaretRightFill } from "react-bootstrap-icons";
 import Automaton from "../../lib/automaton/fsm/DFA_NFA";
 import LearnerFather from "../../lib/learning/learners/learner_father";
@@ -66,14 +66,14 @@ export abstract class LearnerSection<LearnerT extends LearnerFather<LearningData
   }
 
   create_card(title: string, content: React.ReactElement) {
-    return <div className="card border-primary text-primary border-primary text-primary my-2">
-      <div className="card-header">
+    return <Card className="border-primary text-primary my-2">
+      <Card.Header>
         {title}
-      </div>
-      <div className="card-body">
+      </Card.Header>
+      <Card.Body>
         {content}
-      </div>
-    </div>
+      </Card.Body>
+    </Card>
   }
 
   change_learner(regex: string | undefined) {

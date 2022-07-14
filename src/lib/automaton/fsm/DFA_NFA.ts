@@ -341,10 +341,15 @@ export default class Automaton implements FSM<string[], State> {
     return this.symmetric_difference(aut).is_empty()
   }
 
-  /** @returns a deterministic complemented automaton */
+  /** @returns a fresh deterministic complemented automaton */
   complement() {
-    this.complete();
-    let res = this.determinize();
+    let res: Automaton;
+    if (this.is_deterministic()) {
+      res = this.clone()
+    } else {
+      this.complete();
+      res = this.determinize();
+    }
     res.all_states().forEach(e => {
       e.isAccepting = !e.isAccepting
     });
