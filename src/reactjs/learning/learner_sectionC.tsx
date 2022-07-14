@@ -1,4 +1,4 @@
-import React, { Component, ReactElement } from "react";
+import React from "react";
 import { Button } from "react-bootstrap";
 import { ArrowClockwise, ArrowCounterclockwise, CaretLeftFill, CaretRightFill } from "react-bootstrap-icons";
 import Automaton from "../../lib/automaton/fsm/DFA_NFA";
@@ -20,7 +20,7 @@ export interface StateReact<Learner extends LearnerFather<LearningDataStructure>
 }
 
 
-export abstract class LearnerSection<LearnerT extends LearnerFather<LearningDataStructure>> extends Component<PropReact<LearnerT>, StateReact<LearnerT>>{
+export abstract class LearnerSection<LearnerT extends LearnerFather<LearningDataStructure>> extends React.Component<PropReact<LearnerT>, StateReact<LearnerT>>{
   constructor(prop: PropReact<LearnerT>) {
     super(prop)
     this.state = {
@@ -30,11 +30,11 @@ export abstract class LearnerSection<LearnerT extends LearnerFather<LearningData
         dataStructure: prop.learner.data_structure.clone(),
         automaton: undefined
       }], position: 0, learner: prop.learner,
-      show_regex_dialog: false
+      show_regex_dialog: false,
     };
   }
 
-  abstract dataStructureToNodeElement(ds: LearningDataStructure): ReactElement;
+  abstract dataStructureToNodeElement(ds: LearningDataStructure): React.ReactElement;
   abstract next_op_child(state: StateReact<LearnerT>): StateReact<LearnerT>;
 
   next_op(state: StateReact<LearnerT>): StateReact<LearnerT> {
@@ -62,11 +62,11 @@ export abstract class LearnerSection<LearnerT extends LearnerFather<LearningData
 
   reload() {
     if (this.state.position !== 0)
-      this.setState({ position: 0 })
+      this.setState({ position: 0, })
   }
 
-  create_card(title: string, content: ReactElement) {
-    return <div className="card border-primary text-primary border-primary text-primary my-2" >
+  create_card(title: string, content: React.ReactElement) {
+    return <div className="card border-primary text-primary border-primary text-primary my-2">
       <div className="card-header">
         {title}
       </div>
@@ -102,11 +102,11 @@ export abstract class LearnerSection<LearnerT extends LearnerFather<LearningData
         dataStructure: learner.data_structure.clone(),
         automaton: undefined
       }], position: 0, learner: learner,
-      show_regex_dialog: false
+      show_regex_dialog: false,
     }
   }
 
-  render(): ReactElement {
+  render(): React.ReactElement {
     let position = this.state.position
     let memory_cell = this.state.memory[position]
 

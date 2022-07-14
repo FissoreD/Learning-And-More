@@ -1,12 +1,13 @@
-import { Component, ReactElement } from "react";
+import React from "react";
 import { Container, Nav, Navbar } from "react-bootstrap";
 
-export type AlgosNavBar = "Automaton" | "Learning"
+export type AlgosNavBar = "Home" | "Automaton" | "Learning"
 
 interface ChangeCnt { change_cnt: (algo: AlgosNavBar) => void; }
 
-export class NavBar extends Component<ChangeCnt> {
-  render(): ReactElement {
+export class NavBar extends React.Component<ChangeCnt> {
+  render(): React.ReactElement {
+    let links = (["Automaton", "Learning"] as AlgosNavBar[]).map((e, pos) => <Nav.Link key={pos} onClick={() => this.props.change_cnt(e)}>{e}</Nav.Link>)
     return (
       <Navbar bg="light" expand="lg">
         <Container>
@@ -14,9 +15,7 @@ export class NavBar extends Component<ChangeCnt> {
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
-              <Nav.Link >Home</Nav.Link>
-              <Nav.Link onClick={() => alert("Not implemented")}>Automata</Nav.Link>
-              <Nav.Link onClick={() => this.props.change_cnt("Learning")}>Learning</Nav.Link>
+              <>{links}</>
             </Nav>
           </Navbar.Collapse>
         </Container>

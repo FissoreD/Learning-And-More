@@ -1,10 +1,10 @@
-import { Component, ReactElement } from "react";
+import React from "react";
 import ObservationTable from "../../../lib/learning/learners/observation_table/observation_table";
 import { to_eps } from "../../../lib/tools";
 
 interface Prop { data_structure: ObservationTable; }
 
-export class ObservationTableC extends Component<Prop>{
+export class ObservationTableC extends React.Component<Prop>{
   create_table(name: string, cnt: string[]) {
     return cnt.map((S, pos) => <tr key={S + "trs"}>
       {pos === 0 ?
@@ -17,7 +17,7 @@ export class ObservationTableC extends Component<Prop>{
   }
 
 
-  render(): ReactElement {
+  render(): React.ReactElement {
     return <div className="table-responsive"> <table className="table table-striped align-middle text-center">
       <thead>
         <tr>

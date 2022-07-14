@@ -1,10 +1,9 @@
 // import dynamic from 'next/dynamic';
-import React, { Component, ReactElement } from "react";
+import React from "react";
 import Automaton from "../../lib/automaton/fsm/DFA_NFA";
 
 // const Graphviz = dynamic(() => import('graphviz-react'), { ssr: false });
 import Graphviz from "graphviz-react";
-import { Button, ButtonGroup } from "react-bootstrap";
 
 const options = {
   fit: true,
@@ -16,7 +15,7 @@ const options = {
 interface Prop { automaton: Automaton }
 interface State { show_aut: boolean }
 
-export class AutomatonC extends Component<Prop, State>{
+export class AutomatonC extends React.Component<Prop, State>{
 
   constructor(prop: Prop) {
     super(prop)
@@ -27,13 +26,13 @@ export class AutomatonC extends Component<Prop, State>{
     this.setState((_state) => { return { show_aut: bool } })
   }
 
-  render(): ReactElement {
+  render(): React.ReactElement {
     return <div className='text-center'>
-      <ButtonGroup aria-label="...">
+      {/* <ButtonGroup aria-label="...">
         <Button onClick={_ => { this.create_automaton(true) }}> Show</Button>
         <Button onClick={_ => { this.create_automaton(false) }}> Hide</Button>
-      </ButtonGroup>
-      {this.state.show_aut && <Graphviz className='automaton img-fluid' options={options} dot={this.props.automaton.toDot()} />}
+      </ButtonGroup> */}
+      {<Graphviz className='automaton img-fluid' options={options} dot={this.props.automaton.toDot()} />}
     </div>
   }
 }

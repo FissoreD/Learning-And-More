@@ -1,17 +1,18 @@
 import Automaton from "../../../automaton/fsm/DFA_NFA";
 import State from "../../../automaton/fsm/state";
+import { to_eps } from "../../../tools";
 import Teacher from "../../teachers/teacher";
 import LearnerFather from "../learner_father";
 import DiscriminationTree from "./discrimination_tree";
 
 export default class TTT extends LearnerFather<DiscriminationTree> {
   finish = false;
-  last_ce: { value: string, accepted: boolean } | undefined;
+  last_ce: { value: string, accepted: boolean, is_teacher: boolean } | undefined;
+  last_split: { u: string, a: string, v: string, ua_state: string, u_state: string } | undefined;
 
   constructor(teacher: Teacher) {
     super(teacher, new DiscriminationTree(""))
     this.initiate()
-    this.last_ce = undefined;
   }
 
   initiate() {
@@ -37,26 +38,29 @@ export default class TTT extends LearnerFather<DiscriminationTree> {
 
   make_next_query() {
     if (this.finish) return
-    this.automaton = this.make_automaton()
     let ce: string | undefined;
+    let is_teacher: boolean;
+    this.make_automaton()
+    console.log(this.last_ce, this.to_stabilize_hypothesis());
     if (this.to_stabilize_hypothesis()) {
       ce = this.last_ce!.value;
+      is_teacher = false;
     } else {
-      ce = this.teacher.equiv(this.automaton)
+      ce = this.teacher.equiv(this.automaton!)
+      is_teacher = true
     }
-    if (ce === undefined) this.finish = true
-    else {
-      let { a, v, ua_state, u_state } = this.split_ce_in_uav(ce)
+    if (ce === undefined) { this.finish = true; return }
+    let { a, v, ua_state, u_state, u } = this.split_ce_in_uav(ce)
+    this.last_split = { u, a, v, ua_state: ua_state!, u_state: u_state! }
 
-      this.last_ce = { value: a + v, accepted: this.teacher.member(a + v) }
-
-      this.data_structure.split_leaf({
-        leaf_name: ua_state!,
-        name_leaf_to_add: u_state + a,
-        new_discriminator: v,
-        is_top: !this.automaton.accept_word(ua_state + v)
-      })
-    }
+    this.last_ce = { value: u_state + a + v, accepted: !this.automaton!.accept_word(u_state + a + v), is_teacher }
+    if (is_teacher) return
+    this.data_structure.split_leaf({
+      leaf_name: ua_state!,
+      name_leaf_to_add: u_state + a,
+      new_discriminator: v,
+      is_top: !this.automaton!.accept_word(ua_state + v)
+    })
   }
 
   make_automaton(): Automaton {
@@ -95,5 +99,11 @@ export default class TTT extends LearnerFather<DiscriminationTree> {
       }
     }
     throw new Error("Invalid counter-example")
+  }
+
+  split_to_string() {
+    let [u, a, v, u_state, ua_state] = [to_eps(this.last_split!.u), this.last_split!.a, to_eps(this.last_split!.v), to_eps(this.last_split!.u_state), to_eps(this.last_split!.ua_state)]
+    console.log(this.last_split)
+    return `The conunter-example could be split into ${u + "." + a + "." + v} because (${"⌊" + u + "⌋." + a + "." + v} = ${u_state + "." + a + "." + v}) ≠ (${"⌊" + u + "." + a + "⌋." + v} = ${ua_state + "." + v})`;
   }
 }

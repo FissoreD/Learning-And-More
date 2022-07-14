@@ -20,3 +20,7 @@ label {
   outline: none !important;
   box-shadow: none !important;
 }
+
+p{
+  white-space: pre-line;
+}

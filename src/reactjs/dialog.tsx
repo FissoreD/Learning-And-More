@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
@@ -6,7 +6,7 @@ import Modal from 'react-bootstrap/Modal';
 interface Prop { fn: (a: string | undefined) => void, show: boolean }
 interface State { regex: string | undefined }
 
-export default class Dialog extends Component<Prop, State> {
+export default class Dialog extends React.Component<Prop, State> {
 
   constructor(prop: Prop) {
     super(prop)

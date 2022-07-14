@@ -1,4 +1,4 @@
-import React, { Component, ReactElement } from "react";
+import React from "react";
 import { ButtonGroup } from "react-bootstrap";
 import TTT from "../../lib/learning/learners/discrimination_tree/TTT";
 import L_star from "../../lib/learning/learners/observation_table/l_star";
@@ -8,10 +8,10 @@ import TTTC from "./discrimination_tree/tttC";
 import LStarC from "./observation_table/l_star";
 import NLStarC from "./observation_table/nl_star";
 
-interface State { cnt: ReactElement, regex: string }
+interface State { cnt: React.ReactElement, regex: string }
 
-let regex = "(a+b)*a(a+b)(a+b)(a+b)(a+b)(a+b)"
-export default class LearnerContainerC extends Component<{}, State> {
+let regex = "(a+b)*a(a+b)(a+b)"
+export default class LearnerContainerC extends React.Component<{}, State> {
   constructor(prop: {}) {
     super(prop)
     this.state = {
@@ -24,7 +24,7 @@ export default class LearnerContainerC extends Component<{}, State> {
   }
 
   change_cnt(algo: "L*" | "NL*" | "TTT") {
-    let cnt: ReactElement;
+    let cnt: React.ReactElement;
     let teacher = new TeacherAutomaton({
       automaton: this.state.regex,
       type: "Regex"
@@ -41,7 +41,7 @@ export default class LearnerContainerC extends Component<{}, State> {
     this.setState({ regex })
   }
 
-  render(): ReactElement {
+  render(): React.ReactElement {
     /* @todo : must give a unique key to the generated elements in the map*/
     let algos: ("L*" | "NL*" | "TTT")[] = ["L*", "NL*", "TTT"]
     let create_buttons = () => {
