@@ -41,7 +41,6 @@ export default class TTT extends LearnerFather<DiscriminationTree> {
     let ce: string | undefined;
     let is_teacher: boolean;
     this.make_automaton()
-    console.log(this.last_ce, this.to_stabilize_hypothesis());
     if (this.to_stabilize_hypothesis()) {
       ce = this.last_ce!.value;
       is_teacher = false;

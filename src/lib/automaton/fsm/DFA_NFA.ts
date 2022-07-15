@@ -17,9 +17,11 @@ export default class Automaton implements FSM<string[], State> {
     this.alphabet = [...new Set([...stateList].map(e => e.alphabet).flat())];
   }
 
-  complete(bottom?: State) {
-    let alphabet = this.alphabet
-    bottom = bottom || State.bottom(alphabet)
+  complete(p?: { bottom?: State, alphabet?: string[] }) {
+    let alphabet = p?.alphabet || this.alphabet
+    console.log("This alphabet", { alphabet });
+
+    let bottom = p?.bottom || State.Bottom(alphabet)
     let to_add = false;
     for (const symbol of alphabet) {
       bottom.add_transition(symbol, bottom);
@@ -131,7 +133,7 @@ export default class Automaton implements FSM<string[], State> {
   }
 
   is_deterministic(): boolean {
-    return this.all_states().every(e => this.alphabet.every(l => e.getSuccessor(l).length === 1))
+    return this.all_states().every(e => this.alphabet.every(l => e.getSuccessor(l) === undefined || e.getSuccessor(l).length === 1))
   }
 
   /** @returns a fresh Determinized Automaton */
@@ -274,9 +276,9 @@ export default class Automaton implements FSM<string[], State> {
     return new Automaton(newStates)
   }
 
-  clone() {
+  clone(alphabet?: string[]) {
     let all_states = this.all_states()
-    let res = new Automaton(all_states.map(e => e.clone()));
+    let res = new Automaton(all_states.map(e => e.clone({ alphabet })));
     this.alphabet.forEach(l =>
       all_states.forEach((e, pos) =>
         e.getSuccessor(l).forEach(succ => res.all_states()[pos].add_transition(l, res.all_states()[all_states.indexOf(succ)]))
@@ -292,8 +294,8 @@ export default class Automaton implements FSM<string[], State> {
   union(aut: Automaton): Automaton {
     let res;
     let states = [
-      ...aut.all_states().map(e => e.clone("1" + e.name)),
-      ...this.all_states().map(e => e.clone("2" + e.name))
+      ...aut.all_states().map(e => e.clone({ name: "1" + e.name })),
+      ...this.all_states().map(e => e.clone({ name: "2" + e.name }))
     ];
     let alphabet = [...new Set(states.map(e => e.alphabet).flat())];
     states.forEach(e => e.alphabet = alphabet)
@@ -315,11 +317,11 @@ export default class Automaton implements FSM<string[], State> {
   }
 
   intersection(aut: Automaton): Automaton {
-    return aut.complement().union(this.complement()).complement()
+    return aut.complement([...this.alphabet, ...aut.alphabet]).union(this.complement([...this.alphabet, ...aut.alphabet])).complement([...this.alphabet, ...aut.alphabet])
   }
 
   difference(aut: Automaton): Automaton {
-    return aut.union(this.complement()).complement()
+    return aut.union(this.complement([...aut.alphabet, ...this.alphabet])).complement()
   }
 
   symmetric_difference(aut: Automaton): Automaton {
@@ -342,12 +344,11 @@ export default class Automaton implements FSM<string[], State> {
   }
 
   /** @returns a fresh deterministic complemented automaton */
-  complement() {
-    let res: Automaton;
-    if (this.is_deterministic()) {
-      res = this.clone()
-    } else {
-      this.complete();
+  complement(alphabet?: string[] | string) {
+    let res = this.clone();
+    res.alphabet = alphabet ? [...alphabet] : res.alphabet
+    res.complete()
+    if (!res.is_deterministic()) {
       res = this.determinize();
     }
     res.all_states().forEach(e => {

@@ -1,4 +1,5 @@
 export default class State {
+  static Bottom = (alphabet: string | string[]) => new State("bottom", false, false, alphabet)
   isAccepting: boolean;
   isInitial: boolean;
   alphabet: string[];
@@ -24,15 +25,16 @@ export default class State {
   }
 
   add_transition(symbol: string, state: State) {
+    state = state || State.Bottom
     if (!this.outTransitions.has(symbol)) {
       this.outTransitions.set(symbol, [state])
     }
     if (this.outTransitions.get(symbol)!.includes(state)) return
     this.outTransitions.get(symbol)!.push(state);
-
     this.successors.add(state);
     state.predecessor.add(this);
-    state.inTransitions.get(symbol)!.push(this);
+    if (state.name !== "bottom")
+      state.inTransitions.get(symbol)!.push(this);
   }
 
   getSuccessor(symbol: string) {
@@ -56,11 +58,7 @@ export default class State {
     return this.outTransitions
   }
 
-  clone(name?: string) {
-    return new State(name || this.name, this.isAccepting, this.isInitial, this.alphabet)
-  }
-
-  static bottom(alphabet: string[]) {
-    return new State("bottom", false, false, alphabet)
+  clone(p: { name?: string, alphabet?: string[] }) {
+    return new State(p.name || this.name, this.isAccepting, this.isInitial, p.alphabet || this.alphabet)
   }
 }
