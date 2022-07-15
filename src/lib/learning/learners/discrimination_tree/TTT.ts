@@ -102,7 +102,6 @@ export default class TTT extends LearnerFather<DiscriminationTree> {
 
   split_to_string() {
     let [u, a, v, u_state, ua_state] = [to_eps(this.last_split!.u), this.last_split!.a, to_eps(this.last_split!.v), to_eps(this.last_split!.u_state), to_eps(this.last_split!.ua_state)]
-    console.log(this.last_split)
     return `The conunter-example could be split into ${u + "." + a + "." + v} because (${"⌊" + u + "⌋." + a + "." + v} = ${u_state + "." + a + "." + v}) ≠ (${"⌊" + u + "." + a + "⌋." + v} = ${ua_state + "." + v})`;
   }
 }

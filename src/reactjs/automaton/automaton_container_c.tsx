@@ -50,12 +50,9 @@ export default class AutomatonContainerC extends React.Component<{}, State>{
   set_regex(regex: string | undefined) {
     if (regex)
       this.setState((state) => {
-        console.log(state);
         if (state.change_regex_a1) {
-          console.log("HERE");
           return { r1: regex }
         } else {
-          console.log("THERE");
           return { r2: regex }
         }
       })
@@ -68,9 +65,10 @@ export default class AutomatonContainerC extends React.Component<{}, State>{
     return <Card className="h-100 border-primary text-primary">
       <Card.Header>
         Automaton A{pos}
-        <a className="float-end" onClick={() => {
-          this.setState({ show_regex_setter: true, change_regex_a1: pos === 1 });
-        }}><BootstrapReboot /></a>
+        {// eslint-disable-next-line
+          <a className="float-end" onClick={() => {
+            this.setState({ show_regex_setter: true, change_regex_a1: pos === 1 });
+          }}><BootstrapReboot /></a>}
       </Card.Header>
       <div className="h-100 d-flex justify-content-center align-items-center" style={{ minHeight: "130px" }}>
         <AutomatonC automaton={Automaton.regex_to_automaton(r)} />

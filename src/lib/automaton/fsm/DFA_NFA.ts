@@ -19,8 +19,6 @@ export default class Automaton implements FSM<string[], State> {
 
   complete(p?: { bottom?: State, alphabet?: string[] }) {
     let alphabet = p?.alphabet || this.alphabet
-    console.log("This alphabet", { alphabet });
-
     let bottom = p?.bottom || State.Bottom(alphabet)
     let to_add = false;
     for (const symbol of alphabet) {

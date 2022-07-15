@@ -33,8 +33,6 @@ export class NL_star extends LearnerOTBase {
    * returns 0111
    */
   row_union(row1: string, row2: string): string {
-    console.log(row1, row2);
-
     return Array.from(row1).map((e, pos) => [e, row2.charAt(pos)].includes("1") ? "1" : "0").join("");
   }
 
