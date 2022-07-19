@@ -3,7 +3,7 @@ export interface FSM<Alphabet, State> {
   initialStates: State[];
   alphabet: Alphabet;
 
-  complete(bottom?: State): FSM<Alphabet, State>;
+  complete(p?: { bottom?: State, alphabet?: Alphabet }): FSM<Alphabet, State>;
   /** @returns a fresh Determinized FSM */
   determinize(): FSM<Alphabet, State>;
   minimize(): FSM<Alphabet, State>;

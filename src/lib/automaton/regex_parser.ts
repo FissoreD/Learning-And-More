@@ -94,7 +94,6 @@ function minimizeAutomaton(automatonInput: HisAutomaton): Automaton {
 }
 
 
-
 // import { todo } from "../tools";
 // import Automaton from "./fsm/DFA_NFA";
 

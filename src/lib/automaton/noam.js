@@ -516,7 +516,7 @@
         if (!this.hasNext()) {
           throw new Error(
             "HashTable internal error: " +
-              "called _HashChainIterator.next on exhausted iterator"
+            "called _HashChainIterator.next on exhausted iterator"
           );
         }
         var retval = this.node;
@@ -540,7 +540,7 @@
         if (to_cap_idx >= CAPACITY_CHOICES.length) {
           throw new Error(
             "Capacity of HashTable can't grow beyond " +
-              CAPACITY_CHOICES[CAPACITY_CHOICES.length - 1]
+            CAPACITY_CHOICES[CAPACITY_CHOICES.length - 1]
           );
         }
         if (to_cap_idx >= 0) {
@@ -758,7 +758,7 @@
       structure.HashTable.prototype.keys = function () {
         var keys = [];
 
-        for (var it = this.keyIterator(); it.hasNext(); ) {
+        for (var it = this.keyIterator(); it.hasNext();) {
           keys.push(it.next());
         }
 
@@ -769,7 +769,7 @@
       structure.HashTable.prototype.values = function () {
         var values = [];
 
-        for (var it = this.valueIterator(); it.hasNext(); ) {
+        for (var it = this.valueIterator(); it.hasNext();) {
           values.push(it.next());
         }
 
@@ -780,7 +780,7 @@
       structure.HashTable.prototype.entries = function () {
         var entries = [];
 
-        for (var it = this.keyValueIterator(); it.hasNext(); ) {
+        for (var it = this.keyValueIterator(); it.hasNext();) {
           entries.push(it.next());
         }
 
@@ -1497,10 +1497,10 @@
       for (i = 0; i < fsm.transitions.length; i++) {
         lines.push(
           fsm.transitions[i].fromState.toString() +
-            ":" +
-            fsm.transitions[i].symbol.toString() +
-            ">" +
-            fsm.transitions[i].toStates.join(",")
+          ":" +
+          fsm.transitions[i].symbol.toString() +
+          ">" +
+          fsm.transitions[i].toStates.join(",")
         );
       }
 
@@ -1537,10 +1537,10 @@
           if (typeof parseCounts[parseState] === "undefined") {
             throw new Error(
               "Line " +
-                (i + 1).toString() +
-                ": invalid section name " +
-                parseState +
-                ". Must be one of: states, initial, accepting, alphabet, transitions."
+              (i + 1).toString() +
+              ": invalid section name " +
+              parseState +
+              ". Must be one of: states, initial, accepting, alphabet, transitions."
             );
           } else {
             parseCounts[parseState] += 1;
@@ -1548,10 +1548,10 @@
             if (parseCounts[parseState] > 1) {
               throw new Error(
                 "Line " +
-                  (i + 1).toString() +
-                  ": duplicate section name " +
-                  parseState +
-                  "."
+                (i + 1).toString() +
+                ": duplicate section name " +
+                parseState +
+                "."
               );
             }
           }
@@ -1559,8 +1559,8 @@
           if (parseState === null) {
             throw new Error(
               "Line " +
-                (i + 1).toString() +
-                ": no #section declared. Add one section: states, initial, accepting, alphabet, transitions."
+              (i + 1).toString() +
+              ": no #section declared. Add one section: states, initial, accepting, alphabet, transitions."
             );
           } else if (parseState === "states") {
             var st = line.split(";");
@@ -2519,7 +2519,7 @@
 
       var currentState =
         newFsm.acceptingStates[
-          Math.floor(Math.random() * newFsm.acceptingStates.length)
+        Math.floor(Math.random() * newFsm.acceptingStates.length)
         ];
       var trail = [];
 
@@ -2591,7 +2591,7 @@
 
       var currentState =
         nonAcceptingStates[
-          Math.floor(Math.random() * nonAcceptingStates.length)
+        Math.floor(Math.random() * nonAcceptingStates.length)
         ];
       var trail = [];
 
@@ -3346,8 +3346,8 @@
 
       str.push(
         "Initial nonterminal: <" +
-          JSON.stringify(grammar.initialNonterminal) +
-          ">"
+        JSON.stringify(grammar.initialNonterminal) +
+        ">"
       );
 
       var slimProds = [],
@@ -3924,16 +3924,16 @@
                     if (
                       noam.util.areEquivalent(
                         tree.choices[j].elements[
-                          tree.choices[j].elements.length - 1
+                        tree.choices[j].elements.length - 1
                         ],
                         tree.choices[i].elements[
-                          tree.choices[i].elements.length - 1
+                        tree.choices[i].elements.length - 1
                         ]
                       )
                     ) {
                       var last =
                         tree.choices[i].elements[
-                          tree.choices[i].elements.length - 1
+                        tree.choices[i].elements.length - 1
                         ];
                       var rest1 = makeSeq(
                         tree.choices[i].elements.slice(
@@ -3984,13 +3984,13 @@
                   if (noam.fsm.isSubset(fsms[i], fsms[j])) {
                     found = j;
                   }
-                } catch (e) {}
+                } catch (e) { }
 
                 try {
                   if (noam.fsm.isSubset(fsms[j], fsms[i])) {
                     found = i;
                   }
-                } catch (e) {}
+                } catch (e) { }
 
                 if (found >= 0) {
                   tree.choices.splice(found, 1);
@@ -4033,13 +4033,13 @@
                   if (noam.fsm.isSubset(fsms[i], fsms[j])) {
                     found = j;
                   }
-                } catch (e) {}
+                } catch (e) { }
 
                 try {
                   if (noam.fsm.isSubset(fsms[j], fsms[i])) {
                     found = i;
                   }
-                } catch (e) {}
+                } catch (e) { }
 
                 if (found >= 0) {
                   tree.expr.choices.splice(found, 1);
@@ -4084,13 +4084,13 @@
                   if (noam.fsm.isSubset(fsms[i], fsms[i + 1])) {
                     found = i + 1;
                   }
-                } catch (e) {}
+                } catch (e) { }
 
                 try {
                   if (noam.fsm.isSubset(fsms[i + 1], fsms[i])) {
                     found = i;
                   }
-                } catch (e) {}
+                } catch (e) { }
 
                 if (found >= 0) {
                   tree.elements.splice(found, 1);
@@ -4267,7 +4267,7 @@
                       if (noam.fsm.isSubset(fsm_kstar, fsm_other)) {
                         found = true;
                       }
-                    } catch (e) {}
+                    } catch (e) { }
 
                     if (found) {
                       tree.elements.splice(i - 1, 1);
@@ -4304,7 +4304,7 @@
                       if (noam.fsm.isSubset(fsm_kstar, fsm_other)) {
                         found = true;
                       }
-                    } catch (e) {}
+                    } catch (e) { }
 
                     if (found) {
                       tree.elements.splice(i + 1, 1);
@@ -5027,7 +5027,7 @@
           if (input.peek() !== undefined) {
             throw new RegexError(
               "Malformed regex array: successfully parsed up to position " +
-                input.idx,
+              input.idx,
               input.idx
             );
           }
@@ -5090,8 +5090,8 @@
             if (failed) {
               throw new RegexError(
                 "Array regex not convertible to string representation:" +
-                  " failed at position " +
-                  i,
+                " failed at position " +
+                i,
                 i
               );
             }
@@ -5138,7 +5138,7 @@
           if (katoms.length === 0) {
             throw new RegexError(
               "Malformed regex array: empty choice subexpression at index " +
-                input.idx,
+              input.idx,
               input.idx
             );
           }
@@ -5164,7 +5164,7 @@
             if (input.peek() !== specials.RIGHT_PAREN) {
               throw new RegexError(
                 "Malformed regex array: missing matching right parenthesis at index " +
-                  input.idx,
+                input.idx,
                 input.idx
               );
             }
@@ -5182,7 +5182,7 @@
           } else if (input.peek() === specials.KSTAR) {
             throw new RegexError(
               "Malformed regex array: empty subexpression before Kleene star at index " +
-                input.idx,
+              input.idx,
               input.idx
             );
           } else {

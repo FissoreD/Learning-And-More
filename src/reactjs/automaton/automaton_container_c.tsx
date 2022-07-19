@@ -51,9 +51,9 @@ export default class AutomatonContainerC extends React.Component<{}, State>{
     if (regex)
       this.setState((state) => {
         if (state.change_regex_a1) {
-          return { r1: regex }
+          return { r1: regex!, r2: state.r2 }
         } else {
-          return { r2: regex }
+          return { r1: state.r1, r2: regex! }
         }
       })
     this.setState({ show_regex_setter: false })
