@@ -15,7 +15,7 @@ export default class LearnerContainerC extends React.Component<{}, State> {
   constructor(prop: {}) {
     super(prop)
     this.state = {
-      cnt: <LStarC change_regex_container={this.change_regex.bind(this)} name={"L-Star"} learner={new L_star(new TeacherAutomaton({
+      cnt: <LStarC changeRegexContainer={this.changeRegex.bind(this)} name={"L-Star"} learner={new L_star(new TeacherAutomaton({
         automaton: regex,
         type: "Regex"
       }))} />,
@@ -23,40 +23,40 @@ export default class LearnerContainerC extends React.Component<{}, State> {
     }
   }
 
-  change_cnt(algo: "L*" | "NL*" | "TTT") {
+  changeCnt(algo: "L*" | "NL*" | "TTT") {
     let cnt: React.ReactElement;
     let teacher = new TeacherAutomaton({
       automaton: this.state.regex,
       type: "Regex"
     })
     switch (algo) {
-      case "L*": cnt = <LStarC change_regex_container={this.change_regex.bind(this)} name={"L-Star"} learner={new L_star(teacher)} />; break;
-      case "NL*": cnt = <NLStarC change_regex_container={this.change_regex.bind(this)} name={"NL-Star"} learner={new NL_star(teacher)} />; break;
-      case "TTT": cnt = <TTTC change_regex_container={this.change_regex.bind(this)} name={"TTT"} learner={new TTT(teacher)} />; break
+      case "L*": cnt = <LStarC changeRegexContainer={this.changeRegex.bind(this)} name={"L-Star"} learner={new L_star(teacher)} />; break;
+      case "NL*": cnt = <NLStarC changeRegexContainer={this.changeRegex.bind(this)} name={"NL-Star"} learner={new NL_star(teacher)} />; break;
+      case "TTT": cnt = <TTTC changeRegexContainer={this.changeRegex.bind(this)} name={"TTT"} learner={new TTT(teacher)} />; break
     }
     this.setState({ cnt })
   }
 
-  change_regex(regex: string) {
+  changeRegex(regex: string) {
     this.setState({ regex })
   }
 
   render(): React.ReactElement {
     /* @todo : must give a unique key to the generated elements in the map*/
     let algos: ("L*" | "NL*" | "TTT")[] = ["L*", "NL*", "TTT"]
-    let create_buttons = () => {
+    let createButtons = () => {
       return (
         <ButtonGroup className="d-flex" style={{ maxWidth: "70%", width: "100%" }}>{algos.map(
           (algo, pos) =>
             <React.Fragment key={pos}>
               <input type="radio" className="btn-check" name="btnradio" id={"btnradio" + pos} autoComplete="off" defaultChecked={pos === 0} />
-              <label className="btn btn-outline-primary" htmlFor={"btnradio" + pos} onClick={() => this.change_cnt(algo)}>{algo}</label>
+              <label className="btn btn-outline-primary" htmlFor={"btnradio" + pos} onClick={() => this.changeCnt(algo)}>{algo}</label>
             </React.Fragment>)}
         </ButtonGroup>)
     }
     return < >
       <div className="d-flex justify-content-center my-2">
-        {create_buttons()}
+        {createButtons()}
       </div>
       {this.state.cnt}
     </ >

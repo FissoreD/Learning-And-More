@@ -13,7 +13,7 @@ export default class Dialog extends React.Component<Prop, State> {
     this.state = { regex: undefined }
   }
 
-  send_regex() {
+  sendRegex() {
     this.props.fn(this.state.regex)
   }
 
@@ -30,7 +30,7 @@ export default class Dialog extends React.Component<Prop, State> {
         <Modal.Body>
           <Form onSubmit={(e) => {
             e.preventDefault();
-            this.send_regex();
+            this.sendRegex();
           }}>
             <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
               <Form.Label>Enter your regex</Form.Label>
@@ -42,7 +42,7 @@ export default class Dialog extends React.Component<Prop, State> {
           <Button variant="secondary" onClick={() => this.quit()}>
             Close
           </Button>
-          <Button variant="primary" onClick={() => this.send_regex()}>
+          <Button variant="primary" onClick={() => this.sendRegex()}>
             Save Changes
           </Button>
         </Modal.Footer>

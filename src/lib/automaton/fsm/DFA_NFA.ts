@@ -1,4 +1,4 @@
-import { same_vector, to_eps } from "../../tools";
+import { sameVector, toEps } from "../../tools";
 import regexToAutomaton from "../regex_parser";
 import { FSM } from "./FSM_interface";
 import State from "./state";
@@ -13,31 +13,31 @@ export default class Automaton implements FSM<string[], State> {
     this.states = new Map();
     stateList.forEach(e => this.states.set(e.name, e));
 
-    this.initialStates = this.all_states().filter(s => s.isInitial);
+    this.initialStates = this.allStates().filter(s => s.isInitial);
     this.alphabet = [...new Set([...stateList].map(e => e.alphabet).flat())];
   }
 
   complete(p?: { bottom?: State, alphabet?: string[] }) {
     let alphabet = p?.alphabet || this.alphabet
     let bottom = p?.bottom || State.Bottom(alphabet)
-    let to_add = false;
+    let toAdd = false;
     for (const symbol of alphabet) {
-      bottom.add_transition(symbol, bottom);
+      bottom.addTransition(symbol, bottom);
       for (const state of this.states.values()) {
         let transintion = this.findTransition(state, symbol)
         if (transintion === undefined || transintion.length === 0) {
-          state.add_transition(symbol, bottom);
-          to_add = true;
+          state.addTransition(symbol, bottom);
+          toAdd = true;
         }
       }
     }
-    if (to_add) {
+    if (toAdd) {
       this.states.set(bottom.name, bottom)
     }
     return this
   }
 
-  read_word(word: string): [State | undefined, boolean] {
+  readWord(word: string): [State | undefined, boolean] {
     if (word.length === 0)
       return [this.initialStates.find(e => e.isAccepting) || this.initialStates[0], this.initialStates.some(e => e.isAccepting)];
     let nextStates: Set<State> = new Set(this.initialStates);
@@ -48,9 +48,9 @@ export default class Automaton implements FSM<string[], State> {
         return [undefined, false]
       }
       for (const state of nextStates) {
-        let next_transition = this.findTransition(state, symbol)
-        if (next_transition)
-          for (const nextState of next_transition) {
+        let nextTransition = this.findTransition(state, symbol)
+        if (nextTransition)
+          for (const nextState of nextTransition) {
             nextStates2.add(nextState)
             if (index === word.length - 1 && nextState.isAccepting)
               return [nextState, true]
@@ -62,12 +62,12 @@ export default class Automaton implements FSM<string[], State> {
     return [nextStates.values().next().value, false];
   }
 
-  give_state(word: string): State | undefined {
-    return this.read_word(word)[0]
+  giveState(word: string): State | undefined {
+    return this.readWord(word)[0]
   }
 
-  accept_word(word: string): boolean {
-    return this.read_word(word)[1]
+  acceptWord(word: string): boolean {
+    return this.readWord(word)[1]
   }
 
   findTransition(state: State, symbol: string) {
@@ -91,7 +91,7 @@ export default class Automaton implements FSM<string[], State> {
       }
     }
 
-    let all_states = this.all_states();
+    let allStates = this.allStates();
 
     let shape = "circle"
 
@@ -101,79 +101,79 @@ export default class Automaton implements FSM<string[], State> {
       let [states, transition] = [x, triples[x].join(",")]
       let split = states.split("&");
       let A = split[0], B = split[1];
-      return `${to_eps(A)} -> ${to_eps(B)} [label = "${transition}"]`
+      return `${toEps(A)} -> ${toEps(B)} [label = "${transition}"]`
     }).join("\n"));
 
     this.initialStates.forEach(s => {
-      txt = txt.concat(`\nI${to_eps(s.name)} [label="", style=invis, width=0]\nI${to_eps(s.name)} -> ${to_eps(s.name)}`);
+      txt = txt.concat(`\nI${toEps(s.name)} [label="", style=invis, width=0]\nI${toEps(s.name)} -> ${toEps(s.name)}`);
     });
 
     // Accepting states
-    all_states.forEach(s => {
+    allStates.forEach(s => {
       if (s.isAccepting)
-        txt = txt.concat(`\n${to_eps(s.name)} [peripheries=2]`)
+        txt = txt.concat(`\n${toEps(s.name)} [peripheries=2]`)
     })
 
     txt += "\n}"
     return txt
   }
 
-  accepting_states() {
-    return this.all_states().filter(s => s.isAccepting);
+  acceptingStates() {
+    return this.allStates().filter(s => s.isAccepting);
   }
 
-  state_number() {
+  getStateNumber() {
     return this.states.size;
   }
 
-  transition_number() {
-    return Array.from(this.states).map(([_, e]) => e.get_out_transition_number()).reduce((a, b) => a + b, 0)
+  getTransitionNumber() {
+    return Array.from(this.states).map(([_, e]) => e.getOutTransitionNumber()).reduce((a, b) => a + b, 0)
   }
 
-  is_deterministic(): boolean {
-    return this.all_states().every(e => this.alphabet.every(l => e.getSuccessor(l) === undefined || e.getSuccessor(l).length === 1))
+  isDeterministic(): boolean {
+    return this.allStates().every(e => this.alphabet.every(l => e.getSuccessor(l) === undefined || e.getSuccessor(l).length === 1))
   }
 
   /** @returns a fresh Determinized Automaton */
   determinize(): Automaton {
     this.complete()
-    let all_states = this.all_states()
-    let new_states = new Map<string, State>();
-    let state_map = new Map(all_states.map((e, pos) => [e.name, pos]))
+    let allStates = this.allStates()
+    let newStates = new Map<string, State>();
+    let stateMap = new Map(allStates.map((e, pos) => [e.name, pos]))
 
-    let init_state = [...this.initialStates].sort((a, b) => state_map.get(a.name)! - state_map.get(b.name)!);
-    let to_treat = [init_state.map(e => state_map.get(e.name)!)];
+    let initState = [...this.initialStates].sort((a, b) => stateMap.get(a.name)! - stateMap.get(b.name)!);
+    let toTreat = [initState.map(e => stateMap.get(e.name)!)];
 
-    let find_state = (n: number[]) => new_states.get(JSON.stringify(n))!;
-    let add_state = (name: number[], is_initial = false) =>
-      new_states.set(JSON.stringify(name),
+    let findState = (n: number[]) => newStates.get(JSON.stringify(n))!;
+    let addState = (name: number[], isInitial = false) =>
+      newStates.set(JSON.stringify(name),
         new State(JSON.stringify(name),
-          name.some(e => all_states[e].isAccepting),
-          is_initial, this.alphabet));
-    let add_successor = (current: number[], letter: string, successor: number[]) =>
-      find_state(current).add_transition(letter, find_state(successor));
+          name.some(e => allStates[e].isAccepting),
+          isInitial, this.alphabet));
+    let addSuccessor = (current: number[], letter: string, successor: number[]) =>
+      findState(current).addTransition(letter, findState(successor));
 
-    add_state(to_treat[0], true);
+    addState(toTreat[0], true);
 
     let done: number[][] = []
-    while (to_treat.length > 0) {
-      let current = to_treat.shift()!;
+    while (toTreat.length > 0) {
+      let current = toTreat.shift()!;
       done.push(current)
       for (const letter of this.alphabet) {
-        let successor = [...new Set(current.map(e => all_states[e].getSuccessor(letter)).flat())].map(e => state_map.get(e.name)!).sort();
+        let successor = [...new Set(current.map(e => allStates[e].getSuccessor(letter)).flat())].map(e => stateMap.get(e.name)!).sort();
 
-        if (new_states.has(JSON.stringify(successor))) {
-          add_successor(current, letter, successor);
+        if (newStates.has(JSON.stringify(successor))) {
+          addSuccessor(current, letter, successor);
         } else {
-          add_state(successor)
-          add_successor(current, letter, successor);
+          addState(successor)
+          addSuccessor(current, letter, successor);
         }
-        if (!done.some(e => same_vector(e, successor))) {
-          to_treat.push(successor)
+        if (!done.some(e => sameVector(e, successor))) {
+          toTreat.push(successor)
         }
       }
     }
-    let res = new Automaton([...new_states.values()])
+    let res = new Automaton([...newStates.values()])
     return res
   }
 
@@ -186,7 +186,7 @@ export default class Automaton implements FSM<string[], State> {
   minimize(): Automaton {
     this.complete()
 
-    let aut = this.is_deterministic() ? this : this.determinize()
+    let aut = this.isDeterministic() ? this : this.determinize()
 
     /** List of states reachable from *the* initial state */
     let stateList = new Set<string>();
@@ -197,7 +197,7 @@ export default class Automaton implements FSM<string[], State> {
     while (toExplore.length > 0) {
       let newState = toExplore.shift()!
 
-      for (const successor of newState.get_all_successors()) {
+      for (const successor of newState.getAllSuccessors()) {
         if (!stateList.has(successor.name)) {
           toExplore.push(successor)
           stateList.add(successor.name)
@@ -265,7 +265,7 @@ export default class Automaton implements FSM<string[], State> {
           for (const successor of aut.states.get(oldState)!.getSuccessor(letter)) {
             if (!oldStateToNewState.get(oldState)!.getSuccessor(letter)![0] ||
               (oldStateToNewState.get(oldState)!.getSuccessor(letter)![0].name !== oldStateToNewState.get(successor.name)!.name))
-              oldStateToNewState.get(oldState)!.add_transition(letter, oldStateToNewState.get(successor.name)!)
+              oldStateToNewState.get(oldState)!.addTransition(letter, oldStateToNewState.get(successor.name)!)
           }
         }
       }
@@ -275,11 +275,11 @@ export default class Automaton implements FSM<string[], State> {
   }
 
   clone(alphabet?: string[]) {
-    let all_states = this.all_states()
+    let all_states = this.allStates()
     let res = new Automaton(all_states.map(e => e.clone({ alphabet })));
     this.alphabet.forEach(l =>
       all_states.forEach((e, pos) =>
-        e.getSuccessor(l).forEach(succ => res.all_states()[pos].add_transition(l, res.all_states()[all_states.indexOf(succ)]))
+        e.getSuccessor(l).forEach(succ => res.allStates()[pos].addTransition(l, res.allStates()[all_states.indexOf(succ)]))
       ))
     return res;
   }
@@ -292,8 +292,8 @@ export default class Automaton implements FSM<string[], State> {
   union(aut: Automaton): Automaton {
     let res;
     let states = [
-      ...aut.all_states().map(e => e.clone({ name: "1" + e.name })),
-      ...this.all_states().map(e => e.clone({ name: "2" + e.name }))
+      ...aut.allStates().map(e => e.clone({ name: "1" + e.name })),
+      ...this.allStates().map(e => e.clone({ name: "2" + e.name }))
     ];
     let alphabet = [...new Set(states.map(e => e.alphabet).flat())];
     states.forEach(e => e.alphabet = alphabet)
@@ -301,14 +301,14 @@ export default class Automaton implements FSM<string[], State> {
     res.complete()
 
     alphabet.forEach(l => {
-      aut.all_states().forEach((e, pos) => e.getSuccessor(l)?.forEach(succ =>
-        states[pos].add_transition(l, states[aut.all_states().indexOf(succ)])
+      aut.allStates().forEach((e, pos) => e.getSuccessor(l)?.forEach(succ =>
+        states[pos].addTransition(l, states[aut.allStates().indexOf(succ)])
       ))
-      this.all_states().forEach((e, pos) => e.getSuccessor(l)?.forEach(succ =>
-        states[pos + aut.all_states().length].add_transition(l, states[this.all_states().indexOf(succ) + aut.all_states().length])
+      this.allStates().forEach((e, pos) => e.getSuccessor(l)?.forEach(succ =>
+        states[pos + aut.allStates().length].addTransition(l, states[this.allStates().indexOf(succ) + aut.allStates().length])
       ))
     });
-    if (this.is_deterministic() && aut.is_deterministic()) {
+    if (this.isDeterministic() && aut.isDeterministic()) {
       return res.determinize()
     }
     return res;
@@ -322,23 +322,23 @@ export default class Automaton implements FSM<string[], State> {
     return aut.union(this.complement([...aut.alphabet, ...this.alphabet])).complement()
   }
 
-  symmetric_difference(aut: Automaton): Automaton {
+  symmetricDifference(aut: Automaton): Automaton {
     return this.difference(aut).union(aut.difference(this));
   }
 
-  is_empty() {
-    let aut = this.is_deterministic() ? this : this.determinize()
-    return aut.all_states().every(e => !e.isAccepting)
+  isEmpty() {
+    let aut = this.isDeterministic() ? this : this.determinize()
+    return aut.allStates().every(e => !e.isAccepting)
   }
 
   /** @returns if the automaton is the universal automaton */
-  is_full() {
-    let aut = this.is_deterministic() ? this : this.determinize()
-    return aut.all_states().every(e => e.isAccepting)
+  isFull() {
+    let aut = this.isDeterministic() ? this : this.determinize()
+    return aut.allStates().every(e => e.isAccepting)
   }
 
-  same_language(aut: Automaton) {
-    return this.symmetric_difference(aut).is_empty()
+  sameLanguage(aut: Automaton) {
+    return this.symmetricDifference(aut).isEmpty()
   }
 
   /** @returns a fresh deterministic complemented automaton */
@@ -346,10 +346,10 @@ export default class Automaton implements FSM<string[], State> {
     let res = this.clone();
     res.alphabet = alphabet ? [...alphabet] : res.alphabet
     res.complete()
-    if (!res.is_deterministic()) {
+    if (!res.isDeterministic()) {
       res = this.determinize();
     }
-    res.all_states().forEach(e => {
+    res.allStates().forEach(e => {
       e.isAccepting = !e.isAccepting
     });
     return res;
@@ -423,7 +423,7 @@ export default class Automaton implements FSM<string[], State> {
       stateSet.add(state)
     });
     transitions.forEach(({ current, symbol, next }) =>
-      stateMap.get(current)!.add_transition(
+      stateMap.get(current)!.addTransition(
         symbol,
         stateMap.get(next)!)
     )
@@ -431,20 +431,20 @@ export default class Automaton implements FSM<string[], State> {
     return new Automaton(stateSet);
   }
 
-  static regex_to_automaton(regex: string) {
+  static regex2automaton(regex: string) {
     return regexToAutomaton(regex)
   }
 
-  all_states() {
+  allStates() {
     return [...this.states.values()]
   }
 
   toString() {
     let txt: String[] = [];
     this.initialStates.forEach(e => txt.push('[' + e.name + "]"));
-    this.all_states().forEach(state =>
-      state.get_all_out_transitions().forEach((nextStates, symbol) => nextStates.forEach(next => txt.push(`${symbol},[${state.name}]->[${next.name}]`))));
-    this.accepting_states().forEach(e => txt.push("[" + e.name + "]"));
+    this.allStates().forEach(state =>
+      state.getAllOutTransitions().forEach((nextStates, symbol) => nextStates.forEach(next => txt.push(`${symbol},[${state.name}]->[${next.name}]`))));
+    this.acceptingStates().forEach(e => txt.push("[" + e.name + "]"));
     return txt.join('\n');
   }
 }

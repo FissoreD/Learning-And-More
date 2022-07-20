@@ -3,16 +3,16 @@ import { default as regexToAutomaton } from "../../../lib/automaton/regex_parser
 
 test("Regex parser", () => {
   let aut = regexToAutomaton("(a+b)*a+$")
-  expect(aut.accept_word("a")).toBeTruthy()
-  expect(aut.accept_word("")).toBeTruthy()
-  expect(aut.accept_word("ba")).toBeTruthy()
-  expect(aut.accept_word("bbba")).toBeTruthy()
+  expect(aut.acceptWord("a")).toBeTruthy()
+  expect(aut.acceptWord("")).toBeTruthy()
+  expect(aut.acceptWord("ba")).toBeTruthy()
+  expect(aut.acceptWord("bbba")).toBeTruthy()
 })
 
 test("Regex intersection", () => {
-  let a1 = Automaton.regex_to_automaton("a+b")
-  let a2 = Automaton.regex_to_automaton("(a+b)*c")
+  let a1 = Automaton.regex2automaton("a+b")
+  let a2 = Automaton.regex2automaton("(a+b)*c")
 
   let inter = a1.intersection(a2).minimize()
-  expect(inter.is_empty()).toBeTruthy()
+  expect(inter.isEmpty()).toBeTruthy()
 })

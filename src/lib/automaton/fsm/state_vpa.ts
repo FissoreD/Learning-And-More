@@ -5,8 +5,8 @@ export interface AlphabetVPA { INT: string[], CALL: string[], RET: string[] }
 
 type transition = {
   INT: { [letter: string]: StateVPA[] },
-  CALL: { [letter: string]: { successors: StateVPA[], symbol_to_push: string } },
-  RET: { [letter: string]: { [stack_top: string]: StateVPA[] } }
+  CALL: { [letter: string]: { successors: StateVPA[], symbolToPush: string } },
+  RET: { [letter: string]: { [stackTop: string]: StateVPA[] } }
 }
 
 export class StateVPA {
@@ -19,15 +19,15 @@ export class StateVPA {
   private predecessor: Set<StateVPA>;
   private mapAlphSymbolToType: Map<String, ALPHABET_TYPE>
   name: string;
-  stack_alphabet: string[];
+  stackAlphabet: string[];
 
   /**
    * `isAccepting` and `isInitial` are _optional_ and if not specified
    * are supposed to be _false_
    */
-  constructor(p: { name: string, isAccepting?: boolean, isInitial?: boolean, alphabet: AlphabetVPA, stack_alphabet: string[] }) {
+  constructor(p: { name: string, isAccepting?: boolean, isInitial?: boolean, alphabet: AlphabetVPA, stackAlphabet: string[] }) {
     this.name = p.name;
-    this.stack_alphabet = p.stack_alphabet;
+    this.stackAlphabet = p.stackAlphabet;
     this.isAccepting = p.isAccepting || false;
     this.isInitial = p.isInitial || false;
     this.alphabet = p.alphabet;
@@ -43,14 +43,14 @@ export class StateVPA {
     }))
 
 
-    for (const stack_top of p.stack_alphabet) {
+    for (const stackTop of p.stackAlphabet) {
       for (const letter of p.alphabet.CALL) {
-        this.outTransitions.CALL![letter] = { successors: [], symbol_to_push: "" }
-        this.inTransitions.CALL![letter] = { successors: [], symbol_to_push: "" }
+        this.outTransitions.CALL![letter] = { successors: [], symbolToPush: "" }
+        this.inTransitions.CALL![letter] = { successors: [], symbolToPush: "" }
       }
       for (const letter of p.alphabet.CALL) {
-        this.outTransitions.RET![letter] = { [stack_top]: [] }
-        this.inTransitions.RET![letter] = { [stack_top]: [] }
+        this.outTransitions.RET![letter] = { [stackTop]: [] }
+        this.inTransitions.RET![letter] = { [stackTop]: [] }
       }
     }
     for (const letter of p.alphabet.INT) {
@@ -59,8 +59,8 @@ export class StateVPA {
     }
   }
 
-  add_transition(p: { type?: ALPHABET_TYPE, symbol: string, top_stack?: string, successor?: StateVPA }) {
-    p.top_stack = p.top_stack || undefined
+  addTransition(p: { type?: ALPHABET_TYPE, symbol: string, topStack?: string, successor?: StateVPA }) {
+    p.topStack = p.topStack || undefined
     p.successor = p.successor || undefined
     let succ: StateVPA[] = [], pred: StateVPA[] = [];
     p.type = p.type || this.mapAlphSymbolToType.get(p.symbol)!
@@ -84,29 +84,28 @@ export class StateVPA {
       }
       case "RET": {
         let succ1, pred1;
-        if (p.top_stack === undefined)
+        if (p.topStack === undefined)
           throw new Error("Top stack should not be undefined")
         succ1 = (this.outTransitions.RET[p.symbol] = (this.outTransitions.RET[p.symbol] || {}))
         if (p.successor)
           pred1 = (p.successor.inTransitions.RET[p.symbol] = (p.successor.inTransitions.RET[p.symbol] || {}))
-        succ = (succ1[p.top_stack] = (succ1[p.top_stack] || []))
+        succ = (succ1[p.topStack] = (succ1[p.topStack] || []))
         if (pred1)
-          pred = (pred1[p.top_stack] = (pred1[p.top_stack] || []))
+          pred = (pred1[p.topStack] = (pred1[p.topStack] || []))
         break;
       }
       case "CALL": {
-        if (p.top_stack === undefined)
+        if (p.topStack === undefined)
           throw new Error("Top stack should not be undefined")
 
-        let succ1: { successors: StateVPA[]; symbol_to_push: string },
-          pred1: { successors: StateVPA[]; symbol_to_push: string };
+        let succ1, pred1;
         succ1 = (this.outTransitions.CALL[p.symbol] = (this.outTransitions.CALL[p.symbol] || {}))
         if (p.successor) {
           pred1 = (p.successor.inTransitions.CALL[p.symbol] = (p.successor.inTransitions.CALL[p.symbol] || {}))
-          if (pred1) pred1.symbol_to_push = p.top_stack;
+          if (pred1) pred1.symbolToPush = p.topStack;
           pred = pred1?.successors
         }
-        succ1.symbol_to_push = p.top_stack;
+        succ1.symbolToPush = p.topStack;
         succ = succ1.successors;
         break;
       }
@@ -124,7 +123,7 @@ export class StateVPA {
     return succ
   }
 
-  getSuccessor(p: { type?: ALPHABET_TYPE, symbol: string, top_stack?: string, stack?: string[] }): StateVPA[] {
+  getSuccessor(p: { type?: ALPHABET_TYPE, symbol: string, topStack?: string, stack?: string[] }): StateVPA[] {
     let type = p.type || this.mapAlphSymbolToType.get(p.symbol)
     if (type === undefined)
       throw new Error(`You should specify a type for this symbol : ${p.symbol}`)
@@ -132,38 +131,38 @@ export class StateVPA {
       return this.outTransitions[type][p.symbol]
     if (type === "CALL") {
       let tr = this.outTransitions[type][p.symbol]
-      p.stack!.push(tr.symbol_to_push)
+      p.stack!.push(tr.symbolToPush)
       return tr.successors
     }
-    if (type === "RET" && p.top_stack)
-      return this.outTransitions[type][p.symbol][p.top_stack]
+    if (type === "RET" && p.topStack)
+      return this.outTransitions[type][p.symbol][p.topStack]
     console.log(this.alphabet);
 
     throw new Error(`The top stack symbol should be specified for ${p.symbol}`)
   }
 
-  getPredecessor(p: { type?: ALPHABET_TYPE, symbol: string, top_stack?: string }) {
+  getPredecessor(p: { type?: ALPHABET_TYPE, symbol: string, topStack?: string }) {
     let type = p.type || this.mapAlphSymbolToType.get(p.symbol)
     if (type === undefined)
       throw new Error(`You should specify a type for this symbol : ${p.symbol}`)
     let res = this.inTransitions[type]
     if (type === "INT")
       return res as unknown as StateVPA[]
-    if (p.top_stack)
-      return res[p.top_stack] as StateVPA[]
+    if (p.topStack)
+      return res[p.topStack] as StateVPA[]
     throw new Error(`The top stack symbol should be specified for ${p.symbol}`)
   }
 
 
-  get_out_transition_number(): number {
+  getOutTransitionNumber(): number {
     return todo()
   }
 
-  get_all_successors() {
+  getAllSuccessors() {
     return this.successors
   }
 
-  get_all_out_transitions() {
+  getAllOutTransitions() {
     return this.outTransitions
   }
 
@@ -171,11 +170,11 @@ export class StateVPA {
     return new StateVPA({ ...this, name: name || this.name })
   }
 
-  static Bottom(alphabet: AlphabetVPA, stack_alphabet: string[]) {
-    return new StateVPA({ name: "bottom", isAccepting: false, isInitial: false, alphabet, stack_alphabet })
+  static Bottom(alphabet: AlphabetVPA, stackAlphabet: string[]) {
+    return new StateVPA({ name: "bottom", isAccepting: false, isInitial: false, alphabet, stackAlphabet })
   }
 
-  get_type(symbol: string) {
+  getType(symbol: string) {
     return this.mapAlphSymbolToType.get(symbol)!
   }
 }

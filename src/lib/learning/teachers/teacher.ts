@@ -3,7 +3,7 @@ import Automaton from "../../automaton/fsm/DFA_NFA";
 export default interface Teacher {
   description: string;
   alphabet: string[];
-  counter_examples?: string[];
+  counterExamples?: string[];
   regex: string;
   automaton?: Automaton;
   /**

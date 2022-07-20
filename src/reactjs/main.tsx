@@ -12,7 +12,7 @@ export class Main extends React.Component<{}, Prop> {
     this.state = { cnt: <LearnerContainerC /> }
   }
 
-  swicth_content(section: AlgosNavBar): void {
+  swicthContent(section: AlgosNavBar): void {
     let cnt: React.ReactElement;
     switch (section) {
       case "Automaton": cnt = <AutomatonContainerC />; break;
@@ -24,7 +24,7 @@ export class Main extends React.Component<{}, Prop> {
 
   render(): React.ReactNode {
     return <>
-      <NavBar change_cnt={this.swicth_content.bind(this)} />
+      <NavBar changeCnt={this.swicthContent.bind(this)} />
       <Container >
         <Row className="justify-content-center" >
           <div className="col-xl-8 col-md-10">

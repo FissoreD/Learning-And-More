@@ -3,18 +3,18 @@ import State from "../../../automaton/fsm/state";
 import LearnerOTBase from "./learner_ot_base";
 
 export default class L_star extends LearnerOTBase {
-  make_automaton(): Automaton {
+  makeAutomaton(): Automaton {
     const
-      word_for_state: string[] = [],
+      wordForState: string[] = [],
       statesMap: Map<string, State> = new Map(),
       acceptingStates: State[] = [],
       initialStates: State[] = [],
       statesSet: Set<State> = new Set();
-    this.data_structure.S.forEach(s => {
-      let name = this.data_structure.assoc[s];
+    this.dataStructure.S.forEach(s => {
+      let name = this.dataStructure.assoc[s];
       if (!statesMap.get(name)) {
         let state = new State(name, name[0] === "1", s === "", this.alphabet);
-        word_for_state.push(s);
+        wordForState.push(s);
         if (state.isAccepting) acceptingStates.push(state)
         if (state.isInitial) initialStates.push(state)
         statesMap.set(name, state);
@@ -22,10 +22,10 @@ export default class L_star extends LearnerOTBase {
       }
     })
 
-    for (const word of word_for_state) {
-      let name = this.data_structure.assoc[word]
+    for (const word of wordForState) {
+      let name = this.dataStructure.assoc[word]
       for (const symbol of this.alphabet) {
-        statesMap.get(name)!.add_transition(symbol, statesMap.get(this.data_structure.assoc[word + symbol])!)
+        statesMap.get(name)!.addTransition(symbol, statesMap.get(this.dataStructure.assoc[word + symbol])!)
       }
     }
 
@@ -36,9 +36,9 @@ export default class L_star extends LearnerOTBase {
   /**
    * @returns the first t in SA st it does not exist s in S st row(s) === row (t)
    */
-  is_close(): string | undefined {
-    let res = this.data_structure.SA.find(t => !this.data_structure.S.some(s => this.same_row(s, t)));
-    this.closedness_counter += res === undefined ? 0 : 1;
+  isClose(): string | undefined {
+    let res = this.dataStructure.SA.find(t => !this.dataStructure.S.some(s => this.sameRow(s, t)));
+    this.closednessCounter += res === undefined ? 0 : 1;
     return res;
   }
 
@@ -47,17 +47,17 @@ export default class L_star extends LearnerOTBase {
    * the first two are s1, s2 in {@link S} st row(s1) === row(s2)
    * and there is an "a" in alphabet st row(s1 + a) !== row(s2 + a)
    */
-  is_consistent(): string[] | undefined {
-    for (let s1_ind = 0; s1_ind < this.data_structure.S.length; s1_ind++) {
-      for (let s2_ind = s1_ind + 1; s2_ind < this.data_structure.S.length; s2_ind++) {
-        let s1 = this.data_structure.S[s1_ind];
-        let s2 = this.data_structure.S[s2_ind];
-        if (this.same_row(s1, s2)) {
+  isConsistent(): string[] | undefined {
+    for (let s1_ind = 0; s1_ind < this.dataStructure.S.length; s1_ind++) {
+      for (let s2_ind = s1_ind + 1; s2_ind < this.dataStructure.S.length; s2_ind++) {
+        let s1 = this.dataStructure.S[s1_ind];
+        let s2 = this.dataStructure.S[s2_ind];
+        if (this.sameRow(s1, s2)) {
           for (const a of this.alphabet) {
-            for (let i = 0; i < this.data_structure.E.length; i++) {
-              if (this.data_structure.assoc[s1 + a][i] !== this.data_structure.assoc[s2 + a][i] && !this.data_structure.E.includes(a + this.data_structure.E[i])) {
-                this.consistence_counter++;
-                return [s1, s2, a + this.data_structure.E[i]]
+            for (let i = 0; i < this.dataStructure.E.length; i++) {
+              if (this.dataStructure.assoc[s1 + a][i] !== this.dataStructure.assoc[s2 + a][i] && !this.dataStructure.E.includes(a + this.dataStructure.E[i])) {
+                this.consistenceCounter++;
+                return [s1, s2, a + this.dataStructure.E[i]]
               }
             }
           }
@@ -66,7 +66,7 @@ export default class L_star extends LearnerOTBase {
     }
   }
 
-  table_to_update_after_equiv(answer: string): void {
-    this.add_elt_in_S(answer, true);
+  updateTableAfterEquiv(answer: string): void {
+    this.addEltInS(answer, true);
   }
 }

@@ -10,7 +10,7 @@ export class TeacherAutomaton implements Teacher {
   alphabet: string[];
   regex: string;
   automaton: Automaton;
-  counter_examples?: string[];
+  counterExamples?: string[];
 
   constructor(params: {
     type: "Automaton" | "Regex" | "Dot",
@@ -22,7 +22,7 @@ export class TeacherAutomaton implements Teacher {
         automaton = (params.automaton as Automaton).minimize()
         break;
       case "Regex":
-        automaton = Automaton.regex_to_automaton(params.automaton as string).minimize()
+        automaton = Automaton.regex2automaton(params.automaton as string).minimize()
         break;
       case "Dot":
         automaton = Automaton.strToAutomaton(params.automaton as string).minimize()
@@ -32,11 +32,11 @@ export class TeacherAutomaton implements Teacher {
     this.alphabet = [...automaton.alphabet];
     this.regex = params.type === "Regex" ? params.automaton as string : "Teacher with automaton"
     this.description = this.regex;
-    this.counter_examples = [];
+    this.counterExamples = [];
   }
 
   member(sentence: string): boolean {
-    return this.automaton!.accept_word(sentence);
+    return this.automaton!.acceptWord(sentence);
   }
 
   equiv(automaton: Automaton): string | undefined {

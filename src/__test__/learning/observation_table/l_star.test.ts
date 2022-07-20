@@ -11,8 +11,8 @@ test("Learner L-Star Angluin", () => {
     [1]`) // a(ab)*
   let teacher = new TeacherAutomaton({ type: "Automaton", automaton })
   let learner = new L_star(teacher)
-  learner.make_all_queries()
-  expect(automaton.same_language(learner.automaton!));
+  learner.makeAllQueries()
+  expect(automaton.sameLanguage(learner.automaton!));
 })
 
 test("Learner NL-Star Bollig et al", () => {
@@ -23,8 +23,8 @@ test("Learner NL-Star Bollig et al", () => {
     [1]`) // a(ab)*
   let teacher = new TeacherAutomaton({ type: "Automaton", automaton })
   let learner = new L_star(teacher)
-  learner.make_all_queries()
-  expect(automaton.same_language(learner.automaton!));
+  learner.makeAllQueries()
+  expect(automaton.sameLanguage(learner.automaton!));
 })
 
 test("Learner L-Star Angluin", () => {
@@ -32,6 +32,6 @@ test("Learner L-Star Angluin", () => {
   let teacher = new TeacherAutomaton({ type: "Automaton", automaton })
   let learner = new L_star(teacher)
   for (let _a = 0; _a < 10; _a++) {
-    learner.make_next_query()
+    learner.makeNextQuery()
   }
 })

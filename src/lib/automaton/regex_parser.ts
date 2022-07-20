@@ -36,7 +36,7 @@ function HisAutomaton2Mine(aut: HisAutomaton): Automaton {
     let symbol = transition.symbol
     let to = transition.toStates
     to.forEach(state =>
-      statesMap.get(from + "")?.add_transition(symbol, statesMap.get(state + "")!))
+      statesMap.get(from + "")?.addTransition(symbol, statesMap.get(state + "")!))
   }
 
   return new Automaton(statesSet);
@@ -47,7 +47,7 @@ export function MyAutomatonToHis(aut: Automaton): HisAutomaton {
   let state2int = (state: State) => stateList.indexOf(state);
   let states = stateList.map(e => state2int(e))
   let startState = states.length;
-  let transitions: HisTransition[] = stateList.map(state => Array.from(state.get_all_out_transitions()).map(transition =>
+  let transitions: HisTransition[] = stateList.map(state => Array.from(state.getAllOutTransitions()).map(transition =>
   ({
     fromState: state2int(state),
     symbol: transition[0],
@@ -62,7 +62,7 @@ export function MyAutomatonToHis(aut: Automaton): HisAutomaton {
     states.push(startState)
   } else startState = state2int(aut.initialStates[0])
   let res: HisAutomaton = {
-    acceptingStates: aut.accepting_states().map(e => state2int(e)),
+    acceptingStates: aut.acceptingStates().map(e => state2int(e)),
     alphabet: Array.from(aut.alphabet),
     states: states,
     initialState: startState,

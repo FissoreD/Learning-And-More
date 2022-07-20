@@ -1,4 +1,4 @@
-import React, { ReactElement } from "react";
+import { ReactElement } from "react";
 import LearningDataStructure from "../../../lib/learning/learners/learning_data_structure";
 import LearnerOTBase from "../../../lib/learning/learners/observation_table/learner_ot_base";
 import ObservationTable from "../../../lib/learning/learners/observation_table/observation_table";
@@ -6,33 +6,33 @@ import { LearnerSection, MessageType, PropReact, StateReact } from "../learner_s
 import { ObservationTableC } from "./observation_table_c";
 
 export default abstract class LearnerOTBaseC extends LearnerSection<LearnerOTBase>{
-  table_to_modify_after_ce: string;
+  tableToModifyAfterCe: string;
 
-  constructor(prop: PropReact<LearnerOTBase>, table_to_modif: string) {
+  constructor(prop: PropReact<LearnerOTBase>, tableToModif: string) {
     super(prop)
-    this.table_to_modify_after_ce = table_to_modif
+    this.tableToModifyAfterCe = tableToModif
 
   }
   dataStructureToNodeElement(ds: LearningDataStructure): ReactElement {
-    return <ObservationTableC data_structure={ds.clone() as ObservationTable} />
+    return <ObservationTableC dataStructure={ds.clone() as ObservationTable} />
   }
 
-  abstract close_message(close_rep: string): string;
-  abstract consistent_message(s1: string, s2: string, new_col: string): string;
+  abstract closeMessage(closeRep: string): string;
+  abstract consistentMessage(s1: string, s2: string, newCol: string): string;
 
-  next_op_child(state: StateReact<LearnerOTBase>): StateReact<LearnerOTBase> {
+  nextOpChild(state: StateReact<LearnerOTBase>): StateReact<LearnerOTBase> {
     let learner = this.state.learner;
     if (learner.finish) return state
     var message: { type: MessageType, val: string };
-    if (state.do_next) {
+    if (state.doNext) {
       let prop;
-      if ((prop = learner.is_close())) {
-        message = { type: "CLOSEDNESS", val: this.close_message(prop) }
-      } else if ((prop = learner.is_consistent())) {
+      if ((prop = learner.isClose())) {
+        message = { type: "CLOSEDNESS", val: this.closeMessage(prop) }
+      } else if ((prop = learner.isConsistent())) {
         message = {
-          type: "CONSISTENCY", val: this.consistent_message(prop[0], prop[1], prop[2])
+          type: "CONSISTENCY", val: this.consistentMessage(prop[0], prop[1], prop[2])
         }
-      } else if ((prop = learner.counter_example)) {
+      } else if ((prop = learner.counterExample)) {
         message = {
           type: "CE", val: "Received the counter-example " + prop
         }
@@ -46,16 +46,16 @@ export default abstract class LearnerOTBaseC extends LearnerSection<LearnerOTBas
         }
       }
     } else {
-      this.state.learner.make_next_query()
+      this.state.learner.makeNextQuery()
 
-      let old_msg = state.memory[state.position].message
-      message = { ...old_msg };
-      switch (old_msg.type) {
+      let oldMsg = state.memory[state.position].message
+      message = { ...oldMsg };
+      switch (oldMsg.type) {
         case "CONSISTENCY":
         case "CLOSEDNESS":
           message.val = "The table has been modified"; break;
         case "CE":
-          message.val = "The counter-example has been added in " + this.table_to_modify_after_ce; break;
+          message.val = "The counter-example has been added in " + this.tableToModifyAfterCe; break;
         case "SEND-HYP":
           message.val = "The conjecture has been sent to the Teacher"; break;
         case "END":
@@ -65,11 +65,11 @@ export default abstract class LearnerOTBaseC extends LearnerSection<LearnerOTBas
     }
     let memory = state.memory;
     memory.push({
-      message, dataStructure: learner.data_structure.clone(),
+      message, dataStructure: learner.dataStructure.clone(),
       automaton: learner.automaton ? learner.automaton.clone() : undefined
     })
     let position = state.position + 1
-    state = { position, do_next: !state.do_next, memory, learner: state.learner, show_regex_dialog: false }
+    state = { position, doNext: !state.doNext, memory, learner: state.learner, showRegexDialog: false }
     return state
   }
 }

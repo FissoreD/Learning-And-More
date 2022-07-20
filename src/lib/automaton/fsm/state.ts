@@ -24,7 +24,7 @@ export default class State {
     }
   }
 
-  add_transition(symbol: string, state: State) {
+  addTransition(symbol: string, state: State) {
     state = state || State.Bottom
     if (!this.outTransitions.has(symbol)) {
       this.outTransitions.set(symbol, [state])
@@ -46,15 +46,15 @@ export default class State {
     return this.inTransitions.get(symbol)!
   }
 
-  get_out_transition_number(): number {
+  getOutTransitionNumber(): number {
     return this.outTransitions.size
   }
 
-  get_all_successors() {
+  getAllSuccessors() {
     return this.successors
   }
 
-  get_all_out_transitions() {
+  getAllOutTransitions() {
     return this.outTransitions
   }
 

@@ -3,17 +3,17 @@ import Teacher from "../teachers/teacher";
 
 export default abstract class LearnerFather<DataStType> {
   alphabet: string[];
-  member_number = 0;
-  equiv_number = 0;
+  memberNumber = 0;
+  equivNumber = 0;
   finish = false;
   automaton: undefined | Automaton;
   teacher: Teacher;
-  data_structure: DataStType;
+  dataStructure: DataStType;
 
-  constructor(teacher: Teacher, data_structure: DataStType) {
+  constructor(teacher: Teacher, dataStructure: DataStType) {
     this.alphabet = [...teacher.alphabet];
     this.teacher = teacher;
-    this.data_structure = data_structure;
+    this.dataStructure = dataStructure;
   }
 
   /**
@@ -24,34 +24,34 @@ export default abstract class LearnerFather<DataStType> {
    * @param a an Automaton
    * @returns undefined if {@link a} recognize the teacher's language, a counter-example (as a string) otherwise.
    */
-  make_equiv(a: Automaton) {
+  makeEquiv(a: Automaton) {
     let answer = this.teacher.equiv(a);
-    this.equiv_number++;
+    this.equivNumber++;
     return answer;
   }
 
-  abstract make_automaton(): Automaton;
-  abstract make_next_query(): void;
+  abstract makeAutomaton(): Automaton;
+  abstract makeNextQuery(): void;
 
-  make_all_queries() {
+  makeAllQueries() {
     while (!this.finish) {
-      this.make_next_query();
+      this.makeNextQuery();
     }
   }
 
-  get_member_number() {
-    return this.member_number;
+  getMemberNumber() {
+    return this.memberNumber;
   }
 
-  get_equiv_number() {
-    return this.equiv_number;
+  getEquivNumber() {
+    return this.equivNumber;
   }
 
-  get_state_number() {
-    return this.automaton!.state_number()
+  getStateNumber() {
+    return this.automaton!.getStateNumber()
   }
 
-  get_transition_number() {
-    return this.automaton!.transition_number()
+  getTransitionNumber() {
+    return this.automaton!.getTransitionNumber()
   }
 }

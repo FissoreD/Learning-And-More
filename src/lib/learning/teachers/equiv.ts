@@ -11,8 +11,8 @@ import Teacher from "./teacher";
  */
 export let equivalenceFunction = (teacher: Teacher, automaton: Automaton): string | undefined => {
   let counterExemple = (automatonDiff: Automaton): string | undefined => {
-    let stateList = automatonDiff.all_states()
-    if (automatonDiff.accepting_states().length === 0) return undefined;
+    let stateList = automatonDiff.allStates()
+    if (automatonDiff.acceptingStates().length === 0) return undefined;
     let toExplore = Array.from(automatonDiff.initialStates)
     let explored: State[] = []
     type parentChild = { parent: State | undefined, symbol: string }
@@ -21,7 +21,7 @@ export let equivalenceFunction = (teacher: Teacher, automaton: Automaton): strin
       const current = toExplore.shift()!
       if (explored.includes(current)) continue;
       explored.push(current)
-      for (const [symbol, states] of current.get_all_out_transitions()) {
+      for (const [symbol, states] of current.getAllOutTransitions()) {
         if (!explored.includes(states[0])) {
           parent[stateList.indexOf(states[0])] =
             { parent: current, symbol: symbol }
@@ -30,7 +30,7 @@ export let equivalenceFunction = (teacher: Teacher, automaton: Automaton): strin
       }
 
 
-      if (automatonDiff.accepting_states().includes(current)) {
+      if (automatonDiff.acceptingStates().includes(current)) {
         let id = stateList.indexOf(current);
         let res: string[] = [parent[id].symbol]
         while (parent[id].parent) {
@@ -43,11 +43,11 @@ export let equivalenceFunction = (teacher: Teacher, automaton: Automaton): strin
     return "";
   }
 
-  let autom_minimized = automaton.minimize();
-  let diff1 = teacher.automaton!.difference(autom_minimized);
+  let automMinimized = automaton.minimize();
+  let diff1 = teacher.automaton!.difference(automMinimized);
   let counterEx1 = counterExemple(diff1);
 
-  let diff2 = autom_minimized.difference(teacher.automaton!);
+  let diff2 = automMinimized.difference(teacher.automaton!);
   let counterEx2 = counterExemple(diff2);
 
   if (counterEx1 === undefined) return counterEx2;
