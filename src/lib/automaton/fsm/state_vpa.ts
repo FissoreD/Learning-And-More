@@ -30,7 +30,7 @@ export class StateVPA {
     this.stackAlphabet = p.stackAlphabet;
     this.isAccepting = p.isAccepting || false;
     this.isInitial = p.isInitial || false;
-    this.alphabet = p.alphabet;
+    this.alphabet = { INT: [...p.alphabet.INT], CALL: [...p.alphabet.CALL], RET: [...p.alphabet.RET] };
     this.outTransitions = { INT: {}, CALL: {}, RET: {} };
     this.inTransitions = { INT: {}, CALL: {}, RET: {} };
     this.successors = new Set();
@@ -172,8 +172,8 @@ export class StateVPA {
     return this.outTransitions
   }
 
-  clone(name?: string) {
-    return new StateVPA({ ...this, name: name || this.name })
+  clone(p: { name?: string, alphabet?: AlphabetVPA }) {
+    return new StateVPA({ ...this, name: p.name || this.name, alphabet: p.alphabet || this.alphabet })
   }
 
   static Bottom(alphabet: AlphabetVPA, stackAlphabet: string[]) {

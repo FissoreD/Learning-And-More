@@ -84,8 +84,17 @@ export class VPA implements FSM<AlphabetVPA, StateVPA> {
     return this.difference(aut).union(aut.difference(this));
   }
 
-  clone(): VPA {
-    throw todo();
+  clone(alphabet?: AlphabetVPA): VPA {
+    let all_states = this.allStates()
+    let res = new VPA(all_states.map(e => e.clone({ alphabet })));
+    this.flatAlphabet().forEach(symbol =>
+      all_states.forEach((e, pos) =>
+        e.getSuccessor({ symbol }).forEach(succ => res.allStates()[pos].addTransition({
+          symbol,
+          successor: res.allStates()[all_states.indexOf(succ)]
+        }))
+      ))
+    return res;
   }
 
   complement(alphabet?: AlphabetVPA[]): VPA {
