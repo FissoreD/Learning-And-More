@@ -1,4 +1,4 @@
-export interface FSM<Alphabet, State> {
+export default interface FSM<Alphabet, State> {
   states: Map<string, State>;
   initialStates: State[];
   alphabet: Alphabet;

@@ -1,6 +1,6 @@
 import { sameVector, toEps } from "../../tools";
 import regexToAutomaton from "../regex_parser";
-import { FSM } from "./FSM_interface";
+import FSM from "./FSM_interface";
 import State from "./state";
 
 export default class Automaton implements FSM<string[], State> {
@@ -341,7 +341,8 @@ export default class Automaton implements FSM<string[], State> {
     return this.symmetricDifference(aut).isEmpty()
   }
 
-  /** @returns a fresh deterministic complemented automaton */
+  /** 
+   * @returns a fresh deterministic complemented automaton */
   complement(alphabet?: string[] | string) {
     let res = this.clone();
     res.alphabet = alphabet ? [...alphabet] : res.alphabet
@@ -356,7 +357,7 @@ export default class Automaton implements FSM<string[], State> {
   }
 
   /**
-   * Transform a String two an Automaton
+   * Transform a String to an Automaton
    * @param content -> It must be on the form  
    *        Q1  
    *        ...  

@@ -127,16 +127,21 @@ export class StateVPA {
     let type = p.type || this.mapAlphSymbolToType.get(p.symbol)
     if (type === undefined)
       throw new Error(`You should specify a type for this symbol : ${p.symbol}`)
-    if (type === "INT")
-      return this.outTransitions[type][p.symbol]
-    if (type === "CALL") {
-      let tr = this.outTransitions[type][p.symbol]
-      p.stack!.push(tr.symbolToPush)
-      return tr.successors
+
+    try {
+      if (type === "INT")
+        return this.outTransitions[type][p.symbol]
+      if (type === "CALL") {
+        let tr = this.outTransitions[type][p.symbol]
+        p.stack!.push(tr.symbolToPush)
+        return tr.successors
+      }
+      if (type === "RET" && p.topStack) {
+        return this.outTransitions[type][p.symbol][p.topStack]
+      }
+    } catch (e) {
+      return []
     }
-    if (type === "RET" && p.topStack)
-      return this.outTransitions[type][p.symbol][p.topStack]
-    console.log(this.alphabet);
 
     throw new Error(`The top stack symbol should be specified for ${p.symbol}`)
   }
@@ -145,11 +150,12 @@ export class StateVPA {
     let type = p.type || this.mapAlphSymbolToType.get(p.symbol)
     if (type === undefined)
       throw new Error(`You should specify a type for this symbol : ${p.symbol}`)
-    let res = this.inTransitions[type]
     if (type === "INT")
-      return res as unknown as StateVPA[]
+      return this.inTransitions["INT"][p.symbol]
+    if (type === "CALL")
+      return this.inTransitions["CALL"][p.symbol].successors
     if (p.topStack)
-      return res[p.topStack] as StateVPA[]
+      return this.inTransitions["RET"][p.symbol][p.topStack]
     throw new Error(`The top stack symbol should be specified for ${p.symbol}`)
   }
 

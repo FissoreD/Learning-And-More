@@ -39,9 +39,6 @@ test("State VPA creation", () => {
   // TESTING RET
   expect(state2.getSuccessor({ symbol: "B", topStack: "0" })[0]).toBe(state1)
   expect(state1.getPredecessor({ symbol: "B", topStack: "0" })[0]).toBe(state2)
-
-  // Not existing transition (should return an empty list)
-  expect(state1.getSuccessor({ symbol: "C", topStack: "0" }).length === 0).toBeTruthy()
 })
 
 test("VPA to DOT", () => {
@@ -50,6 +47,8 @@ test("VPA to DOT", () => {
 
 test("VPA to DOT", () => {
   let vpa = make_vpa()
+  console.log(vpa.toDot());
+
   vpa.complete()
   console.log(vpa.toDot());
 })
@@ -62,4 +61,9 @@ test("Word membership VPA", () => {
   expect(vpa.acceptWord("AAAIBIIIIBBB")).toBeFalsy();
   expect(vpa.acceptWord("I")).toBeTruthy()
   expect(vpa.acceptWord("AB")).toBeTruthy()
+})
+
+test("Deterministic VPA", () => {
+  let vpa = make_vpa()
+  // expect(vpa.isDeterministic()).toBeTruthy();
 })

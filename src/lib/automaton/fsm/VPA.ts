@@ -1,5 +1,5 @@
 import { todo, toEps } from "../../tools";
-import { FSM } from "./FSM_interface";
+import FSM from "./FSM_interface";
 import { AlphabetVPA, StateVPA } from "./state_vpa";
 
 export type ALPHABET_TYPE = "INT" | "RET" | "CALL"
@@ -29,7 +29,7 @@ export class VPA implements FSM<AlphabetVPA, StateVPA> {
   }
 
   giveState(word: string): StateVPA | undefined {
-    return todo()
+    return this.readWord(word)[0]
   }
 
   complete(p?: { bottom?: StateVPA, alphabet?: AlphabetVPA, stackAlp?: string[] }): VPA {
@@ -73,7 +73,7 @@ export class VPA implements FSM<AlphabetVPA, StateVPA> {
   }
 
   intersection(aut: VPA): VPA {
-    return aut.complement().union(this.complement()).complement()
+    return aut.complement([this.alphabet, aut.alphabet]).union(this.complement([this.alphabet, aut.alphabet])).complement([this.alphabet, aut.alphabet])
   }
 
   difference(aut: VPA): VPA {
@@ -88,38 +88,77 @@ export class VPA implements FSM<AlphabetVPA, StateVPA> {
     throw todo();
   }
 
-  complement(): VPA {
-    throw todo();
+  complement(alphabet?: AlphabetVPA[]): VPA {
+    let res = this.clone();
+    res.alphabet = alphabet ? this.cloneAndUnionAlphabet(...alphabet) : this.cloneAndUnionAlphabet(this.alphabet)
+    res.complete()
+    if (!res.isDeterministic()) {
+      res = this.determinize();
+    }
+    res.allStates().forEach(e => {
+      e.isAccepting = !e.isAccepting
+    });
+    return res;
   }
 
   getStateNumber(): number {
-    throw this.states.size
+    return this.states.size
   }
 
   getTransitionNumber(): number {
-    throw [...this.states.values()].reduce((a, b) => a + b.getOutTransitionNumber(), 0)
+    return [...this.states.values()].reduce((a, b) => a + b.getOutTransitionNumber(), 0)
+  }
+
+  cloneAndUnionAlphabet(...alphabet: AlphabetVPA[]): AlphabetVPA {
+    // Union
+    let res = alphabet.reduce((prev, curr) => {
+      let INT = [...prev.INT, ...curr.INT]
+      let CALL = [...prev.CALL, ...curr.CALL]
+      let RET = [...prev.RET, ...curr.RET]
+      return { INT, CALL, RET }
+    }, { INT: [], CALL: [], RET: [] })
+    // Remove Duplicata
+    res = { INT: [...new Set(res.INT)], CALL: [...new Set(res.CALL)], RET: [...new Set(res.RET)] }
+    // Check if it is a disjoint union of three sets
+    this.isValidAlphabet(res)
+    return res
+  }
+
+  /** 
+   * @throws Error if INT, CALL and RET are not disjoint 
+   */
+  isValidAlphabet(alph: AlphabetVPA) {
+    let a = new Set([...alph.CALL, ...alph.INT, ...alph.RET])
+    if (a.size !== alph.CALL.length + alph.INT.length + alph.RET.length)
+      throw new Error("This alphabet is not valid since INT, CALL and RET are not union")
   }
 
   isDeterministic(): boolean {
-    throw todo();
+    return this.allStates().every(
+      state =>
+        [...this.alphabet.INT, ...this.alphabet.CALL].every(symbol => state.getSuccessor({ symbol, stack: this.stack }) === undefined || state.getSuccessor({ symbol, stack: this.stack }).length === 1)
+        && this.alphabet.RET.every(symbol => this.stackAlphabet.every(topStack => { this.stack.push(topStack); state.getSuccessor({ symbol, topStack }) === undefined || state.getSuccessor({ symbol }).length === 1 })))
+  }
+
+  flatAlphabet() {
+    return ALPH_TYPE_LIST.map(e => this.alphabet[e]).flat()
   }
 
   sameLanguage(aut: VPA): boolean {
-    throw todo();
+    return this.symmetricDifference(aut).isEmpty()
   }
 
-  acceptWord(word: string): boolean {
+  readWord(word: string): [StateVPA | undefined, boolean] {
     if (word.length === 0)
-      return this.initialStates.some(e => e.isAccepting);
+      return [undefined, this.initialStates.some(e => e.isAccepting)];
     let nextStates: Set<StateVPA> = new Set(this.initialStates);
     for (let index = 0; index < word.length && nextStates.size > 0; index++) {
-      console.log(this.stack);
       let nextStates2: Set<StateVPA> = new Set();
       const symbol = word[index];
       if (!this.alphabet.CALL.includes(symbol) &&
         !this.alphabet.INT.includes(symbol) &&
         !this.alphabet.RET.includes(symbol)) {
-        return false
+        return [undefined, false]
       }
       for (const state of nextStates) {
         try {
@@ -130,17 +169,21 @@ export class VPA implements FSM<AlphabetVPA, StateVPA> {
               if (index === word.length - 1 && nextState.isAccepting) {
                 let res = true && this.stack.length === 0
                 this.cleanStack()
-                return res
+                return [nextState, res]
               }
             }
         } catch (e) {
-          return false
+          return [nextStates.values().next().value, false]
         }
       }
       nextStates = nextStates2;
     }
     this.cleanStack()
-    return false;
+    return [nextStates.values().next().value, false];
+  }
+
+  acceptWord(word: string): boolean {
+    return this.readWord(word)[1]
   }
 
   cleanStack() {
@@ -148,11 +191,13 @@ export class VPA implements FSM<AlphabetVPA, StateVPA> {
   }
 
   isEmpty(): boolean {
-    return false;
+    let aut = this.isDeterministic() ? this : this.determinize()
+    return aut.allStates().every(e => !e.isAccepting)
   }
 
   isFull(): boolean {
-    return false;
+    let aut = this.isDeterministic() ? this : this.determinize()
+    return aut.allStates().every(e => e.isAccepting)
   }
 
   /**
@@ -167,7 +212,7 @@ export class VPA implements FSM<AlphabetVPA, StateVPA> {
   }
 
   acceptingStates(): StateVPA[] {
-    throw [...this.states.values()].filter(e => e.isAccepting)
+    return [...this.states.values()].filter(e => e.isAccepting)
   }
 
   allStates(): StateVPA[] {
@@ -189,8 +234,8 @@ export class VPA implements FSM<AlphabetVPA, StateVPA> {
           case "RET": alph = RET; break
         }
         for (let j = 0; j < alph.length; j++) {
-          for (let i = 0; i < (type === "INT" ? 1 : this.stackAlphabet.length); i++) {
-            if (type !== "INT") this.stack.push(this.stackAlphabet[i])
+          for (let i = 0; i < (type === "RET" ? this.stackAlphabet.length : 1); i++) {
+            if (type === "RET") this.stack.push(this.stackAlphabet[i])
             let nextStates = this.findTransition(state, alph[j])
             if (nextStates)
               for (const nextState of nextStates) {
