@@ -7,6 +7,10 @@ export default interface FSM<Alphabet, State> {
   /** @returns a fresh Determinized FSM */
   determinize(): FSM<Alphabet, State>;
   minimize(): FSM<Alphabet, State>;
+  /**
+   * If both FSM are deterministic a deterministic FSM is returned
+   * @returns a fresh FMS accepting the union of the two languages
+   */
   union(aut: FSM<Alphabet, State>): FSM<Alphabet, State>;
   intersection(aut: FSM<Alphabet, State>): FSM<Alphabet, State>;
   difference(aut: FSM<Alphabet, State>): FSM<Alphabet, State>;

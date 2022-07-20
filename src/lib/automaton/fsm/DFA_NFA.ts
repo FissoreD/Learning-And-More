@@ -101,17 +101,17 @@ export default class Automaton implements FSM<string[], State> {
       let [states, transition] = [x, triples[x].join(",")]
       let split = states.split("&");
       let A = split[0], B = split[1];
-      return `${toEps(A)} -> ${toEps(B)} [label = "${transition}"]`
+      return `q${toEps(A)} -> q${toEps(B)} [label = "${transition}"]`
     }).join("\n"));
 
     this.initialStates.forEach(s => {
-      txt = txt.concat(`\nI${toEps(s.name)} [label="", style=invis, width=0]\nI${toEps(s.name)} -> ${toEps(s.name)}`);
+      txt = txt.concat(`\nI${toEps(s.name)} [label="", style=invis, width=0]\nI${toEps(s.name)} -> q${toEps(s.name)}`);
     });
 
     // Accepting states
     allStates.forEach(s => {
       if (s.isAccepting)
-        txt = txt.concat(`\n${toEps(s.name)} [peripheries=2]`)
+        txt = txt.concat(`\nq${toEps(s.name)} [peripheries=2]`)
     })
 
     txt += "\n}"
@@ -284,11 +284,6 @@ export default class Automaton implements FSM<string[], State> {
     return res;
   }
 
-  /** 
-   * If both automata are deterministic a DFA is returned
-   * otherwise, a NFA is returned  
-   * @returns a fresh Automaton of the union of two Automata
-   */
   union(aut: Automaton): Automaton {
     let res;
     let states = [

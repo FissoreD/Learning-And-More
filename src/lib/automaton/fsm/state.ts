@@ -37,7 +37,7 @@ export default class State {
       state.inTransitions.get(symbol)!.push(this);
   }
 
-  getSuccessor(symbol: string) {
+  getSuccessor(symbol: string): State[] {
     return this.outTransitions.get(symbol)!
   }
 

@@ -69,7 +69,41 @@ export class VPA implements FSM<AlphabetVPA, StateVPA> {
   }
 
   union(aut: VPA): VPA {
-    throw todo();
+    let res;
+    let states = [
+      ...aut.allStates().map(e => e.clone({ name: "1" + e.name })),
+      ...this.allStates().map(e => e.clone({ name: "2" + e.name }))
+    ];
+    let alphabet = this.cloneAndUnionAlphabet(...states.map(e => e.alphabet));
+    let stack = [...new Set([...aut.stackAlphabet, ... this.stackAlphabet])]
+    states.forEach(e => e.alphabet = alphabet)
+    res = new VPA(states);
+    res.complete()
+
+    this.flatAlphabet(alphabet).forEach(symbol => {
+      for (let i = 0; i < (alphabet.INT.includes(symbol) ? 1 : stack.length); i++) {
+        aut.allStates().forEach((e, pos) => e.getSuccessor({ symbol, topStack: stack[i] })?.forEach(succ =>
+          states[pos].addTransition({
+            symbol: symbol,
+            successor: states[aut.allStates().indexOf(succ)],
+            topStack: stack[i]
+          })
+        ))
+
+        this.allStates().forEach((e, pos) => e.getSuccessor({ symbol, topStack: stack[i] })?.forEach(succ =>
+          states[pos + aut.allStates().length].addTransition({
+            symbol: symbol,
+            successor: states[this.allStates().indexOf(succ) + aut.allStates().length],
+            topStack: stack[i]
+          })
+        ))
+      }
+    });
+    /** @todo uncomment when finished */
+    // if (this.isDeterministic() && aut.isDeterministic()) {
+    //   return res.determinize()
+    // }
+    return res;
   }
 
   intersection(aut: VPA): VPA {
@@ -87,7 +121,7 @@ export class VPA implements FSM<AlphabetVPA, StateVPA> {
   clone(alphabet?: AlphabetVPA): VPA {
     let all_states = this.allStates()
     let res = new VPA(all_states.map(e => e.clone({ alphabet })));
-    this.flatAlphabet().forEach(symbol =>
+    this.flatAlphabet(this.alphabet).forEach(symbol =>
       all_states.forEach((e, pos) =>
         e.getSuccessor({ symbol }).forEach(succ => res.allStates()[pos].addTransition({
           symbol,
@@ -145,12 +179,16 @@ export class VPA implements FSM<AlphabetVPA, StateVPA> {
   isDeterministic(): boolean {
     return this.allStates().every(
       state =>
-        [...this.alphabet.INT, ...this.alphabet.CALL].every(symbol => state.getSuccessor({ symbol, stack: this.stack }) === undefined || state.getSuccessor({ symbol, stack: this.stack }).length === 1)
-        && this.alphabet.RET.every(symbol => this.stackAlphabet.every(topStack => { this.stack.push(topStack); state.getSuccessor({ symbol, topStack }) === undefined || state.getSuccessor({ symbol }).length === 1 })))
+        [...this.alphabet.INT, ...this.alphabet.CALL].
+          every(symbol => state.getSuccessor({ symbol }).length <= 1)
+        &&
+        this.alphabet.RET.
+          every(symbol => this.stackAlphabet.
+            every(topStack => state.getSuccessor({ symbol, topStack }).length <= 1)))
   }
 
-  flatAlphabet() {
-    return ALPH_TYPE_LIST.map(e => this.alphabet[e]).flat()
+  flatAlphabet(alph: AlphabetVPA) {
+    return ALPH_TYPE_LIST.map(e => alph[e]).flat()
   }
 
   sameLanguage(aut: VPA): boolean {
@@ -277,17 +315,17 @@ export class VPA implements FSM<AlphabetVPA, StateVPA> {
       let [states, transition] = [x, triples[x].join(",")]
       let split = states.split("&");
       let A = split[0], B = split[1];
-      return `${toEps(A)} -> ${toEps(B)} [label = "${transition}"]`
+      return `q${toEps(A)} -> q${toEps(B)} [label = "${transition}"]`
     }).join("\n"));
 
     this.initialStates.forEach(s => {
-      txt = txt.concat(`\nI${toEps(s.name)} [label="", style=invis, width=0]\nI${toEps(s.name)} -> ${toEps(s.name)}`);
+      txt = txt.concat(`\nI${toEps(s.name)} [label="", style=invis, width=0]\nI${toEps(s.name)} -> q${toEps(s.name)}`);
     });
 
     // Accepting states
     allStates.forEach(s => {
       if (s.isAccepting)
-        txt = txt.concat(`\n${toEps(s.name)} [peripheries=2]`)
+        txt = txt.concat(`\nq${toEps(s.name)} [peripheries=2]`)
     })
 
     txt += "\n}"

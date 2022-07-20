@@ -65,5 +65,13 @@ test("Word membership VPA", () => {
 
 test("Deterministic VPA", () => {
   let vpa = make_vpa()
-  // expect(vpa.isDeterministic()).toBeTruthy();
+  expect(vpa.isDeterministic()).toBeTruthy();
+})
+
+test("Union VPA", () => {
+  let vpa1 = make_vpa()
+  let vpa2 = make_vpa()
+  let union = vpa1.union(vpa2)
+  console.log(union.toDot());
+
 })

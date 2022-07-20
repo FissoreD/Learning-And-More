@@ -133,7 +133,8 @@ export class StateVPA {
         return this.outTransitions[type][p.symbol]
       if (type === "CALL") {
         let tr = this.outTransitions[type][p.symbol]
-        p.stack!.push(tr.symbolToPush)
+        if (p.stack) p.stack.push(tr.symbolToPush);
+        else console.warn("Attention, you are looking for a call transition, but you do not provide a stack to make the push operation")
         return tr.successors
       }
       if (type === "RET" && p.topStack) {
