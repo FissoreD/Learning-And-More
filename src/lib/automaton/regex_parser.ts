@@ -1,4 +1,4 @@
-import Automaton from "./fsm/DFA_NFA";
+import DFA_NFA from "./fsm/DFA_NFA";
 import State from "./fsm/state";
 import noam from "./noam";
 interface HisTransition {
@@ -15,7 +15,7 @@ interface HisAutomaton {
   acceptingStates: number[] | number[][]
 }
 
-function HisAutomaton2Mine(aut: HisAutomaton): Automaton {
+function HisAutomaton2Mine(aut: HisAutomaton): DFA_NFA {
 
   let states: State[] = aut.states.map(
     e => new State(
@@ -39,10 +39,10 @@ function HisAutomaton2Mine(aut: HisAutomaton): Automaton {
       statesMap.get(from + "")?.addTransition(symbol, statesMap.get(state + "")!))
   }
 
-  return new Automaton(statesSet);
+  return new DFA_NFA(statesSet);
 }
 
-export function MyAutomatonToHis(aut: Automaton): HisAutomaton {
+export function MyAutomatonToHis(aut: DFA_NFA): HisAutomaton {
   let stateList = Array.from(aut.states).map(e => e[1]);
   let state2int = (state: State) => stateList.indexOf(state);
   let states = stateList.map(e => state2int(e))
@@ -72,18 +72,18 @@ export function MyAutomatonToHis(aut: Automaton): HisAutomaton {
 }
 
 /** Return the mDFA for a regex */
-export default function regexToAutomaton(regex: string): Automaton {
+export default function regexToAutomaton(regex: string): DFA_NFA {
   let res = noam.re.string.toAutomaton(regex);
   return minimizeAutomaton(res);
 }
 
-export function automatonToRegex(automaton: Automaton): string {
+export function automatonToRegex(automaton: DFA_NFA): string {
   // let res = noam.re.tree.toString(noam.re.tree.simplify((noam.fsm.toRegex(MyAutomatonToHis(automaton)))))
   // console.log(res);
   return ""
 }
 
-function minimizeAutomaton(automatonInput: HisAutomaton): Automaton {
+function minimizeAutomaton(automatonInput: HisAutomaton): DFA_NFA {
   let automaton = automatonInput
   automaton = noam.fsm.convertEnfaToNfa(automaton);
   automaton = noam.fsm.convertNfaToDfa(automaton);
@@ -112,13 +112,13 @@ function minimizeAutomaton(automatonInput: HisAutomaton): Automaton {
 
 //   private constructor() { }
 
-//   /** 
-//    * Takes a regex in input and returns the corresponding DFA   
-//    * Regex Grammar:  
-//    * G ::= G + G   
-//    *     | G*   
-//    *     | ( G )  
-//    *     | T  
+//   /**
+//    * Takes a regex in input and returns the corresponding DFA
+//    * Regex Grammar:
+//    * G ::= G + G
+//    *     | G*
+//    *     | ( G )
+//    *     | T
 //    * T ::= $ | [0-9a-zA-Z]
 //    */
 //   static regex_to_DFA(regex: string): Automaton {

@@ -1,4 +1,4 @@
-import Automaton from "../../../automaton/fsm/DFA_NFA";
+import DFA_NFA from "../../../automaton/fsm/DFA_NFA";
 import State from "../../../automaton/fsm/state";
 import { toEps } from "../../../tools";
 import Teacher from "../../teachers/teacher";
@@ -62,7 +62,7 @@ export default class TTT extends LearnerFather<DiscTreeDFA> {
     })
   }
 
-  makeAutomaton(): Automaton {
+  makeAutomaton(): DFA_NFA {
     let initial_state = this.dataStructure.sift("", this.teacher)!
     let states = new Map([...this.dataStructure.getLeaves().values()].map(e => [e.name, new State(e.name, e.isAccepting!, e === initial_state, this.alphabet)]))
 
@@ -82,7 +82,7 @@ export default class TTT extends LearnerFather<DiscTreeDFA> {
         states.get(state)!.addTransition(symbol, states.get(res.name)!)
       }
     }
-    return (this.automaton = new Automaton([...states.values()]))
+    return (this.automaton = new DFA_NFA([...states.values()]))
   }
 
   split_ce_in_uav(ce: string) {

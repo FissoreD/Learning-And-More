@@ -1,0 +1,1 @@
+export const FLEX_CENTER = "d-flex justify-content-center align-items-center"

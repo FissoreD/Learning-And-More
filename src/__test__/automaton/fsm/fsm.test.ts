@@ -1,7 +1,7 @@
-import Automaton from "../../../lib/automaton/fsm/DFA_NFA";
+import DFA_NFA from "../../../lib/automaton/fsm/DFA_NFA";
 
 test("Automaton minimization", () => {
-  let a = Automaton.strToAutomaton(`
+  let a = DFA_NFA.strToAutomaton(`
     [Q1]
     a,[Q1]->[Q2]
     a,[Q2]->[Q3]
@@ -15,7 +15,7 @@ test("Automaton minimization", () => {
 })
 
 test("Automaton Word membership", () => {
-  let a = Automaton.strToAutomaton(`
+  let a = DFA_NFA.strToAutomaton(`
     [Q1]
     a,[Q1]->[Q2]
     b,[Q1]->[Q2]
@@ -35,8 +35,8 @@ test("Automaton Parse and to String methodes", () => {
     a,[Q1]->[Q2]
     a,[Q2]->[Q2]
     [Q2]`
-  let a = Automaton.strToAutomaton(aut_str);
-  let b = Automaton.strToAutomaton(a.toString())
+  let a = DFA_NFA.strToAutomaton(aut_str);
+  let b = DFA_NFA.strToAutomaton(a.toString())
   expect(b.sameLanguage(a)).toBe(true);
 })
 
@@ -48,7 +48,7 @@ test("Automaton Determinize", () => {
     a,[Q0]->[Q2]
     [Q1]
     [Q2]`
-  let a = Automaton.strToAutomaton(aut_str)
+  let a = DFA_NFA.strToAutomaton(aut_str)
   expect(a.getStateNumber()).toBe(3);
   expect(a.isDeterministic()).toBe(false)
 
@@ -62,7 +62,7 @@ test("Automaton Determinize", () => {
     a,[1]->[0]
     b,[1]->[0]
     [1]`
-  a = Automaton.strToAutomaton(aut_already_determinist);
+  a = DFA_NFA.strToAutomaton(aut_already_determinist);
   expect(a.determinize().sameLanguage(a));
 })
 
@@ -73,7 +73,7 @@ test("Automaton Complement & Union & Intersection & Sym. Diff", () => {
     a,[1]->[0]
     [1]
     [2]`
-  let a1 = Automaton.strToAutomaton(aut_str)
+  let a1 = DFA_NFA.strToAutomaton(aut_str)
 
   let a1_compl = a1.complement();
 
@@ -92,15 +92,15 @@ test("Automaton Complement & Union & Intersection & Sym. Diff", () => {
 })
 
 test("Automaton Difference", () => {
-  let a1 = Automaton.strToAutomaton(`[0]
+  let a1 = DFA_NFA.strToAutomaton(`[0]
   a,[0]->[0]
   b,[0]->[2]
   [0]`) // L(a1) = a*
-  let a2 = Automaton.strToAutomaton(`[3]
+  let a2 = DFA_NFA.strToAutomaton(`[3]
   a,[3]->[4]
   b,[3]->[5]
   [4]`) // L(a2) = a
-  let diff = Automaton.strToAutomaton(`[6]
+  let diff = DFA_NFA.strToAutomaton(`[6]
   a,[6]->[7]
   a,[7]->[8]
   a,[8]->[8]

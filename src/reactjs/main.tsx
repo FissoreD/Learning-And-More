@@ -1,6 +1,7 @@
 import React from "react";
 import { Container, Row } from "react-bootstrap";
 import AutomatonContainerC from "./automaton/automaton_container_c";
+import TestVPAViewer from "./automaton/TestVpaViewer";
 import LearnerContainerC from "./learning/learner_containerC";
 import { AlgosNavBar, NavBar } from "./nav_bar";
 
@@ -17,6 +18,7 @@ export class Main extends React.Component<{}, Prop> {
     switch (section) {
       case "Automaton": cnt = <AutomatonContainerC />; break;
       case "Learning": cnt = <LearnerContainerC />; break;
+      case "TestVPAViewer": cnt = <TestVPAViewer />; break;
       default: throw new Error("Should not be here")
     }
     this.setState(() => { return { cnt } })

@@ -5,7 +5,7 @@ import { AlphabetVPA, StateVPA } from "./state_vpa";
 export type ALPHABET_TYPE = "INT" | "RET" | "CALL"
 export const ALPH_TYPE_LIST: ALPHABET_TYPE[] = ["INT", "RET", "CALL"]
 
-export class VPA implements FSM<AlphabetVPA, StateVPA> {
+export default class VPA implements FSM<AlphabetVPA, StateVPA> {
   states: Map<string, StateVPA>;
   initialStates: StateVPA[];
   alphabet: AlphabetVPA;
@@ -74,7 +74,7 @@ export class VPA implements FSM<AlphabetVPA, StateVPA> {
       ...aut.allStates().map(e => e.clone({ name: "1" + e.name })),
       ...this.allStates().map(e => e.clone({ name: "2" + e.name }))
     ];
-    let alphabet = this.cloneAndUnionAlphabet(...states.map(e => e.alphabet));
+    let alphabet = VPA.cloneAndUnionAlphabet(...states.map(e => e.alphabet));
     let stack = [...new Set([...aut.stackAlphabet, ... this.stackAlphabet])]
     states.forEach(e => e.alphabet = alphabet)
     res = new VPA(states);
@@ -133,7 +133,7 @@ export class VPA implements FSM<AlphabetVPA, StateVPA> {
 
   complement(alphabet?: AlphabetVPA[]): VPA {
     let res = this.clone();
-    res.alphabet = alphabet ? this.cloneAndUnionAlphabet(...alphabet) : this.cloneAndUnionAlphabet(this.alphabet)
+    res.alphabet = alphabet ? VPA.cloneAndUnionAlphabet(...alphabet) : VPA.cloneAndUnionAlphabet(this.alphabet)
     res.complete()
     if (!res.isDeterministic()) {
       res = this.determinize();
@@ -152,7 +152,7 @@ export class VPA implements FSM<AlphabetVPA, StateVPA> {
     return [...this.states.values()].reduce((a, b) => a + b.getOutTransitionNumber(), 0)
   }
 
-  cloneAndUnionAlphabet(...alphabet: AlphabetVPA[]): AlphabetVPA {
+  static cloneAndUnionAlphabet(...alphabet: AlphabetVPA[]): AlphabetVPA {
     // Union
     let res = alphabet.reduce((prev, curr) => {
       let INT = [...prev.INT, ...curr.INT]
@@ -163,14 +163,14 @@ export class VPA implements FSM<AlphabetVPA, StateVPA> {
     // Remove Duplicata
     res = { INT: [...new Set(res.INT)], CALL: [...new Set(res.CALL)], RET: [...new Set(res.RET)] }
     // Check if it is a disjoint union of three sets
-    this.isValidAlphabet(res)
+    VPA.isValidAlphabet(res)
     return res
   }
 
   /** 
    * @throws Error if INT, CALL and RET are not disjoint 
    */
-  isValidAlphabet(alph: AlphabetVPA) {
+  static isValidAlphabet(alph: AlphabetVPA) {
     let a = new Set([...alph.CALL, ...alph.INT, ...alph.RET])
     if (a.size !== alph.CALL.length + alph.INT.length + alph.RET.length)
       throw new Error("This alphabet is not valid since INT, CALL and RET are not union")

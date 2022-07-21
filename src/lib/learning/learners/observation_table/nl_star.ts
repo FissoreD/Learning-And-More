@@ -1,4 +1,4 @@
-import Automaton from "../../../automaton/fsm/DFA_NFA";
+import DFA_NFA from "../../../automaton/fsm/DFA_NFA";
 import State from "../../../automaton/fsm/state";
 import Teacher from "../../teachers/teacher";
 import LearnerOTBase from "./learner_ot_base";
@@ -139,7 +139,7 @@ export class NL_star extends LearnerOTBase {
         }
       }
     }
-    this.automaton = new Automaton(stateSet)
+    this.automaton = new DFA_NFA(stateSet)
     return this.automaton;
   }
 

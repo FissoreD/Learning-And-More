@@ -3,7 +3,7 @@ import regexToAutomaton from "../regex_parser";
 import FSM from "./FSM_interface";
 import State from "./state";
 
-export default class Automaton implements FSM<string[], State> {
+export default class DFA_NFA implements FSM<string[], State> {
   states: Map<string, State>;
   initialStates: State[];
   alphabet: string[];
@@ -135,7 +135,7 @@ export default class Automaton implements FSM<string[], State> {
   }
 
   /** @returns a fresh Determinized Automaton */
-  determinize(): Automaton {
+  determinize(): DFA_NFA {
     this.complete()
     let allStates = this.allStates()
     let newStates = new Map<string, State>();
@@ -173,7 +173,7 @@ export default class Automaton implements FSM<string[], State> {
         }
       }
     }
-    let res = new Automaton([...newStates.values()])
+    let res = new DFA_NFA([...newStates.values()])
     return res
   }
 
@@ -183,7 +183,7 @@ export default class Automaton implements FSM<string[], State> {
    * @returns A fresh determinized automaton 
    * @link https://en.wikipedia.org/wiki/DFA_minimization
    */
-  minimize(): Automaton {
+  minimize(): DFA_NFA {
     this.complete()
 
     let aut = this.isDeterministic() ? this : this.determinize()
@@ -271,12 +271,12 @@ export default class Automaton implements FSM<string[], State> {
       }
     }
 
-    return new Automaton(newStates)
+    return new DFA_NFA(newStates)
   }
 
   clone(alphabet?: string[]) {
     let all_states = this.allStates()
-    let res = new Automaton(all_states.map(e => e.clone({ alphabet })));
+    let res = new DFA_NFA(all_states.map(e => e.clone({ alphabet })));
     this.alphabet.forEach(l =>
       all_states.forEach((e, pos) =>
         e.getSuccessor(l).forEach(succ => res.allStates()[pos].addTransition(l, res.allStates()[all_states.indexOf(succ)]))
@@ -284,7 +284,7 @@ export default class Automaton implements FSM<string[], State> {
     return res;
   }
 
-  union(aut: Automaton): Automaton {
+  union(aut: DFA_NFA): DFA_NFA {
     let res;
     let states = [
       ...aut.allStates().map(e => e.clone({ name: "1" + e.name })),
@@ -292,7 +292,7 @@ export default class Automaton implements FSM<string[], State> {
     ];
     let alphabet = [...new Set(states.map(e => e.alphabet).flat())];
     states.forEach(e => e.alphabet = alphabet)
-    res = new Automaton(states);
+    res = new DFA_NFA(states);
     res.complete()
 
     alphabet.forEach(l => {
@@ -309,15 +309,15 @@ export default class Automaton implements FSM<string[], State> {
     return res;
   }
 
-  intersection(aut: Automaton): Automaton {
+  intersection(aut: DFA_NFA): DFA_NFA {
     return aut.complement([...this.alphabet, ...aut.alphabet]).union(this.complement([...this.alphabet, ...aut.alphabet])).complement([...this.alphabet, ...aut.alphabet])
   }
 
-  difference(aut: Automaton): Automaton {
+  difference(aut: DFA_NFA): DFA_NFA {
     return aut.union(this.complement([...aut.alphabet, ...this.alphabet])).complement()
   }
 
-  symmetricDifference(aut: Automaton): Automaton {
+  symmetricDifference(aut: DFA_NFA): DFA_NFA {
     return this.difference(aut).union(aut.difference(this));
   }
 
@@ -332,7 +332,7 @@ export default class Automaton implements FSM<string[], State> {
     return aut.allStates().every(e => e.isAccepting)
   }
 
-  sameLanguage(aut: Automaton) {
+  sameLanguage(aut: DFA_NFA) {
     return this.symmetricDifference(aut).isEmpty()
   }
 
@@ -424,7 +424,7 @@ export default class Automaton implements FSM<string[], State> {
         stateMap.get(next)!)
     )
 
-    return new Automaton(stateSet);
+    return new DFA_NFA(stateSet);
   }
 
   static regex2automaton(regex: string) {

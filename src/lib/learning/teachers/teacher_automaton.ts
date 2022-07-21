@@ -1,4 +1,4 @@
-import Automaton from "../../automaton/fsm/DFA_NFA";
+import DFA_NFA from "../../automaton/fsm/DFA_NFA";
 import { equivalenceFunction } from "./equiv";
 import Teacher from "./teacher";
 
@@ -9,23 +9,23 @@ export class TeacherAutomaton implements Teacher {
   description: string;
   alphabet: string[];
   regex: string;
-  automaton: Automaton;
+  automaton: DFA_NFA;
   counterExamples?: string[];
 
   constructor(params: {
     type: "Automaton" | "Regex" | "Dot",
-    automaton: Automaton | string
+    automaton: DFA_NFA | string
   }) {
-    let automaton: Automaton;
+    let automaton: DFA_NFA;
     switch (params.type) {
       case "Automaton":
-        automaton = (params.automaton as Automaton).minimize()
+        automaton = (params.automaton as DFA_NFA).minimize()
         break;
       case "Regex":
-        automaton = Automaton.regex2automaton(params.automaton as string).minimize()
+        automaton = DFA_NFA.regex2automaton(params.automaton as string).minimize()
         break;
       case "Dot":
-        automaton = Automaton.strToAutomaton(params.automaton as string).minimize()
+        automaton = DFA_NFA.strToAutomaton(params.automaton as string).minimize()
         break;
     }
     this.automaton = automaton.minimize();
@@ -39,7 +39,7 @@ export class TeacherAutomaton implements Teacher {
     return this.automaton!.acceptWord(sentence);
   }
 
-  equiv(automaton: Automaton): string | undefined {
+  equiv(automaton: DFA_NFA): string | undefined {
     return equivalenceFunction(this, automaton)
   }
 }

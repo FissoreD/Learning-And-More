@@ -1,7 +1,7 @@
 import React from "react";
 import { Button, Card } from "react-bootstrap";
 import { ArrowClockwise, ArrowCounterclockwise, CaretLeftFill, CaretRightFill } from "react-bootstrap-icons";
-import Automaton from "../../lib/automaton/fsm/DFA_NFA";
+import DFA_NFA from "../../lib/automaton/fsm/DFA_NFA";
 import LearnerFather from "../../lib/learning/learners/learner_father";
 import LearningDataStructure from "../../lib/learning/learners/learning_data_structure";
 import AutomatonC from "../automaton/automaton";
@@ -13,7 +13,7 @@ export type MessageType = "END" | "SEND-HYP" | "CE" | "CONSISTENCY" | "CLOSEDNES
 
 export interface StateReact<Learner extends LearnerFather<LearningDataStructure>> {
   doNext: boolean,
-  memory: { dataStructure: LearningDataStructure, automaton: Automaton | undefined, message: { type: MessageType, val: string } }[],
+  memory: { dataStructure: LearningDataStructure, automaton: DFA_NFA | undefined, message: { type: MessageType, val: string } }[],
   position: number,
   learner: Learner,
   showRegexDialog: boolean

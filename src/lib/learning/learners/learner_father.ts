@@ -1,4 +1,4 @@
-import Automaton from "../../automaton/fsm/DFA_NFA";
+import DFA_NFA from "../../automaton/fsm/DFA_NFA";
 import Teacher from "../teachers/teacher";
 
 export default abstract class LearnerFather<DataStType> {
@@ -6,7 +6,7 @@ export default abstract class LearnerFather<DataStType> {
   memberNumber = 0;
   equivNumber = 0;
   finish = false;
-  automaton: undefined | Automaton;
+  automaton: undefined | DFA_NFA;
   teacher: Teacher;
   dataStructure: DataStType;
 
@@ -17,20 +17,20 @@ export default abstract class LearnerFather<DataStType> {
   }
 
   /**
-   * Takes in parameter an {@link Automaton} and ask 
+   * Takes in parameter an {@link DFA_NFA} and ask 
    * to the teacher if the automaton knows the language.
    * If so : the Learner has learnt the language
    * Else : it appends the counter-example to {@link S}
    * @param a an Automaton
    * @returns undefined if {@link a} recognize the teacher's language, a counter-example (as a string) otherwise.
    */
-  makeEquiv(a: Automaton) {
+  makeEquiv(a: DFA_NFA) {
     let answer = this.teacher.equiv(a);
     this.equivNumber++;
     return answer;
   }
 
-  abstract makeAutomaton(): Automaton;
+  abstract makeAutomaton(): DFA_NFA;
   abstract makeNextQuery(): void;
 
   makeAllQueries() {

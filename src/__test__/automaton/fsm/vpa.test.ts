@@ -1,11 +1,11 @@
 import { StateVPA } from "../../../lib/automaton/fsm/state_vpa";
-import { VPA } from "../../../lib/automaton/fsm/VPA";
+import VPA from "../../../lib/automaton/fsm/VPA";
 
 /**
  * Return a VPA where :  
  * 
  */
-let make_vpa = (): VPA => {
+export let make_vpa = (): VPA => {
   let alphabet = { CALL: ["A"], RET: ["B", "C"], INT: ["I"] }
   let stack_alphabet = ["0"]
   let state1 = new StateVPA({ name: "state1", isAccepting: true, alphabet, stackAlphabet: stack_alphabet })
@@ -45,7 +45,7 @@ test("VPA to DOT", () => {
   console.log(make_vpa().toDot());
 })
 
-test("VPA to DOT", () => {
+test("VPA complete test", () => {
   let vpa = make_vpa()
   console.log(vpa.toDot());
 

@@ -1,6 +1,6 @@
 // import dynamic from 'next/dynamic';
 import React from "react";
-import Automaton from "../../lib/automaton/fsm/DFA_NFA";
+import DFA_NFA from "../../lib/automaton/fsm/DFA_NFA";
 
 // const Graphviz = dynamic(() => import('graphviz-react'), { ssr: false });
 import Graphviz from "graphviz-react";
@@ -13,7 +13,7 @@ const options = {
   zoom: false,
 }
 
-interface Prop { automaton: Automaton }
+interface Prop { automaton: DFA_NFA }
 interface State { showAut: boolean }
 
 export default class AutomatonC extends React.Component<Prop, State>{

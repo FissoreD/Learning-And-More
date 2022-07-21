@@ -2,22 +2,22 @@ import { toEps } from "../../../tools";
 import Teacher from "../../teachers/teacher";
 import DiscTreeFather, { InnerNode, Leaf, TreeElt } from "./DiscTreeFather";
 
-type Generic = [string, string]
+export type StringCouple = [string, string]
 
-export default class DiscTreeVPA extends DiscTreeFather<Generic> {
-  nodeNameToString(node: TreeElt<Generic>): string {
+export default class DiscTreeVPA extends DiscTreeFather<StringCouple> {
+  nodeNameToString(node: TreeElt<StringCouple>): string {
     if (node instanceof InnerNode)
       return `${toEps(node.name[0])},${toEps(node.name[1])}`
     return toEps(node.name)
   }
 
 
-  newChild(name: Generic): DiscTreeFather<Generic> {
+  newChild(name: StringCouple): DiscTreeFather<StringCouple> {
     return new DiscTreeVPA(name)
   }
 
-  sift(word: string, teacher: Teacher): Leaf<Generic> | undefined {
-    let currentNode: InnerNode<Generic> | Leaf<Generic> | undefined = this.root;
+  sift(word: string, teacher: Teacher): Leaf<StringCouple> | undefined {
+    let currentNode: InnerNode<StringCouple> | Leaf<StringCouple> | undefined = this.root;
     while (currentNode instanceof InnerNode) {
       currentNode = teacher.member(currentNode.name[0] + word + currentNode.name[1]) ? currentNode.right : currentNode.left
     }

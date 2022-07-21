@@ -1,9 +1,9 @@
-import Automaton from "../../../automaton/fsm/DFA_NFA";
+import DFA_NFA from "../../../automaton/fsm/DFA_NFA";
 import State from "../../../automaton/fsm/state";
 import LearnerOTBase from "./learner_ot_base";
 
 export default class L_star extends LearnerOTBase {
-  makeAutomaton(): Automaton {
+  makeAutomaton(): DFA_NFA {
     const
       wordForState: string[] = [],
       statesMap: Map<string, State> = new Map(),
@@ -29,7 +29,7 @@ export default class L_star extends LearnerOTBase {
       }
     }
 
-    this.automaton = new Automaton(statesSet);
+    this.automaton = new DFA_NFA(statesSet);
     return this.automaton;
   }
 
