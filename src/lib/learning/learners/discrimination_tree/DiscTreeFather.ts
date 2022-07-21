@@ -1,17 +1,16 @@
-import { toEps } from "../../../tools";
 import LearningDataStructure from "../learning_data_structure";
 
-export class InnerNode {
-  name: string;
-  right: InnerNode | Leaf | undefined;
-  left: InnerNode | Leaf | undefined;
-  parent: InnerNode | undefined;
+export class InnerNode<LblType> {
+  name: LblType;
+  right: InnerNode<LblType> | Leaf<LblType> | undefined;
+  left: InnerNode<LblType> | Leaf<LblType> | undefined;
+  parent: InnerNode<LblType> | undefined;
   depth = 0;
   constructor(p: {
-    name: string,
-    top?: InnerNode | Leaf,
-    bot?: InnerNode | Leaf,
-    parent?: InnerNode
+    name: LblType,
+    top?: InnerNode<LblType> | Leaf<LblType>,
+    bot?: InnerNode<LblType> | Leaf<LblType>,
+    parent?: InnerNode<LblType>
   }) {
     this.name = p.name
     this.right = p.top
@@ -20,34 +19,34 @@ export class InnerNode {
     this.depth = p.parent?.depth || 0
   }
 
-  addRightLeaf(l: Leaf) {
+  addRightLeaf(l: Leaf<LblType>) {
     this.right = l
     l.setParent(this, true)
   }
 
-  addLeftLeaf(l: Leaf) {
+  addLeftLeaf(l: Leaf<LblType>) {
     this.left = l
     l.setParent(this, false)
   }
 }
 
-export class Leaf {
+export class Leaf<LblType> {
   name: string
-  parent: InnerNode
+  parent: InnerNode<LblType>
   depth: number
   isAccepting: boolean | undefined;
-  constructor(p: { name: string, parent: InnerNode }) {
+  constructor(p: { name: string, parent: InnerNode<LblType> }) {
     this.name = p.name;
     this.parent = p.parent;
     this.depth = p.parent.depth + 1;
   }
 
-  setParent(i: InnerNode, isRight: boolean) {
+  setParent(i: InnerNode<LblType>, isRight: boolean) {
     this.parent = i;
     this.isAccepting = this.isAcceptingMethod(i, isRight)
   }
 
-  isAcceptingMethod(parent: InnerNode, isRight: boolean): boolean {
+  isAcceptingMethod(parent: InnerNode<LblType>, isRight: boolean): boolean {
     if (this.isAccepting !== undefined) return this.isAccepting
     if (isRight && parent.parent === undefined)
       return true
@@ -60,20 +59,20 @@ export class Leaf {
   }
 }
 
-export type TreeElt = InnerNode | Leaf
+export type TreeElt<LblType> = InnerNode<LblType> | Leaf<LblType>
 
-export default abstract class DiscTreeFather implements LearningDataStructure {
-  protected root: InnerNode;
-  protected leaves: Map<string, Leaf>;
-  protected innerNodes: Set<InnerNode>;
+export default abstract class DiscTreeFather<LblType> implements LearningDataStructure {
+  protected root: InnerNode<LblType>;
+  protected leaves: Map<string, Leaf<LblType>>;
+  protected innerNodes: Set<InnerNode<LblType>>;
 
-  constructor(rootName: string) {
+  constructor(rootName: LblType) {
     this.root = new InnerNode({ name: rootName })
     this.leaves = new Map()
     this.innerNodes = new Set([this.root])
   }
 
-  lowestCommonAnchestor(te1: TreeElt, te2: TreeElt) {
+  lowestCommonAnchestor(te1: TreeElt<LblType>, te2: TreeElt<LblType>) {
     while (te1.depth > te2.depth) te1 = te1.parent!
     while (te1.depth < te2.depth) te2 = te2.parent!
     while (te1 !== te2) {
@@ -83,10 +82,10 @@ export default abstract class DiscTreeFather implements LearningDataStructure {
     return te1
   }
 
-  splitLeaf(p: { leafName: string, newDiscriminator: string, nameLeafToAdd: string, isTop: boolean }) {
+  splitLeaf(p: { leafName: string, newDiscriminator: LblType, nameLeafToAdd: string, isTop: boolean }) {
     let leafToSplit = this.leaves.get(p.leafName)!
     let parent = leafToSplit.parent;
-    let newInnerNode = new InnerNode({ name: p.newDiscriminator, parent })
+    let newInnerNode = new InnerNode<LblType>({ name: p.newDiscriminator, parent })
     this.innerNodes.add(newInnerNode)
 
     // Set new child's parent after split
@@ -109,14 +108,14 @@ export default abstract class DiscTreeFather implements LearningDataStructure {
     return newInnerNode;
   }
 
-  addRightChild(p: { parent: InnerNode, name: string }) {
+  addRightChild(p: { parent: InnerNode<LblType>, name: string }) {
     let newLeaf = new Leaf(p)
     p.parent.addRightLeaf(newLeaf)
     this.leaves.set(newLeaf.name, newLeaf)
     return newLeaf
   }
 
-  addLeftChild(p: { parent: InnerNode, name: string }) {
+  addLeftChild(p: { parent: InnerNode<LblType>, name: string }) {
     let newLeaf = new Leaf(p)
     p.parent.addLeftLeaf(newLeaf)
     this.leaves.set(newLeaf.name, newLeaf)
@@ -131,20 +130,22 @@ export default abstract class DiscTreeFather implements LearningDataStructure {
     return this.leaves
   }
 
-  addRoot(s: string): Leaf {
+  addRoot(s: string): Leaf<LblType> {
     if (this.root.right === undefined)
       return this.addRightChild({ parent: this.root, name: s })
     else
       return this.addLeftChild({ parent: this.root, name: s })
   }
 
+  abstract nodeNameToString(node: TreeElt<LblType>): string;
+
   toString() {
     let a = "";
-    let toExplore: (InnerNode | Leaf)[] = [this.root]
-    let addToStr = (c: InnerNode, e: Leaf | InnerNode | undefined) => a = a + `\n${toEps(c.name)} -> ${e ? toEps(e.name) : "null"}`
+    let toExplore: (InnerNode<LblType> | Leaf<LblType>)[] = [this.root]
+    let addToStr = (c: InnerNode<LblType>, e: Leaf<LblType> | InnerNode<LblType> | undefined) => a = a + `\n${this.nodeNameToString(c)} -> ${e ? this.nodeNameToString(e) : "null"}`
     while (toExplore.length > 0) {
       let current = toExplore.shift()!
-      if (current instanceof InnerNode) {
+      if (current instanceof InnerNode<LblType>) {
         addToStr(current, current.left)
         addToStr(current, current.right)
         if (current.left) toExplore.push(current.left)
@@ -154,34 +155,34 @@ export default abstract class DiscTreeFather implements LearningDataStructure {
     return a;
   }
 
-  abstract newChild(name: string): DiscTreeFather;
+  abstract newChild(name: LblType): DiscTreeFather<LblType>;
 
-  clone(): DiscTreeFather {
+  clone(): DiscTreeFather<LblType> {
     let res = this.newChild(this.root.name);
-    let map = new Map<TreeElt, TreeElt>();
+    let map = new Map<TreeElt<LblType>, TreeElt<LblType>>();
     map.set(this.root, res.root)
-    let toExplore: TreeElt[] = [this.root];
+    let toExplore: TreeElt<LblType>[] = [this.root];
     while (toExplore.length > 0) {
       let current = toExplore.pop()!;
       let matched = map.get(current)
-      if (current instanceof InnerNode) {
-        if (current.left instanceof InnerNode) {
-          let newN = new InnerNode({ name: current.left.name, parent: matched as InnerNode });
-          (matched as InnerNode).left = newN
+      if (current instanceof InnerNode<LblType>) {
+        if (current.left instanceof InnerNode<LblType>) {
+          let newN = new InnerNode<LblType>({ name: current.left.name, parent: matched as InnerNode<LblType> });
+          (matched as InnerNode<LblType>).left = newN
           map.set(current.left, newN)
           toExplore.push(current.left)
           res.innerNodes.add(newN)
         } else if (current.left instanceof Leaf) {
-          res.addLeftChild({ parent: matched as InnerNode, name: current.left.name });
+          res.addLeftChild({ parent: matched as InnerNode<LblType>, name: current.left.name });
         }
-        if (current.right instanceof InnerNode) {
-          let newN = new InnerNode({ name: current.right.name, parent: matched as InnerNode });
-          (matched as InnerNode).right = newN
+        if (current.right instanceof InnerNode<LblType>) {
+          let newN = new InnerNode<LblType>({ name: current.right.name, parent: matched as InnerNode<LblType> });
+          (matched as InnerNode<LblType>).right = newN
           map.set(current.right, newN)
           toExplore.push(current.right)
           res.innerNodes.add(newN)
         } else if (current.right instanceof Leaf) {
-          res.addRightChild({ parent: matched as InnerNode, name: current.right.name });
+          res.addRightChild({ parent: matched as InnerNode<LblType>, name: current.right.name });
         }
       }
     }
@@ -192,19 +193,19 @@ export default abstract class DiscTreeFather implements LearningDataStructure {
     let a = `digraph DT {`
     const nodes = new Map([...this.innerNodes].map((e, pos) => [e, pos]))
     const leaves = new Map([...this.leaves].map(([_, e], pos) => [e, pos + nodes.size]))
-    let toExplore: (InnerNode | Leaf)[] = [this.root]
-    let addToStr = (c: InnerNode, e: Leaf | InnerNode | undefined) => a = a + `\n${nodes.get(c)} -> ${e ? (e instanceof InnerNode ? nodes.get(e) : leaves.get(e)) : "point"}`
+    let toExplore: (InnerNode<LblType> | Leaf<LblType>)[] = [this.root]
+    let addToStr = (c: InnerNode<LblType>, e: Leaf<LblType> | InnerNode<LblType> | undefined) => a = a + `\n${nodes.get(c)} -> ${e ? (e instanceof InnerNode<LblType> ? nodes.get(e) : leaves.get(e)) : "point"}`
     while (toExplore.length > 0) {
       let current = toExplore.shift()!
-      if (current instanceof InnerNode) {
+      if (current instanceof InnerNode<LblType>) {
         addToStr(current, current.left)
         addToStr(current, current.right)
         if (current.left) toExplore.push(current.left)
         if (current.right) toExplore.push(current.right)
       }
     }
-    nodes.forEach((_e, f) => a = a + `\n${nodes.get(f)}[label = "${toEps(f.name)}"]`)
-    leaves.forEach((_e, f) => a = a + `\n${leaves.get(f)}[label = "${toEps(f.name)}"]`)
+    nodes.forEach((_e, f) => a = a + `\n${nodes.get(f)}[label = "${this.nodeNameToString(f)}"]`)
+    leaves.forEach((_e, f) => a = a + `\n${leaves.get(f)}[label = "${this.nodeNameToString(f)}"]`)
     if (this.root.left === undefined || this.root.right === undefined)
       a = a + "\npoint[shape=point]";
     a = a + "\n}";
