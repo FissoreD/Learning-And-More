@@ -1,5 +1,5 @@
 import { ReactElement } from "react";
-import DiscriminationTree from "../../../lib/learning/learners/discrimination_tree/discrimination_tree";
+import DiscTreeDFA from "../../../lib/learning/learners/discrimination_tree/DiscTreeDFA";
 import TTT from "../../../lib/learning/learners/discrimination_tree/TTT";
 import LearningDataStructure from "../../../lib/learning/learners/learning_data_structure";
 import { TeacherAutomaton } from "../../../lib/learning/teachers/teacher_automaton";
@@ -12,7 +12,7 @@ export default class TTTC extends LearnerSection<TTT> {
   }
 
   dataStructureToNodeElement(ds: LearningDataStructure): ReactElement {
-    return <DiscriminationTreeC dt={ds.clone() as DiscriminationTree} />
+    return <DiscriminationTreeC dt={ds.clone() as DiscTreeDFA} />
   }
 
   nextOpChild(state: StateReact<TTT>): StateReact<TTT> {

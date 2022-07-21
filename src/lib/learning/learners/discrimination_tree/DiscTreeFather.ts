@@ -1,8 +1,7 @@
 import { toEps } from "../../../tools";
-import Teacher from "../../teachers/teacher";
 import LearningDataStructure from "../learning_data_structure";
 
-class InnerNode {
+export class InnerNode {
   name: string;
   right: InnerNode | Leaf | undefined;
   left: InnerNode | Leaf | undefined;
@@ -32,7 +31,7 @@ class InnerNode {
   }
 }
 
-class Leaf {
+export class Leaf {
   name: string
   parent: InnerNode
   depth: number
@@ -61,25 +60,17 @@ class Leaf {
   }
 }
 
-type TreeElt = InnerNode | Leaf
+export type TreeElt = InnerNode | Leaf
 
-export default class DiscriminationTree implements LearningDataStructure {
-  private root: InnerNode;
-  private leaves: Map<string, Leaf>;
-  private innerNodes: Set<InnerNode>;
+export default abstract class DiscTreeFather implements LearningDataStructure {
+  protected root: InnerNode;
+  protected leaves: Map<string, Leaf>;
+  protected innerNodes: Set<InnerNode>;
 
   constructor(rootName: string) {
     this.root = new InnerNode({ name: rootName })
     this.leaves = new Map()
     this.innerNodes = new Set([this.root])
-  }
-
-  sift(word: string, teacher: Teacher): Leaf | undefined {
-    let currentNode: InnerNode | Leaf | undefined = this.root;
-    while (currentNode instanceof InnerNode) {
-      currentNode = teacher.member(word + currentNode.name) ? currentNode.right : currentNode.left
-    }
-    return currentNode
   }
 
   lowestCommonAnchestor(te1: TreeElt, te2: TreeElt) {
@@ -163,8 +154,10 @@ export default class DiscriminationTree implements LearningDataStructure {
     return a;
   }
 
-  clone(): DiscriminationTree {
-    let res = new DiscriminationTree(this.root.name)
+  abstract newChild(name: string): DiscTreeFather;
+
+  clone(): DiscTreeFather {
+    let res = this.newChild(this.root.name);
     let map = new Map<TreeElt, TreeElt>();
     map.set(this.root, res.root)
     let toExplore: TreeElt[] = [this.root];

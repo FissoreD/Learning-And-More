@@ -3,15 +3,15 @@ import State from "../../../automaton/fsm/state";
 import { toEps } from "../../../tools";
 import Teacher from "../../teachers/teacher";
 import LearnerFather from "../learner_father";
-import DiscriminationTree from "./discrimination_tree";
+import DiscTreeDFA from "./DiscTreeDFA";
 
-export default class TTT extends LearnerFather<DiscriminationTree> {
+export default class TTT extends LearnerFather<DiscTreeDFA> {
   finish = false;
   lastCe: { value: string, accepted: boolean, isTeacher: boolean } | undefined;
   lastSplit: { u: string, a: string, v: string, uaState: string, uState: string } | undefined;
 
   constructor(teacher: Teacher) {
-    super(teacher, new DiscriminationTree(""))
+    super(teacher, new DiscTreeDFA(""))
     this.initiate()
   }
 
