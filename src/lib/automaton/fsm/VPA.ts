@@ -75,7 +75,7 @@ export default class VPA implements FSM<AlphabetVPA, StateVPA> {
       ...this.allStates().map(e => e.clone({ name: "2" + e.name }))
     ];
     let alphabet = VPA.cloneAndUnionAlphabet(...states.map(e => e.alphabet));
-    let stack = [...new Set([...aut.stackAlphabet, ... this.stackAlphabet])]
+    let stack = [...new Set([...aut.stackAlphabet, ...this.stackAlphabet])]
     states.forEach(e => e.alphabet = alphabet)
     res = new VPA(states);
     res.complete()
@@ -179,12 +179,9 @@ export default class VPA implements FSM<AlphabetVPA, StateVPA> {
   isDeterministic(): boolean {
     return this.allStates().every(
       state =>
-        [...this.alphabet.INT, ...this.alphabet.CALL].
-          every(symbol => state.getSuccessor({ symbol }).length <= 1)
+        [...this.alphabet.INT, ...this.alphabet.CALL].every(symbol => state.getSuccessor({ symbol }).length <= 1)
         &&
-        this.alphabet.RET.
-          every(symbol => this.stackAlphabet.
-            every(topStack => state.getSuccessor({ symbol, topStack }).length <= 1)))
+        this.alphabet.RET.every(symbol => this.stackAlphabet.every(topStack => state.getSuccessor({ symbol, topStack }).length <= 1)))
   }
 
   flatAlphabet(alph: AlphabetVPA) {
