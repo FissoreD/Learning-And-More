@@ -1,4 +1,4 @@
-import DFA_NFA from "../../automaton/fsm/DFA_NFA";
+import DFA_NFA from "../../automaton/regular/DFA_NFA";
 import { equivalenceFunction } from "./equiv";
 import Teacher from "./teacher";
 

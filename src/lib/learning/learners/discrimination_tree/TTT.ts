@@ -1,5 +1,5 @@
-import DFA_NFA from "../../../automaton/fsm/DFA_NFA";
-import State from "../../../automaton/fsm/state";
+import DFA_NFA from "../../../automaton/regular/DFA_NFA";
+import State from "../../../automaton/regular/state";
 import { toEps } from "../../../tools";
 import Teacher from "../../teachers/teacher";
 import LearnerFather from "../learner_father";

@@ -1,5 +1,5 @@
-import Automaton from "../../automaton/fsm/DFA_NFA";
-import State from "../../automaton/fsm/state";
+import Automaton ../../automaton / FSM_interface";
+import State from "../../automaton/regular/state";
 import Teacher from "./teacher";
 
 /**

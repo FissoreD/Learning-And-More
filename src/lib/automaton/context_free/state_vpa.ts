@@ -1,7 +1,5 @@
 import { todo } from "../../tools";
-import { ALPHABET_TYPE, ALPH_TYPE_LIST } from "./VPA";
-
-export interface AlphabetVPA { INT: string[], CALL: string[], RET: string[] }
+import AlphabetVPA, { ALPHABET_TYPE, ALPH_TYPE_LIST } from "./AlphabetVPA";
 
 type transition = {
   INT: { [letter: string]: StateVPA[] },
@@ -30,7 +28,7 @@ export class StateVPA {
     this.stackAlphabet = p.stackAlphabet;
     this.isAccepting = p.isAccepting || false;
     this.isInitial = p.isInitial || false;
-    this.alphabet = { INT: [...p.alphabet.INT], CALL: [...p.alphabet.CALL], RET: [...p.alphabet.RET] };
+    this.alphabet = new AlphabetVPA({ INT: p.alphabet.INT, CALL: p.alphabet.CALL, RET: p.alphabet.RET });
     this.outTransitions = { INT: {}, CALL: {}, RET: {} };
     this.inTransitions = { INT: {}, CALL: {}, RET: {} };
     this.successors = new Set();
@@ -169,7 +167,7 @@ export class StateVPA {
     return this.successors
   }
 
-  getAllOutTransitions() {
+  getAllOutTransitions(): transition {
     return this.outTransitions
   }
 

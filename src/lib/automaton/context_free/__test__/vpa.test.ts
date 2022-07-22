@@ -1,12 +1,13 @@
-import { StateVPA } from "../../../lib/automaton/fsm/state_vpa";
-import VPA from "../../../lib/automaton/fsm/VPA";
+import AlphabetVPA from "../AlphabetVPA";
+import { StateVPA } from "../state_vpa";
+import VPA from "../VPA";
 
 /**
  * Return a VPA where :  
  * 
  */
 export let make_vpa = (): VPA => {
-  let alphabet = { CALL: ["A"], RET: ["B", "C"], INT: ["I"] }
+  let alphabet = new AlphabetVPA({ CALL: ["A"], RET: ["B", "C"], INT: ["I"] })
   let stack_alphabet = ["0"]
   let state1 = new StateVPA({ name: "state1", isAccepting: true, alphabet, stackAlphabet: stack_alphabet })
   let state2 = new StateVPA({ name: "state2", isInitial: true, alphabet, stackAlphabet: stack_alphabet })
@@ -20,7 +21,7 @@ export let make_vpa = (): VPA => {
 }
 
 test("State VPA creation", () => {
-  let alphabet = { CALL: ["A"], RET: ["B", "C"], INT: ["I"] }
+  let alphabet = new AlphabetVPA({ CALL: ["A"], RET: ["B", "C"], INT: ["I"] })
   let stack_alphabet = ["0", "1"]
   let state1 = new StateVPA({ name: "state1", alphabet, stackAlphabet: stack_alphabet })
   let state2 = new StateVPA({ name: "state2", alphabet, stackAlphabet: stack_alphabet })

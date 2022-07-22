@@ -1,6 +1,6 @@
 import { sameVector, toEps } from "../../tools";
+import FSM from "../FSM_interface";
 import regexToAutomaton from "../regex_parser";
-import FSM from "./FSM_interface";
 import State from "./state";
 
 export default class DFA_NFA implements FSM<string[], State> {
@@ -131,7 +131,7 @@ export default class DFA_NFA implements FSM<string[], State> {
   }
 
   isDeterministic(): boolean {
-    return this.allStates().every(e => this.alphabet.every(l => e.getSuccessor(l) === undefined || e.getSuccessor(l).length === 1))
+    return this.allStates().every(e => this.alphabet.every(l => e.getSuccessor(l) === undefined || e.getSuccessor(l).length === 1)) && this.initialStates.length <= 1
   }
 
   /** @returns a fresh Determinized Automaton */

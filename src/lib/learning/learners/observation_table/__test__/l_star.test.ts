@@ -1,7 +1,7 @@
-import aut from "../../../json/automata.json";
-import DFA_NFA from "../../../lib/automaton/fsm/DFA_NFA";
-import L_star from "../../../lib/learning/learners/observation_table/l_star";
-import { TeacherAutomaton } from "../../../lib/learning/teachers/teacher_automaton";
+import aut from "../../../../../json/automata.json";
+import DFA_NFA from "../../../../automaton/regular/DFA_NFA";
+import { TeacherAutomaton } from "../../../teachers/teacher_automaton";
+import L_star from "../l_star";
 
 test("Learner L-Star Angluin", () => {
   let automaton = DFA_NFA.strToAutomaton(`[0]

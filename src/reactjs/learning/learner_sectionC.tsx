@@ -1,7 +1,7 @@
 import React from "react";
 import { Button, Card } from "react-bootstrap";
 import { ArrowClockwise, ArrowCounterclockwise, CaretLeftFill, CaretRightFill } from "react-bootstrap-icons";
-import DFA_NFA from "../../lib/automaton/fsm/DFA_NFA";
+import DFA_NFA from "../../lib/automaton/regular/DFA_NFA";
 import LearnerFather from "../../lib/learning/learners/learner_father";
 import LearningDataStructure from "../../lib/learning/learners/learning_data_structure";
 import AutomatonC from "../automaton/automaton";

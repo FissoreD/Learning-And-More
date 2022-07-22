@@ -1,6 +1,6 @@
-import aut from "../../../json/automata.json"
-import TTT from "../../../lib/learning/learners/discrimination_tree/TTT"
-import { TeacherAutomaton } from "../../../lib/learning/teachers/teacher_automaton"
+import aut from "../../../../../json/automata.json"
+import { TeacherAutomaton } from "../../../teachers/teacher_automaton"
+import TTT from "../TTT"
 
 test("TTT learn a+bb", () => {
   let t = new TeacherAutomaton({ type: "Dot", automaton: aut.a_or_bb })

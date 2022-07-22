@@ -1,5 +1,5 @@
-import { AlphabetVPA, StateVPA } from "../../../automaton/fsm/state_vpa";
-import VPA from "../../../automaton/fsm/VPA";
+import { AlphabetVPA, StateVPA } from "../../../automaton/context_free/state_vpa";
+import VPA from "../../../automaton/context_free/VPA";
 import { todo, toEps } from "../../../tools";
 import Teacher from "../../teachers/teacher";
 import DiscTreeVPA, { StringCouple } from "./DiscTreeVPA";

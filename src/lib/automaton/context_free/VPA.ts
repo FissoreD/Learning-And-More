@@ -1,9 +1,7 @@
 import { todo, toEps } from "../../tools";
-import FSM from "./FSM_interface";
-import { AlphabetVPA, StateVPA } from "./state_vpa";
-
-export type ALPHABET_TYPE = "INT" | "RET" | "CALL"
-export const ALPH_TYPE_LIST: ALPHABET_TYPE[] = ["INT", "RET", "CALL"]
+import FSM from "../FSM_interface";
+import AlphabetVPA, { ALPH_TYPE_LIST } from "./AlphabetVPA";
+import { StateVPA } from "./state_vpa";
 
 export default class VPA implements FSM<AlphabetVPA, StateVPA> {
   states: Map<string, StateVPA>;
@@ -18,14 +16,11 @@ export default class VPA implements FSM<AlphabetVPA, StateVPA> {
     this.states = new Map();
     stateList.forEach(e => this.states.set(e.name, e));
     this.stack = []
-    this.stackAlphabet = [...stateList][0].stackAlphabet
+    stateList = [...stateList]
+    this.stackAlphabet = stateList[0].stackAlphabet
 
     this.initialStates = this.allStates().filter(s => s.isInitial);
-    this.alphabet = {
-      CALL: [...new Set([...stateList].map(e => e.alphabet.CALL).flat())],
-      RET: [...new Set([...stateList].map(e => e.alphabet.RET).flat())],
-      INT: [...new Set([...stateList].map(e => e.alphabet.INT).flat())]
-    };
+    this.alphabet = new AlphabetVPA().union(...stateList.map(e => e.alphabet));
   }
 
   giveState(word: string): StateVPA | undefined {
@@ -68,42 +63,201 @@ export default class VPA implements FSM<AlphabetVPA, StateVPA> {
     throw todo();
   }
 
+  /**
+   * Union of two deterministic VPAs
+   * @returns a _deterministic_ VPA
+   * @throws an error if one of the two VPA is not deterministic
+   */
   union(aut: VPA): VPA {
-    let res;
-    let states = [
-      ...aut.allStates().map(e => e.clone({ name: "1" + e.name })),
-      ...this.allStates().map(e => e.clone({ name: "2" + e.name }))
-    ];
-    let alphabet = VPA.cloneAndUnionAlphabet(...states.map(e => e.alphabet));
-    let stack = [...new Set([...aut.stackAlphabet, ...this.stackAlphabet])]
-    states.forEach(e => e.alphabet = alphabet)
-    res = new VPA(states);
-    res.complete()
+    let createName = (state1?: string, state2?: string) => {
+      return (state1 ? state1 + "1" : "") + (state2 ? state2 + "2" : "")
+    }
 
-    this.flatAlphabet(alphabet).forEach(symbol => {
-      for (let i = 0; i < (alphabet.INT.includes(symbol) ? 1 : stack.length); i++) {
-        aut.allStates().forEach((e, pos) => e.getSuccessor({ symbol, topStack: stack[i] })?.forEach(succ =>
-          states[pos].addTransition({
-            symbol: symbol,
-            successor: states[aut.allStates().indexOf(succ)],
-            topStack: stack[i]
-          })
-        ))
+    if (this.isDeterministic() && aut.isDeterministic()) {
+      /** 
+       * The stack alphabet of the new VPA : it is made by the cartesian product
+       * of the alphabet of the first automaton and the alphabet of {@link aut},
+       * plus each singleton of the stack alphabet of {@link this} and {@link aut}
+       */
+      let stackAlphabet = this.stackAlphabet.map(s1 =>
+        aut.stackAlphabet.map(s2 => createName(s1, s2))).flat();
+      this.stackAlphabet.forEach(e => stackAlphabet.push(e + "1"));
+      aut.stackAlphabet.forEach(e => stackAlphabet.push(e + "2"));
 
-        this.allStates().forEach((e, pos) => e.getSuccessor({ symbol, topStack: stack[i] })?.forEach(succ =>
-          states[pos + aut.allStates().length].addTransition({
-            symbol: symbol,
-            successor: states[this.allStates().indexOf(succ) + aut.allStates().length],
-            topStack: stack[i]
-          })
-        ))
+      /**
+       * The alphabet of the new VPA is made by the union of the alphabets
+       * of the alphabets of {@link this} and {@link aut}
+       */
+      let alphabet = this.alphabet.union(aut.alphabet);
+      this.complete({ alphabet });
+      aut.complete({ alphabet });
+
+      /** Start with the initial states of {@link this} and {@link aut} */
+      let initState1 = this.initialStates[0];
+      let initState2 = aut.initialStates[0];
+
+      let mapNewStateOldState = new Map<StateVPA, [StateVPA?, StateVPA?]>();
+      let toExplore = [new StateVPA({
+        name: createName(initState1.name, initState2.name),
+        alphabet, stackAlphabet: stackAlphabet,
+        isAccepting: initState1.isAccepting || initState2.isAccepting,
+        isInitial: true
+      })];
+      mapNewStateOldState.set(toExplore[0], [initState1, initState2]);
+
+      let explored = new Set<string>();
+
+      /** 
+       * Creates a new states from the two passed in parameter  
+       * At least one of them can be undefined  
+       * It pushes the new state in the toExplore list if if has
+       * not already been explored
+       */
+      let buildState = (successor1?: StateVPA, successor2?: StateVPA) => {
+        let name = createName(successor1?.name, successor2?.name)
+        let newState = new StateVPA({
+          name,
+          alphabet,
+          stackAlphabet,
+          // Note : this line to modifiy for intersection ( && )
+          isAccepting: successor1?.isAccepting || successor2?.isAccepting
+        })
+        if (!explored.has(name))
+          toExplore.push(newState)
+        return newState
       }
-    });
-    /** @todo uncomment when finished */
-    // if (this.isDeterministic() && aut.isDeterministic()) {
-    //   return res.determinize()
-    // }
-    return res;
+
+      while (toExplore.length) {
+        let current = toExplore.pop()!;
+        explored.add(current.name);
+        let [nextA, nextB] = mapNewStateOldState.get(current)!;
+        if (nextA === undefined && nextB === undefined) {
+          throw new Error("At least one state should be present")
+        } else if (nextA === undefined || nextB === undefined) {
+          let next = (nextA || nextB)!
+          let outTrans = next.getAllOutTransitions()
+          // The VPA is deterministic threfore there is only
+          // on successor when reading an INT transition
+          next.alphabet.INT.forEach(symbol => {
+            let successor = outTrans.INT[symbol][0]
+            current.addTransition({ symbol: createName(nextA && symbol, nextB && symbol), successor: buildState(successor) })
+          })
+          next.alphabet.CALL.forEach(symbol => {
+            let successor = outTrans.CALL[symbol].successors[0]
+            current.addTransition({
+              symbol: createName(nextA && symbol, nextB && symbol),
+              successor: buildState(successor),
+              topStack: outTrans.CALL[symbol].symbolToPush
+            })
+          })
+          next.alphabet.RET.forEach(symbol => {
+            let successors = outTrans.RET[symbol]
+            next.stackAlphabet.forEach(topStack => {
+              let successor = successors[topStack][0]
+              current.addTransition({
+                symbol: createName(nextA && symbol, nextB && symbol),
+                successor: buildState(successor),
+                topStack
+              })
+            })
+          })
+          // Note : Here nextA & nextB are both defined
+        } else {
+          let outA = nextA.getAllOutTransitions()
+          let outB = nextB.getAllOutTransitions()
+          let alphAnotB = nextA.alphabet.difference(nextB.alphabet)
+          let alphBnotA = nextA.alphabet.difference(nextB.alphabet)
+          let alphAinterB = nextA.alphabet.intersection(nextB.alphabet)
+
+          let addINT = (a1?: string, a2?: string) => current.addTransition({
+            symbol: createName(a1, a2),
+            successor: buildState(a1 ? outA.INT[a1][0] : undefined, a2 ? outB.INT[a2][0] : undefined)
+          })
+
+          alphAnotB.INT.forEach(e => addINT(e))
+          alphBnotA.INT.forEach(e => addINT(undefined, e))
+          alphAinterB.INT.forEach(e => addINT(e, e))
+
+          let addCALL = (a1?: string, a2?: string) => {
+            current.addTransition({
+              symbol: createName(a1, a2),
+              successor: buildState(
+                a1 ? outA.CALL[a1].successors[0] : undefined,
+                a2 ? outB.CALL[a2].successors[0] : undefined),
+              topStack: createName(
+                a1 ? outA.CALL[a1].symbolToPush : undefined,
+                a2 ? outB.CALL[a2].symbolToPush : undefined)
+            })
+          }
+
+          alphAnotB.CALL.forEach(e => addCALL(e))
+          alphBnotA.CALL.forEach(e => addCALL(undefined, e))
+          alphAinterB.CALL.forEach(e => addCALL(e, e))
+
+          alphAnotB.RET.forEach(e => nextA?.stackAlphabet.forEach(topStack => {
+            current.addTransition({
+              symbol: createName(e),
+              successor: buildState(outA.RET[e][topStack][0]),
+              topStack: createName(topStack, undefined)
+            })
+          }))
+
+          alphAnotB.RET.forEach(e => nextB?.stackAlphabet.forEach(topStack => {
+            current.addTransition({
+              symbol: createName(undefined, e),
+              successor: buildState(undefined, outB.RET[e][topStack][0]),
+              topStack: createName(undefined, topStack)
+            })
+          }))
+
+          alphAinterB.RET.forEach(e => nextA?.stackAlphabet.forEach(topStackA =>
+            nextB?.stackAlphabet.forEach(topStackB => {
+              current.addTransition({
+                symbol: createName(e, e),
+                successor: buildState(outB.RET[e][topStackA][0], outB.RET[e][topStackB][0]),
+                topStack: createName(topStackA, topStackB)
+              })
+            })))
+        }
+      }
+      // return res.determinize()
+      return new VPA([...mapNewStateOldState.keys()])
+    }
+    // let res;
+    // let states = [
+    //   ...aut.allStates().map(e => e.clone({ name: "1" + e.name })),
+    //   ...this.allStates().map(e => e.clone({ name: "2" + e.name }))
+    // ];
+    // let alphabet = VPA.cloneAndUnionAlphabet(...states.map(e => e.alphabet));
+    // let stack = [...new Set([...aut.stackAlphabet, ...this.stackAlphabet])]
+    // states.forEach(e => e.alphabet = alphabet)
+    // res = new VPA(states);
+    // res.complete()
+
+    // this.flatAlphabet(alphabet).forEach(symbol => {
+    //   for (let i = 0; i < (alphabet.INT.includes(symbol) ? 1 : stack.length); i++) {
+    //     aut.allStates().forEach((e, pos) => e.getSuccessor({ symbol, topStack: stack[i] })?.forEach(succ =>
+    //       states[pos].addTransition({
+    //         symbol: symbol,
+    //         successor: states[aut.allStates().indexOf(succ)],
+    //         topStack: stack[i]
+    //       })
+    //     ))
+
+    //     this.allStates().forEach((e, pos) => e.getSuccessor({ symbol, topStack: stack[i] })?.forEach(succ =>
+    //       states[pos + aut.allStates().length].addTransition({
+    //         symbol: symbol,
+    //         successor: states[this.allStates().indexOf(succ) + aut.allStates().length],
+    //         topStack: stack[i]
+    //       })
+    //     ))
+    //   }
+    // });
+    /** 
+     * Determinization of the two VPAs
+     * Note : They must be deterministic 
+     */
+    throw Error("The union between non deterministic VPA is not implemented");
   }
 
   intersection(aut: VPA): VPA {
@@ -133,7 +287,7 @@ export default class VPA implements FSM<AlphabetVPA, StateVPA> {
 
   complement(alphabet?: AlphabetVPA[]): VPA {
     let res = this.clone();
-    res.alphabet = alphabet ? VPA.cloneAndUnionAlphabet(...alphabet) : VPA.cloneAndUnionAlphabet(this.alphabet)
+    res.alphabet = alphabet ? new AlphabetVPA().union(...alphabet) : this.alphabet.clone()
     res.complete()
     if (!res.isDeterministic()) {
       res = this.determinize();
@@ -152,21 +306,6 @@ export default class VPA implements FSM<AlphabetVPA, StateVPA> {
     return [...this.states.values()].reduce((a, b) => a + b.getOutTransitionNumber(), 0)
   }
 
-  static cloneAndUnionAlphabet(...alphabet: AlphabetVPA[]): AlphabetVPA {
-    // Union
-    let res = alphabet.reduce((prev, curr) => {
-      let INT = [...prev.INT, ...curr.INT]
-      let CALL = [...prev.CALL, ...curr.CALL]
-      let RET = [...prev.RET, ...curr.RET]
-      return { INT, CALL, RET }
-    }, { INT: [], CALL: [], RET: [] })
-    // Remove Duplicata
-    res = { INT: [...new Set(res.INT)], CALL: [...new Set(res.CALL)], RET: [...new Set(res.RET)] }
-    // Check if it is a disjoint union of three sets
-    VPA.isValidAlphabet(res)
-    return res
-  }
-
   /** 
    * @throws Error if INT, CALL and RET are not disjoint 
    */
@@ -181,7 +320,7 @@ export default class VPA implements FSM<AlphabetVPA, StateVPA> {
       state =>
         [...this.alphabet.INT, ...this.alphabet.CALL].every(symbol => state.getSuccessor({ symbol }).length <= 1)
         &&
-        this.alphabet.RET.every(symbol => this.stackAlphabet.every(topStack => state.getSuccessor({ symbol, topStack }).length <= 1)))
+        this.alphabet.RET.every(symbol => this.stackAlphabet.every(topStack => state.getSuccessor({ symbol, topStack }).length <= 1))) && this.initialStates.length <= 1
   }
 
   flatAlphabet(alph: AlphabetVPA) {

@@ -1,4 +1,4 @@
-import DFA_NFA from "../../../lib/automaton/fsm/DFA_NFA";
+import DFA_NFA from "../DFA_NFA";
 
 test("Automaton minimization", () => {
   let a = DFA_NFA.strToAutomaton(`

@@ -4,8 +4,8 @@ import React from "react";
 // const Graphviz = dynamic(() => import('graphviz-react'), { ssr: false });
 import Graphviz from "graphviz-react";
 import { Col, Row } from "react-bootstrap";
-import { StateVPA } from "../../lib/automaton/fsm/state_vpa";
-import VPA from "../../lib/automaton/fsm/VPA";
+import { StateVPA } from "../../lib/automaton/context_free/state_vpa";
+import VPA from "../../lib/automaton/context_free/VPA";
 import { FLEX_CENTER } from "../global_vars";
 
 export let make_vpa = (): VPA => {

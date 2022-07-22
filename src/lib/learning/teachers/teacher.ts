@@ -1,4 +1,4 @@
-import Automaton from "../../automaton/fsm/DFA_NFA";
+import Automaton from "../../automaton/regular/DFA_NFA";
 
 export default interface Teacher {
   description: string;

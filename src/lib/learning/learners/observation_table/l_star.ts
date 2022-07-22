@@ -1,5 +1,5 @@
-import DFA_NFA from "../../../automaton/fsm/DFA_NFA";
-import State from "../../../automaton/fsm/state";
+import DFA_NFA from "../../../automaton/regular/DFA_NFA";
+import State from "../../../automaton/regular/state";
 import LearnerOTBase from "./learner_ot_base";
 
 export default class L_star extends LearnerOTBase {

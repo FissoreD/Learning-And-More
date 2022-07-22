@@ -1,4 +1,4 @@
-import DFA_NFA from "../../automaton/fsm/DFA_NFA";
+import DFA_NFA from "../../automaton/regular/DFA_NFA";
 import Teacher from "../teachers/teacher";
 
 export default abstract class LearnerFather<DataStType> {
