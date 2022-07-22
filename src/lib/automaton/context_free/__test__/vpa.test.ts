@@ -3,14 +3,13 @@ import { StateVPA } from "../state_vpa";
 import VPA from "../VPA";
 
 /**
- * Return a VPA where :  
- * 
+ * @returns a VPA for the test
  */
-export let make_vpa = (): VPA => {
+let createVPA1 = (): VPA => {
   let alphabet = new AlphabetVPA({ CALL: ["A"], RET: ["B", "C"], INT: ["I"] })
   let stack_alphabet = ["0"]
-  let state1 = new StateVPA({ name: "state1", isAccepting: true, alphabet, stackAlphabet: stack_alphabet })
-  let state2 = new StateVPA({ name: "state2", isInitial: true, alphabet, stackAlphabet: stack_alphabet })
+  let state1 = new StateVPA({ name: "1", isAccepting: true, alphabet, stackAlphabet: stack_alphabet })
+  let state2 = new StateVPA({ name: "2", isInitial: true, alphabet, stackAlphabet: stack_alphabet })
   state1.addTransition({ symbol: "I", successor: state1 })
   state2.addTransition({ symbol: "I", successor: state1 })
   state2.addTransition({ symbol: "B", topStack: "0", successor: state1 })
@@ -20,11 +19,22 @@ export let make_vpa = (): VPA => {
   return vpa
 }
 
+let createVPA2 = (): VPA => {
+  let alphabet = new AlphabetVPA({ CALL: ["A"], RET: ["B", "C"], INT: ["I"] })
+  let stack_alphabet = ["2"]
+  let state1 = new StateVPA({ name: "1", isAccepting: true, isInitial: true, alphabet, stackAlphabet: stack_alphabet })
+  state1.addTransition({ symbol: "I", successor: state1 })
+  state1.addTransition({ symbol: "A", topStack: "2", successor: state1 })
+  state1.addTransition({ symbol: "B", topStack: "2", successor: state1 })
+  let vpa = new VPA([state1])
+  return vpa
+}
+
 test("State VPA creation", () => {
   let alphabet = new AlphabetVPA({ CALL: ["A"], RET: ["B", "C"], INT: ["I"] })
   let stack_alphabet = ["0", "1"]
-  let state1 = new StateVPA({ name: "state1", alphabet, stackAlphabet: stack_alphabet })
-  let state2 = new StateVPA({ name: "state2", alphabet, stackAlphabet: stack_alphabet })
+  let state1 = new StateVPA({ name: "1", alphabet, stackAlphabet: stack_alphabet })
+  let state2 = new StateVPA({ name: "2", alphabet, stackAlphabet: stack_alphabet })
   state1.addTransition({ symbol: "I", successor: state1 })
   state2.addTransition({ symbol: "I", successor: state1 })
   state2.addTransition({ symbol: "B", topStack: "0", successor: state1 })
@@ -43,11 +53,11 @@ test("State VPA creation", () => {
 })
 
 test("VPA to DOT", () => {
-  console.log(make_vpa().toDot());
+  console.log(createVPA1().toDot());
 })
 
 test("VPA complete test", () => {
-  let vpa = make_vpa()
+  let vpa = createVPA1()
   console.log(vpa.toDot());
 
   vpa.complete()
@@ -55,7 +65,7 @@ test("VPA complete test", () => {
 })
 
 test("Word membership VPA", () => {
-  let vpa = make_vpa()
+  let vpa = createVPA1()
   expect(vpa.acceptWord("AAAIBIIII")).toBeFalsy()
   expect(vpa.acceptWord("AAAIBIIIIBB")).toBeTruthy()
   expect(vpa.acceptWord("AAAIBIIIIB")).toBeFalsy();
@@ -65,14 +75,20 @@ test("Word membership VPA", () => {
 })
 
 test("Deterministic VPA", () => {
-  let vpa = make_vpa()
+  let vpa = createVPA1()
   expect(vpa.isDeterministic()).toBeTruthy();
 })
 
 test("Union VPA", () => {
-  let vpa1 = make_vpa()
-  let vpa2 = make_vpa()
+  let vpa1 = createVPA1()
+  let vpa2 = createVPA2()
   let union = vpa1.union(vpa2)
   console.log(union.toDot());
+})
 
+test("Intersection VPA", () => {
+  let vpa1 = createVPA1()
+  let vpa2 = createVPA2()
+  let intersection = vpa1.intersection(vpa2)
+  console.log(intersection.toDot());
 })

@@ -28,7 +28,7 @@ export class StateVPA {
     this.stackAlphabet = p.stackAlphabet;
     this.isAccepting = p.isAccepting || false;
     this.isInitial = p.isInitial || false;
-    this.alphabet = new AlphabetVPA({ INT: p.alphabet.INT, CALL: p.alphabet.CALL, RET: p.alphabet.RET });
+    this.alphabet = p.alphabet.clone();
     this.outTransitions = { INT: {}, CALL: {}, RET: {} };
     this.inTransitions = { INT: {}, CALL: {}, RET: {} };
     this.successors = new Set();
@@ -62,13 +62,15 @@ export class StateVPA {
     p.successor = p.successor || undefined
     let succ: StateVPA[] = [], pred: StateVPA[] = [];
     p.type = p.type || this.mapAlphSymbolToType.get(p.symbol)!
+    if (p.topStack && !this.stackAlphabet.includes(p.topStack))
+      this.stackAlphabet.push(p.topStack)
 
     if (this.mapAlphSymbolToType.has(p.symbol) &&
       p.type !== this.mapAlphSymbolToType.get(p.symbol))
       throw new Error(`You can't add a transition of type ${p.type} with symbol ${p.symbol}, because ${p.symbol} belongs is of type ${this.mapAlphSymbolToType.get(p.symbol)}`)
 
     if (p.type === undefined)
-      throw new Error(`You must specify the type of Alphabet for ${p.symbol} since it is not known`)
+      throw new Error(`You must specify the type of Alphabet for ${p.symbol} since it is not known, current alphabet is : ${this.alphabet.toString()}`)
 
     if (!this.mapAlphSymbolToType.has(p.symbol))
       this.mapAlphSymbolToType.set(p.symbol, p.type)
@@ -96,8 +98,10 @@ export class StateVPA {
         if (p.topStack === undefined)
           throw new Error("Top stack should not be undefined")
 
-        let succ1, pred1;
-        succ1 = (this.outTransitions.CALL[p.symbol] = (this.outTransitions.CALL[p.symbol] || {}))
+        let succ1: { successors: StateVPA[], symbolToPush: string },
+          pred1: { successors: StateVPA[], symbolToPush: string };
+        succ1 = (this.outTransitions.CALL[p.symbol] = (this.outTransitions.CALL[p.symbol] ||
+          { successors: [p.successor], symbolToPush: p.topStack }))
         if (p.successor) {
           pred1 = (p.successor.inTransitions.CALL[p.symbol] = (p.successor.inTransitions.CALL[p.symbol] || {}))
           if (pred1) pred1.symbolToPush = p.topStack;
@@ -132,7 +136,7 @@ export class StateVPA {
       if (type === "CALL") {
         let tr = this.outTransitions[type][p.symbol]
         if (p.stack) p.stack.push(tr.symbolToPush);
-        else console.warn("Attention, you are looking for a call transition, but you do not provide a stack to make the push operation")
+        // else console.warn("Attention, you are looking for a call transition, but you do not provide a stack to make the push operation")
         return tr.successors
       }
       if (type === "RET" && p.topStack) {
@@ -176,7 +180,7 @@ export class StateVPA {
   }
 
   static Bottom(alphabet: AlphabetVPA, stackAlphabet: string[]) {
-    return new StateVPA({ name: "bottom", isAccepting: false, isInitial: false, alphabet, stackAlphabet })
+    return new StateVPA({ name: "⊥", isAccepting: false, isInitial: false, alphabet, stackAlphabet })
   }
 
   getType(symbol: string) {

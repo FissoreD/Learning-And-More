@@ -1,6 +1,6 @@
 import { sameVector, toEps } from "../../tools";
 import FSM from "../FSM_interface";
-import regexToAutomaton from "../regex_parser";
+import regexToAutomaton from "./regex_parser";
 import State from "./state";
 
 export default class DFA_NFA implements FSM<string[], State> {
@@ -134,7 +134,9 @@ export default class DFA_NFA implements FSM<string[], State> {
     return this.allStates().every(e => this.alphabet.every(l => e.getSuccessor(l) === undefined || e.getSuccessor(l).length === 1)) && this.initialStates.length <= 1
   }
 
-  /** @returns a fresh Determinized Automaton */
+  /** 
+   * @returns a fresh Determinized Automaton 
+   */
   determinize(): DFA_NFA {
     this.complete()
     let allStates = this.allStates()
@@ -180,7 +182,7 @@ export default class DFA_NFA implements FSM<string[], State> {
   /**
    * Hopcroft minimization Algorithm
    * If the automaton is not deterministic, it is determinized 
-   * @returns A fresh determinized automaton 
+   * @returns A fresh determinized & minimized automaton 
    * @link https://en.wikipedia.org/wiki/DFA_minimization
    */
   minimize(): DFA_NFA {

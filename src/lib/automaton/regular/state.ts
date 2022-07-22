@@ -1,5 +1,5 @@
 export default class State {
-  static Bottom = (alphabet: string | string[]) => new State("bottom", false, false, alphabet)
+  static Bottom = (alphabet: string | string[]) => new State("⊥", false, false, alphabet)
   isAccepting: boolean;
   isInitial: boolean;
   alphabet: string[];
@@ -33,7 +33,7 @@ export default class State {
     this.outTransitions.get(symbol)!.push(state);
     this.successors.add(state);
     state.predecessor.add(this);
-    if (state.name !== "bottom")
+    if (state.name !== "⊥")
       state.inTransitions.get(symbol)!.push(this);
   }
 

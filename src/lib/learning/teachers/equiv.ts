@@ -1,4 +1,4 @@
-import Automaton ../../automaton / FSM_interface";
+import DFA_NFA from "../../automaton/regular/DFA_NFA";
 import State from "../../automaton/regular/state";
 import Teacher from "./teacher";
 
@@ -9,8 +9,8 @@ import Teacher from "./teacher";
  * @param automaton 
  * @returns undifined if res = empty else the shortes word in res
  */
-export let equivalenceFunction = (teacher: Teacher, automaton: Automaton): string | undefined => {
-  let counterExemple = (automatonDiff: Automaton): string | undefined => {
+export let equivalenceFunction = (teacher: Teacher, automaton: DFA_NFA): string | undefined => {
+  let counterExemple = (automatonDiff: DFA_NFA): string | undefined => {
     let stateList = automatonDiff.allStates()
     if (automatonDiff.acceptingStates().length === 0) return undefined;
     let toExplore = Array.from(automatonDiff.initialStates)

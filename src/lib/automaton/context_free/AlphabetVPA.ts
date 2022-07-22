@@ -6,6 +6,7 @@ export default class AlphabetVPA {
   INT: string[]
   CALL: string[]
   RET: string[]
+
   constructor(p?: { INT: string[], CALL: string[], RET: string[] }) {
     this.INT = p ? [...p.INT] : []
     this.CALL = p ? [...p.CALL] : []
@@ -32,8 +33,8 @@ export default class AlphabetVPA {
     }, this.clone())
     // Remove Duplicata
     // Check if it is a disjoint union of three sets
-    res.isValidAlphabet()
     res.makeSet()
+    res.isValidAlphabet()
     return res
   }
 
@@ -67,9 +68,13 @@ export default class AlphabetVPA {
     return res
   }
 
+  toString() {
+    return JSON.stringify({ INT: this.INT, CALL: this.CALL, RET: this.RET })
+  }
+
   isValidAlphabet() {
     let a = new Set([...this.CALL, ...this.INT, ...this.RET])
     if (a.size !== this.CALL.length + this.INT.length + this.RET.length)
-      throw new Error("This alphabet is not valid since INT, CALL and RET are not union")
+      throw new Error("This alphabet is not valid since INT, CALL and RET are not union" + this.toString())
   }
 }
