@@ -1,5 +1,5 @@
 import Learner_OT_Abstract from "../../../lib/learning/learners/observation_table/Learner_OT_Abstract";
-import L_Star from "../../../lib/learning/learners/observation_table/L_Star";
+import L_Star from "../../../lib/learning/learners/observation_table/L_star";
 import { TeacherAutomaton } from "../../../lib/learning/teachers/TeacherAutomaton";
 import { toEps } from "../../../lib/tools";
 import { PropReact } from "../LearnerSectionC";

@@ -2,6 +2,7 @@ import DFA_NFA from "../../../automaton/regular/DFA_NFA";
 import State from "../../../automaton/regular/StateDFA";
 import Learner_OT_Abstract from "./Learner_OT_Abstract";
 
+
 export default class L_star extends Learner_OT_Abstract {
   makeAutomaton(): DFA_NFA {
     const
