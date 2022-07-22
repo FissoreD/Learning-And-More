@@ -1,10 +1,10 @@
 import { ReactElement } from "react";
 import DiscTreeDFA from "../../../lib/learning/learners/discrimination_tree/DiscTreeDFA";
 import TTT from "../../../lib/learning/learners/discrimination_tree/TTT";
-import LearningDataStructure from "../../../lib/learning/learners/learning_data_structure";
-import { TeacherAutomaton } from "../../../lib/learning/teachers/teacher_automaton";
-import { LearnerSection, MessageType, StateReact } from "../learner_sectionC";
-import DiscriminationTreeC from "./discrimination_tree_c";
+import LearningDataStructure from "../../../lib/learning/learners/LearningDataStructure";
+import { TeacherAutomaton } from "../../../lib/learning/teachers/TeacherAutomaton";
+import { LearnerSection, MessageType, StateReact } from "../LearnerSectionC";
+import DiscriminationTreeC from "./DiscriminationTreeC";
 
 export default class TTTC extends LearnerSection<TTT> {
   createNewLearner(regex: string): TTT {

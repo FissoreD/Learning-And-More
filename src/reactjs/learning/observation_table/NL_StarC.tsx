@@ -1,16 +1,16 @@
-import LearnerOTBase from "../../../lib/learning/learners/observation_table/learner_ot_base";
-import { NL_star } from "../../../lib/learning/learners/observation_table/nl_star";
-import { TeacherAutomaton } from "../../../lib/learning/teachers/teacher_automaton";
+import Learner_OT_Abstract from "../../../lib/learning/learners/observation_table/Learner_OT_Abstract";
+import NL_star from "../../../lib/learning/learners/observation_table/NL_Start";
+import { TeacherAutomaton } from "../../../lib/learning/teachers/TeacherAutomaton";
 import { toEps } from "../../../lib/tools";
-import { PropReact } from "../learner_sectionC";
-import LearnerOTBaseC from "./learner_OT_baseC";
+import { PropReact } from "../LearnerSectionC";
+import Learner_OT_AbstractC from "./Learner_OT_AbstractC";
 
-export default class NLStarC extends LearnerOTBaseC {
+export default class NL_StarC extends Learner_OT_AbstractC {
   createNewLearner(regex: string): NL_star {
     return new NL_star(new TeacherAutomaton({ type: "Regex", automaton: regex }))
   }
 
-  constructor(prop: PropReact<LearnerOTBase>) {
+  constructor(prop: PropReact<Learner_OT_Abstract>) {
     super(prop, "E")
   }
   closeMessage(closeRep: string) {

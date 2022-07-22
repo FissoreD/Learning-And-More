@@ -1,9 +1,9 @@
 import DFA_NFA from "../../../automaton/regular/DFA_NFA";
-import State from "../../../automaton/regular/state";
-import Teacher from "../../teachers/teacher";
-import LearnerOTBase from "./learner_ot_base";
+import State from "../../../automaton/regular/StateDFA";
+import Teacher from "../../teachers/Teacher";
+import Learner_OT_Abstract from "./Learner_OT_Abstract";
 
-export class NL_star extends LearnerOTBase {
+export default class NL_star extends Learner_OT_Abstract {
   primeLines: string[];
 
   constructor(teacher: Teacher) {

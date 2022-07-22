@@ -1,17 +1,7 @@
-// import dynamic from 'next/dynamic';
+import Graphviz from "graphviz-react";
 import React from "react";
 import DFA_NFA from "../../lib/automaton/regular/DFA_NFA";
-
-// const Graphviz = dynamic(() => import('graphviz-react'), { ssr: false });
-import Graphviz from "graphviz-react";
-
-const options = {
-  fit: true,
-  height: undefined,
-  width: undefined,
-  useWorker: false,
-  zoom: false,
-}
+import { graphvizOptions } from "../globalVars";
 
 interface Prop { automaton: DFA_NFA }
 interface State { showAut: boolean }
@@ -29,7 +19,7 @@ export default class AutomatonC extends React.Component<Prop, State>{
 
   render(): React.ReactElement {
     return <div className='text-center'>
-      <Graphviz className='automaton img-fluid' options={options} dot={this.props.automaton.toDot()} />
+      <Graphviz className='automaton img-fluid' options={graphvizOptions} dot={this.props.automaton.toDot()} />
     </div>
   }
 }

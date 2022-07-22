@@ -1,8 +1,8 @@
 import DFA_NFA from "../../../automaton/regular/DFA_NFA";
-import State from "../../../automaton/regular/state";
+import State from "../../../automaton/regular/StateDFA";
 import { toEps } from "../../../tools";
-import Teacher from "../../teachers/teacher";
-import LearnerFather from "../learner_father";
+import Teacher from "../../teachers/Teacher";
+import LearnerFather from "../LearnerFather";
 import DiscTreeDFA from "./DiscTreeDFA";
 
 export default class TTT extends LearnerFather<DiscTreeDFA> {

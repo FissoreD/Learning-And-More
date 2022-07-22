@@ -1,6 +1,6 @@
 import DFA_NFA from "../../automaton/regular/DFA_NFA";
-import State from "../../automaton/regular/state";
-import Teacher from "./teacher";
+import State from "../../automaton/regular/StateDFA";
+import Teacher from "./Teacher";
 
 /**
  * let A = teacher.automaton, B = automaton

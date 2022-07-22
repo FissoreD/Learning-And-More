@@ -2,8 +2,8 @@ import React from "react";
 import { Container, Row } from "react-bootstrap";
 import AutomatonContainerC from "./automaton/automaton_container_c";
 import TestVPAViewer from "./automaton/TestVpaViewer";
-import LearnerContainerC from "./learning/learner_containerC";
-import { AlgosNavBar, NavBar } from "./nav_bar";
+import { AlgosNavBar, NavBar } from "./components/NavBar";
+import LearnerContainerC from "./learning/LearnerContainerC";
 
 interface Prop { cnt: React.ReactElement }
 

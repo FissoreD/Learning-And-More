@@ -2,10 +2,10 @@ import React from "react";
 import { Button, Card } from "react-bootstrap";
 import { ArrowClockwise, ArrowCounterclockwise, CaretLeftFill, CaretRightFill } from "react-bootstrap-icons";
 import DFA_NFA from "../../lib/automaton/regular/DFA_NFA";
-import LearnerFather from "../../lib/learning/learners/learner_father";
-import LearningDataStructure from "../../lib/learning/learners/learning_data_structure";
+import LearnerFather from "../../lib/learning/learners/LearnerFather";
+import LearningDataStructure from "../../lib/learning/learners/LearningDataStructure";
 import AutomatonC from "../automaton/automaton";
-import Dialog from "../dialog";
+import Dialog from "../components/Dialog";
 
 export interface PropReact<Learner extends LearnerFather<LearningDataStructure>> { learner: Learner, name: String, changeRegexContainer: (regex: string) => void }
 

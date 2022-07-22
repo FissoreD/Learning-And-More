@@ -1,5 +1,5 @@
 import DFA_NFA from "../../automaton/regular/DFA_NFA";
-import Teacher from "../teachers/teacher";
+import Teacher from "../teachers/Teacher";
 
 export default abstract class LearnerFather<DataStType> {
   alphabet: string[];

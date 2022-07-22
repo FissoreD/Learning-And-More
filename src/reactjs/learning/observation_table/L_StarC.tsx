@@ -1,17 +1,17 @@
-import LearnerOTBase from "../../../lib/learning/learners/observation_table/learner_ot_base";
-import L_star from "../../../lib/learning/learners/observation_table/l_star";
-import { TeacherAutomaton } from "../../../lib/learning/teachers/teacher_automaton";
+import Learner_OT_Abstract from "../../../lib/learning/learners/observation_table/Learner_OT_Abstract";
+import L_Star from "../../../lib/learning/learners/observation_table/L_Star";
+import { TeacherAutomaton } from "../../../lib/learning/teachers/TeacherAutomaton";
 import { toEps } from "../../../lib/tools";
-import { PropReact } from "../learner_sectionC";
-import LearnerOTBaseC from "./learner_OT_baseC";
+import { PropReact } from "../LearnerSectionC";
+import Learner_OT_AbstractC from "./Learner_OT_AbstractC";
 
-export default class LStarC extends LearnerOTBaseC {
+export default class LStarC extends Learner_OT_AbstractC {
 
-  createNewLearner(regex: string): L_star {
-    return new L_star(new TeacherAutomaton({ type: "Regex", automaton: regex }))
+  createNewLearner(regex: string): L_Star {
+    return new L_Star(new TeacherAutomaton({ type: "Regex", automaton: regex }))
   }
 
-  constructor(prop: PropReact<LearnerOTBase>) {
+  constructor(prop: PropReact<Learner_OT_Abstract>) {
     super(prop, "S")
   }
 

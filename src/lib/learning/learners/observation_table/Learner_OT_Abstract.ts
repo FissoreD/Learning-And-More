@@ -1,9 +1,9 @@
 import { boolToString, generatePrefixList, generateSuffixList } from "../../../tools";
-import Teacher from "../../teachers/teacher";
-import LearnerFather from "../learner_father";
-import ObservationTable from "./observation_table";
+import Teacher from "../../teachers/Teacher";
+import LearnerFather from "../LearnerFather";
+import ObservationTable from "./ObservationTable";
 
-export default abstract class LearnerOTBase extends LearnerFather<ObservationTable> {
+export default abstract class Learner_OT_Abstract extends LearnerFather<ObservationTable> {
   closednessCounter: number;
   consistenceCounter: number;
   counterExample: string | undefined = "";

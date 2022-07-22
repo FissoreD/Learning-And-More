@@ -1,5 +1,5 @@
 import aut from "../../../../../json/automata.json"
-import { TeacherAutomaton } from "../../../teachers/teacher_automaton"
+import { TeacherAutomaton } from "../../../teachers/TeacherAutomaton"
 import TTT from "../TTT"
 
 test("TTT learn a+bb", () => {

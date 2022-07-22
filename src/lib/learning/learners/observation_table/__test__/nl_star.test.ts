@@ -1,6 +1,6 @@
 import DFA_NFA from "../../../../automaton/regular/DFA_NFA";
-import { TeacherAutomaton } from "../../../teachers/teacher_automaton";
-import { NL_star } from "../nl_star";
+import { TeacherAutomaton } from "../../../teachers/TeacherAutomaton";
+import NL_star from "../NL_Start";
 
 test("Learner NL-Star Bollig et al", () => {
   let automaton = DFA_NFA.strToAutomaton(`[0]

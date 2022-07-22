@@ -1,5 +1,5 @@
 import { toEps } from "../../../tools";
-import Teacher from "../../teachers/teacher";
+import Teacher from "../../teachers/Teacher";
 import DiscTreeFather, { InnerNode, Leaf, TreeElt } from "./DiscTreeFather";
 
 export default class DiscTreeDFA extends DiscTreeFather<string> {

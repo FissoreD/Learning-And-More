@@ -1,6 +1,6 @@
 import DFA_NFA from "../../automaton/regular/DFA_NFA";
-import { equivalenceFunction } from "./equiv";
-import Teacher from "./teacher";
+import { equivalenceFunction } from "./Equivalence";
+import Teacher from "./Teacher";
 
 /**
  * This Teacher takes an Automaton Instance as parameter

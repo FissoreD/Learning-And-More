@@ -1,7 +1,7 @@
 import { sameVector, toEps } from "../../tools";
 import FSM from "../FSM_interface";
-import regexToAutomaton from "./regex_parser";
-import State from "./state";
+import regexToAutomaton from "./RegexParser";
+import State from "./StateDFA";
 
 export default class DFA_NFA implements FSM<string[], State> {
   states: Map<string, State>;

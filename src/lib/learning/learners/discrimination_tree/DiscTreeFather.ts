@@ -1,4 +1,4 @@
-import LearningDataStructure from "../learning_data_structure";
+import LearningDataStructure from "../LearningDataStructure";
 
 export class InnerNode<LblType> {
   name: LblType;

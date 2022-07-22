@@ -1,14 +1,14 @@
 import { ReactElement } from "react";
-import LearningDataStructure from "../../../lib/learning/learners/learning_data_structure";
-import LearnerOTBase from "../../../lib/learning/learners/observation_table/learner_ot_base";
-import ObservationTable from "../../../lib/learning/learners/observation_table/observation_table";
-import { LearnerSection, MessageType, PropReact, StateReact } from "../learner_sectionC";
-import { ObservationTableC } from "./observation_table_c";
+import LearningDataStructure from "../../../lib/learning/learners/LearningDataStructure";
+import Learner_OT_Abstract from "../../../lib/learning/learners/observation_table/Learner_OT_Abstract";
+import ObservationTable from "../../../lib/learning/learners/observation_table/ObservationTable";
+import { LearnerSection, MessageType, PropReact, StateReact } from "../LearnerSectionC";
+import { ObservationTableC } from "./ObservationTableC";
 
-export default abstract class LearnerOTBaseC extends LearnerSection<LearnerOTBase>{
+export default abstract class Learner_OT_AbstractC extends LearnerSection<Learner_OT_Abstract>{
   tableToModifyAfterCe: string;
 
-  constructor(prop: PropReact<LearnerOTBase>, tableToModif: string) {
+  constructor(prop: PropReact<Learner_OT_Abstract>, tableToModif: string) {
     super(prop)
     this.tableToModifyAfterCe = tableToModif
 
@@ -20,7 +20,7 @@ export default abstract class LearnerOTBaseC extends LearnerSection<LearnerOTBas
   abstract closeMessage(closeRep: string): string;
   abstract consistentMessage(s1: string, s2: string, newCol: string): string;
 
-  nextOpChild(state: StateReact<LearnerOTBase>): StateReact<LearnerOTBase> {
+  nextOpChild(state: StateReact<Learner_OT_Abstract>): StateReact<Learner_OT_Abstract> {
     let learner = this.state.learner;
     if (learner.finish) return state
     var message: { type: MessageType, val: string };

@@ -1,7 +1,7 @@
 import { todo, toEps } from "../../tools";
 import FSM from "../FSM_interface";
 import AlphabetVPA, { ALPHABET_TYPE, ALPH_TYPE_LIST } from "./AlphabetVPA";
-import StateVPA from "./state_vpa";
+import StateVPA from "./StateVPA";
 
 export default class VPA implements FSM<AlphabetVPA, StateVPA> {
   states: Map<string, StateVPA>;

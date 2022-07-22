@@ -2,7 +2,7 @@ import React from "react";
 import { Button, ButtonGroup, Card, Col, Row } from "react-bootstrap";
 import { BootstrapReboot } from "react-bootstrap-icons";
 import Automaton from "../../lib/automaton/regular/DFA_NFA";
-import Dialog from "../dialog";
+import Dialog from "../components/Dialog";
 import AutomatonC from "./automaton";
 
 type Operation = "∪" | "∩" | "△" | "/" | "Det" | "~"

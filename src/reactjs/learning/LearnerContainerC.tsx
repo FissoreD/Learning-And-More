@@ -1,12 +1,12 @@
 import React from "react";
 import { ButtonGroup } from "react-bootstrap";
 import TTT from "../../lib/learning/learners/discrimination_tree/TTT";
-import L_star from "../../lib/learning/learners/observation_table/l_star";
-import { NL_star } from "../../lib/learning/learners/observation_table/nl_star";
-import { TeacherAutomaton } from "../../lib/learning/teachers/teacher_automaton";
-import TTTC from "./discrimination_tree/tttC";
-import LStarC from "./observation_table/l_star";
-import NLStarC from "./observation_table/nl_star";
+import L_star from "../../lib/learning/learners/observation_table/L_Star";
+import NL_star from "../../lib/learning/learners/observation_table/NL_Start";
+import { TeacherAutomaton } from "../../lib/learning/teachers/TeacherAutomaton";
+import TTTC from "./discrimination_tree/TTT_C";
+import LStarC from "./observation_table/L_StarC";
+import NL_StarC from "./observation_table/NL_StarC";
 
 interface State { cnt: React.ReactElement, regex: string }
 
@@ -31,7 +31,7 @@ export default class LearnerContainerC extends React.Component<{}, State> {
     })
     switch (algo) {
       case "L*": cnt = <LStarC changeRegexContainer={this.changeRegex.bind(this)} name={"L-Star"} learner={new L_star(teacher)} />; break;
-      case "NL*": cnt = <NLStarC changeRegexContainer={this.changeRegex.bind(this)} name={"NL-Star"} learner={new NL_star(teacher)} />; break;
+      case "NL*": cnt = <NL_StarC changeRegexContainer={this.changeRegex.bind(this)} name={"NL-Star"} learner={new NL_star(teacher)} />; break;
       case "TTT": cnt = <TTTC changeRegexContainer={this.changeRegex.bind(this)} name={"TTT"} learner={new TTT(teacher)} />; break
     }
     this.setState({ cnt })

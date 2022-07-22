@@ -1,5 +1,5 @@
 import React from "react";
-import ObservationTable from "../../../lib/learning/learners/observation_table/observation_table";
+import ObservationTable from "../../../lib/learning/learners/observation_table/ObservationTable";
 import { toEps } from "../../../lib/tools";
 
 interface Prop { dataStructure: ObservationTable; }

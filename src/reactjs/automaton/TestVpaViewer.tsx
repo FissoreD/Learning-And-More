@@ -1,15 +1,13 @@
-// import dynamic from 'next/dynamic';
-import React from "react";
-
-// const Graphviz = dynamic(() => import('graphviz-react'), { ssr: false });
 import Graphviz from "graphviz-react";
+import React from "react";
 import { Col, Row } from "react-bootstrap";
-import { StateVPA } from "../../lib/automaton/context_free/state_vpa";
+import AlphabetVPA from "../../lib/automaton/context_free/AlphabetVPA";
+import StateVPA from "../../lib/automaton/context_free/StateVPA";
 import VPA from "../../lib/automaton/context_free/VPA";
-import { FLEX_CENTER } from "../global_vars";
+import { FLEX_CENTER } from "../globalVars";
 
 export let make_vpa = (): VPA => {
-  let alphabet = { CALL: ["A"], RET: ["B", "C"], INT: ["I"] }
+  let alphabet = new AlphabetVPA({ CALL: ["A"], RET: ["B", "C"], INT: ["I"] })
   let stack_alphabet = ["0"]
   let state1 = new StateVPA({ name: "1", isAccepting: true, alphabet, stackAlphabet: stack_alphabet })
   let state2 = new StateVPA({ name: "2", isInitial: true, alphabet, stackAlphabet: stack_alphabet })

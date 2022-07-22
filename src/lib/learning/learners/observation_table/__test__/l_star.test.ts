@@ -1,6 +1,6 @@
 import DFA_NFA from "../../../../automaton/regular/DFA_NFA";
-import { TeacherAutomaton } from "../../../teachers/teacher_automaton";
-import L_star from "../l_star";
+import { TeacherAutomaton } from "../../../teachers/TeacherAutomaton";
+import L_star from "../L_Star";
 
 test("Learner L-Star Angluin", () => {
   let automaton = DFA_NFA.strToAutomaton(`[0]

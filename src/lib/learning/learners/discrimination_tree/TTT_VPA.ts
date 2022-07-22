@@ -1,8 +1,8 @@
 import AlphabetVPA from "../../../automaton/context_free/AlphabetVPA";
-import StateVPA from "../../../automaton/context_free/state_vpa";
+import StateVPA from "../../../automaton/context_free/StateVPA";
 import VPA from "../../../automaton/context_free/VPA";
 import { todo, toEps } from "../../../tools";
-import Teacher from "../../teachers/teacher";
+import Teacher from "../../teachers/Teacher";
 import DiscTreeVPA, { StringCouple } from "./DiscTreeVPA";
 
 export default class TTT_VPA {
