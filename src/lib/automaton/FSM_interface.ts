@@ -6,6 +6,12 @@ export default interface FSM<Alphabet, State> {
   complete(p?: { bottom?: State, alphabet?: Alphabet }): FSM<Alphabet, State>;
   /** @returns a fresh Determinized FSM */
   determinize(): FSM<Alphabet, State>;
+  /**
+   * Hopcroft minimization Algorithm
+   * If the automaton is not deterministic, it is determinized 
+   * @returns A fresh determinized & minimized automaton 
+   * @link https://en.wikipedia.org/wiki/DFA_minimization
+   */
   minimize(): FSM<Alphabet, State>;
   /**
    * If both FSM are deterministic a deterministic FSM is returned

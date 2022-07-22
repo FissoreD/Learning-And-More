@@ -77,4 +77,11 @@ export default class AlphabetVPA {
     if (a.size !== this.CALL.length + this.INT.length + this.RET.length)
       throw new Error("This alphabet is not valid since INT, CALL and RET are not union" + this.toString())
   }
+
+  /** 
+   * @returns a list of all alphabet symbols
+   */
+  flatAlphabet() {
+    return ALPH_TYPE_LIST.map(e => this[e]).flat()
+  }
 }

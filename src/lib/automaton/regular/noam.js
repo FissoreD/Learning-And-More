@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 /*
  * noam - JavaScript library for working with automata and grammars for
  *        regular and context-free languages. https://github.com/izuzak/noam
@@ -4852,72 +4853,6 @@
           return noam.re.array.toString(toArray(regex));
         }
 
-        // Returns a random regex containing at most @a numSymbols symbols from the
-        // specified array of possible symbols @a alphabet. The probability distribution
-        // of symbol selection is uniform and can be skewed by repeating elements in
-        // alphabet. The parameter @a cfg is optional and can contain the following
-        // fields:
-        //   ALT_PROB    - the probability that alteration is used between two subexpressions
-        //                 instead of sequencing (default 0.5)
-        //   KLEENE_PROB - the probability that any subexpression is put under the Kleene
-        //                 star operator (default 0.1)
-        //   EPS_PROB    - the probability that epsilon is added as an alteration choice
-        //                 (default 0.1)
-        function random(numSymbols, alphabet, cfg) {
-          var altp = 0.5;
-          var kleenep = 0.1;
-          var epsp = 0.1;
-          if (cfg) {
-            if (cfg.ALT_PROB) {
-              altp = cfg.ALT_PROB;
-            }
-            if (cfg.KLEENE_PROB) {
-              kleenep = cfg.KLEENE_PROB;
-            }
-            if (cfg.EPS_PROB) {
-              epsp = cfg.EPS_PROB;
-            }
-          }
-
-          return _randomKleene(numSymbols, alphabet, altp, kleenep, epsp);
-        }
-
-        function _randomKleene(numSymbols, alphabet, altp, kleenep, epsp) {
-          var expr = _randomExpr(numSymbols, alphabet, altp, kleenep, epsp);
-          if (Math.random() <= kleenep) {
-            expr = makeKStar(expr);
-          }
-          return expr;
-        }
-
-        function _randomExpr(numSymbols, alphabet, altp, kleenep, epsp) {
-          if (numSymbols === 0) {
-            return makeEps();
-          } else if (numSymbols === 1) {
-            return makeLit(alphabet[noam.util.randint(0, alphabet.length - 1)]);
-          } else if (Math.random() <= epsp) {
-            return makeAlt([
-              makeEps(),
-              _randomKleene(numSymbols, alphabet, altp, kleenep, epsp),
-            ]);
-          } else {
-            var left_sz = noam.util.randint(1, numSymbols - 1);
-            var left = _randomKleene(left_sz, alphabet, altp, kleenep, epsp);
-            var right = _randomKleene(
-              numSymbols - left_sz,
-              alphabet,
-              altp,
-              kleenep,
-              epsp
-            );
-            if (Math.random() <= altp) {
-              return makeAlt([left, right]);
-            } else {
-              return makeSeq([left, right]);
-            }
-          }
-        }
-
         return {
           tags: tags,
 
@@ -4931,7 +4866,6 @@
           toArray: toArray,
           toString: toString,
 
-          random: random,
           simplify: simplify,
         };
       })();

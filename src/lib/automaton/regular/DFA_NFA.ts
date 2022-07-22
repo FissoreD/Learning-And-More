@@ -179,12 +179,6 @@ export default class DFA_NFA implements FSM<string[], State> {
     return res
   }
 
-  /**
-   * Hopcroft minimization Algorithm
-   * If the automaton is not deterministic, it is determinized 
-   * @returns A fresh determinized & minimized automaton 
-   * @link https://en.wikipedia.org/wiki/DFA_minimization
-   */
   minimize(): DFA_NFA {
     this.complete()
 

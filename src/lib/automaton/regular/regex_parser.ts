@@ -42,34 +42,34 @@ function HisAutomaton2Mine(aut: HisAutomaton): DFA_NFA {
   return new DFA_NFA(statesSet);
 }
 
-export function MyAutomatonToHis(aut: DFA_NFA): HisAutomaton {
-  let stateList = Array.from(aut.states).map(e => e[1]);
-  let state2int = (state: State) => stateList.indexOf(state);
-  let states = stateList.map(e => state2int(e))
-  let startState = states.length;
-  let transitions: HisTransition[] = stateList.map(state => Array.from(state.getAllOutTransitions()).map(transition =>
-  ({
-    fromState: state2int(state),
-    symbol: transition[0],
-    toStates: transition[1].map(e => state2int(e))
-  })).flat()).flat();
-  if (aut.initialStates.length > 1) {
-    transitions.push(({
-      fromState: startState,
-      symbol: "$",
-      toStates: aut.initialStates.map(e => state2int(e))
-    }));
-    states.push(startState)
-  } else startState = state2int(aut.initialStates[0])
-  let res: HisAutomaton = {
-    acceptingStates: aut.acceptingStates().map(e => state2int(e)),
-    alphabet: Array.from(aut.alphabet),
-    states: states,
-    initialState: startState,
-    transitions: transitions
-  }
-  return res;
-}
+// export function MyAutomatonToHis(aut: DFA_NFA): HisAutomaton {
+//   let stateList = Array.from(aut.states).map(e => e[1]);
+//   let state2int = (state: State) => stateList.indexOf(state);
+//   let states = stateList.map(e => state2int(e))
+//   let startState = states.length;
+//   let transitions: HisTransition[] = stateList.map(state => Array.from(state.getAllOutTransitions()).map(transition =>
+//   ({
+//     fromState: state2int(state),
+//     symbol: transition[0],
+//     toStates: transition[1].map(e => state2int(e))
+//   })).flat()).flat();
+//   if (aut.initialStates.length > 1) {
+//     transitions.push(({
+//       fromState: startState,
+//       symbol: "$",
+//       toStates: aut.initialStates.map(e => state2int(e))
+//     }));
+//     states.push(startState)
+//   } else startState = state2int(aut.initialStates[0])
+//   let res: HisAutomaton = {
+//     acceptingStates: aut.acceptingStates().map(e => state2int(e)),
+//     alphabet: Array.from(aut.alphabet),
+//     states: states,
+//     initialState: startState,
+//     transitions: transitions
+//   }
+//   return res;
+// }
 
 /** Return the mDFA for a regex */
 export default function regexToAutomaton(regex: string): DFA_NFA {
@@ -77,11 +77,11 @@ export default function regexToAutomaton(regex: string): DFA_NFA {
   return minimizeAutomaton(res);
 }
 
-export function automatonToRegex(automaton: DFA_NFA): string {
-  // let res = noam.re.tree.toString(noam.re.tree.simplify((noam.fsm.toRegex(MyAutomatonToHis(automaton)))))
-  // console.log(res);
-  return ""
-}
+// export function automatonToRegex(automaton: DFA_NFA): string {
+//   // let res = noam.re.tree.toString(noam.re.tree.simplify((noam.fsm.toRegex(MyAutomatonToHis(automaton)))))
+//   // console.log(res);
+//   return ""
+// }
 
 function minimizeAutomaton(automatonInput: HisAutomaton): DFA_NFA {
   let automaton = automatonInput

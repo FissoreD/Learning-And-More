@@ -1,15 +1,16 @@
 import DFA_NFA from "../../../../automaton/regular/DFA_NFA";
 import { TeacherAutomaton } from "../../../teachers/teacher_automaton";
-import L_star from "../l_star";
+import { NL_star } from "../nl_star";
 
-test("Learner L-Star Angluin", () => {
+test("Learner NL-Star Bollig et al", () => {
   let automaton = DFA_NFA.strToAutomaton(`[0]
     a,[0]->[1]
     b,[1]->[2]
     a,[2]->[1]
     [1]`) // a(ab)*
   let teacher = new TeacherAutomaton({ type: "Automaton", automaton })
-  let learner = new L_star(teacher)
+  let learner = new NL_star(teacher)
   learner.makeAllQueries()
   expect(automaton.sameLanguage(learner.automaton!));
 })
+
