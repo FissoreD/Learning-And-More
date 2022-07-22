@@ -4,7 +4,7 @@ import { ArrowClockwise, ArrowCounterclockwise, CaretLeftFill, CaretRightFill } 
 import DFA_NFA from "../../lib/automaton/regular/DFA_NFA";
 import LearnerFather from "../../lib/learning/learners/LearnerFather";
 import LearningDataStructure from "../../lib/learning/learners/LearningDataStructure";
-import AutomatonC from "../automaton/automaton";
+import AutomatonC from "../automaton/Automaton1";
 import Dialog from "../components/Dialog";
 
 export interface PropReact<Learner extends LearnerFather<LearningDataStructure>> { learner: Learner, name: String, changeRegexContainer: (regex: string) => void }

@@ -3,7 +3,7 @@ import { Button, ButtonGroup, Card, Col, Row } from "react-bootstrap";
 import { BootstrapReboot } from "react-bootstrap-icons";
 import Automaton from "../../lib/automaton/regular/DFA_NFA";
 import Dialog from "../components/Dialog";
-import AutomatonC from "./automaton";
+import AutomatonC from "./Automaton1";
 
 type Operation = "∪" | "∩" | "△" | "/" | "Det" | "~"
 const binaryOp: Operation[] = ["∪", "∩", "△", "/"]
