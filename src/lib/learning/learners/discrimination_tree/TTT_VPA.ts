@@ -1,4 +1,5 @@
-import { AlphabetVPA, StateVPA } from "../../../automaton/context_free/state_vpa";
+import AlphabetVPA from "../../../automaton/context_free/AlphabetVPA";
+import StateVPA from "../../../automaton/context_free/state_vpa";
 import VPA from "../../../automaton/context_free/VPA";
 import { todo, toEps } from "../../../tools";
 import Teacher from "../../teachers/teacher";

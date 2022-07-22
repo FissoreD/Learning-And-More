@@ -1,5 +1,5 @@
 import AlphabetVPA from "../AlphabetVPA";
-import { StateVPA } from "../state_vpa";
+import StateVPA from "../state_vpa";
 import VPA from "../VPA";
 
 /**

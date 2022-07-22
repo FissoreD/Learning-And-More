@@ -7,7 +7,7 @@ type transition = {
   RET: { [letter: string]: { [stackTop: string]: StateVPA[] } }
 }
 
-export class StateVPA {
+export default class StateVPA {
   isAccepting: boolean;
   isInitial: boolean;
   alphabet: AlphabetVPA;
