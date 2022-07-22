@@ -1,6 +1,6 @@
 import React from "react";
 import { Container, Row } from "react-bootstrap";
-import AutomatonContainerC from "./automaton/automaton_container_c";
+import AutomatonContainerC from "./automaton/AutomatonContainerC";
 import TestVPAViewer from "./automaton/TestVpaViewer";
 import { AlgosNavBar, NavBar } from "./components/NavBar";
 import LearnerContainerC from "./learning/LearnerContainerC";
