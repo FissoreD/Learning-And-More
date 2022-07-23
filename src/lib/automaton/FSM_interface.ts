@@ -1,3 +1,4 @@
+
 export default interface FSM<Alphabet, State> {
   states: Map<string, State>;
   initialStates: State[];
@@ -41,6 +42,5 @@ export default interface FSM<Alphabet, State> {
   acceptingStates(): State[];
   allStates(): State[];
 
-  toDot(): String;
-  toString(): String;
+  toString(): string;
 }

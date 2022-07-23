@@ -1,12 +1,12 @@
-import Graphviz from "graphviz-react";
 import React from "react";
 import { Col, Row } from "react-bootstrap";
 import AlphabetVPA from "../../lib/automaton/context_free/AlphabetVPA";
 import StateVPA from "../../lib/automaton/context_free/StateVPA";
 import VPA from "../../lib/automaton/context_free/VPA";
+import GraphDotRender from "../components/GraphDotRender";
 import { FLEX_CENTER } from "../globalVars";
 
-export let make_vpa = (): VPA => {
+let createVPA1 = (): VPA => {
   let alphabet = new AlphabetVPA({ CALL: ["A"], RET: ["B", "C"], INT: ["I"] })
   let stack_alphabet = ["0"]
   let state1 = new StateVPA({ name: "1", isAccepting: true, alphabet, stackAlphabet: stack_alphabet })
@@ -20,31 +20,39 @@ export let make_vpa = (): VPA => {
   return vpa
 }
 
-let auts = [make_vpa(), make_vpa().complete(), make_vpa().union(make_vpa())]
-
-const options = {
-  fit: true,
-  height: undefined,
-  width: undefined,
-  useWorker: false,
-  zoom: false,
+let createVPA2 = (): VPA => {
+  let alphabet = new AlphabetVPA({ CALL: ["A"], RET: ["B", "C"], INT: ["I"] })
+  let stack_alphabet = ["2"]
+  let state1 = new StateVPA({ name: "1", isAccepting: true, isInitial: true, alphabet, stackAlphabet: stack_alphabet })
+  state1.addTransition({ symbol: "I", successor: state1 })
+  state1.addTransition({ symbol: "A", topStack: "2", successor: state1 })
+  state1.addTransition({ symbol: "B", topStack: "2", successor: state1 })
+  let vpa = new VPA([state1])
+  return vpa
 }
 
+let auts = [
+  { desc: "VPA1", cnt: createVPA1() },
+  { desc: "VPA1 compl", cnt: createVPA1().complete() },
+  { desc: "VPA2", cnt: createVPA2() },
+  { desc: "VPA2 compl", cnt: createVPA2().complete() },
+  { desc: "VPA1 union VPA2", cnt: createVPA1().union(createVPA2()) },
+  { desc: "VPA1 inter VPA2", cnt: createVPA1().intersection(createVPA2()) },
+]
 
 export default class TestVPAViewer extends React.Component<{}, {}>{
 
   render(): React.ReactElement {
     return <div className='text-center'>
-      <pre>Alphabet: {JSON.stringify(make_vpa().alphabet)}</pre>
-      <pre>Stack: {JSON.stringify(make_vpa().stackAlphabet)}</pre>
       <>
         {auts.map((e, pos) =>
-          <React.Fragment key={pos}>
-            <Row className="border">
+          <div key={pos} className="border">
+            <Row className="justify-content-center">{"Description : " + e.desc}</Row>
+            <Row>
               <Col sm={1} className={FLEX_CENTER}>{pos}</Col>
-              <Col><Graphviz className='automaton img-fluid' options={options} dot={e.toDot()} /></Col>
+              <Col><GraphDotRender dot={e.cnt} /></Col>
             </Row>
-          </React.Fragment>
+          </div>
         )}
       </>
     </div>

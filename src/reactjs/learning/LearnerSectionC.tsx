@@ -4,8 +4,8 @@ import { ArrowClockwise, ArrowCounterclockwise, CaretLeftFill, CaretRightFill } 
 import DFA_NFA from "../../lib/automaton/regular/DFA_NFA";
 import LearnerFather from "../../lib/learning/learners/LearnerFather";
 import LearningDataStructure from "../../lib/learning/learners/LearningDataStructure";
-import AutomatonC from "../automaton/Automaton";
 import Dialog from "../components/Dialog";
+import GraphDotRender from "../components/GraphDotRender";
 
 export interface PropReact<Learner extends LearnerFather<LearningDataStructure>> { learner: Learner, name: String, changeRegexContainer: (regex: string) => void }
 
@@ -134,7 +134,7 @@ export abstract class LearnerSection<LearnerT extends LearnerFather<LearningData
       </div>
       {this.createCard("Language to Learn", this.createText(this.state.learner.teacher.regex))}
       {this.createCard("Message", this.createText(memoryCell.message.val))}
-      {memoryCell.automaton ? this.createCard("Automaton", <AutomatonC automaton={memoryCell.automaton!} />) : <></>}
+      {memoryCell.automaton ? this.createCard("Automaton", <GraphDotRender dot={memoryCell.automaton!} />) : <></>}
       {this.createCard("Observation Table", this.dataStructureToNodeElement(memoryCell.dataStructure))}
     </div >
   }

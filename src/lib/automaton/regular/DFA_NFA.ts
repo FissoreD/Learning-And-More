@@ -1,9 +1,10 @@
+import ToDot from "../../ToDot.interface";
 import { sameVector, toEps } from "../../tools";
 import FSM from "../FSM_interface";
 import regexToAutomaton from "./RegexParser";
 import State from "./StateDFA";
 
-export default class DFA_NFA implements FSM<string[], State> {
+export default class DFA_NFA implements FSM<string[], State>, ToDot {
   states: Map<string, State>;
   initialStates: State[];
   alphabet: string[];

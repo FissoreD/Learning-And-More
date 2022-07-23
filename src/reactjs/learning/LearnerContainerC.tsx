@@ -6,7 +6,7 @@ import NL_star from "../../lib/learning/learners/observation_table/NL_Star";
 import { TeacherAutomaton } from "../../lib/learning/teachers/TeacherAutomaton";
 import TTTC from "./discrimination_tree/TTT_C";
 import LStarC from "./observation_table/L_StarC";
-import NL_StarC from "./observation_table/NL_StarC";
+import NLStarC from "./observation_table/NL_StarC";
 
 interface State { cnt: React.ReactElement, regex: string }
 
@@ -31,7 +31,7 @@ export default class LearnerContainerC extends React.Component<{}, State> {
     })
     switch (algo) {
       case "L*": cnt = <LStarC changeRegexContainer={this.changeRegex.bind(this)} name={"L-Star"} learner={new L_star(teacher)} />; break;
-      case "NL*": cnt = <NL_StarC changeRegexContainer={this.changeRegex.bind(this)} name={"NL-Star"} learner={new NL_star(teacher)} />; break;
+      case "NL*": cnt = <NLStarC changeRegexContainer={this.changeRegex.bind(this)} name={"NL-Star"} learner={new NL_star(teacher)} />; break;
       case "TTT": cnt = <TTTC changeRegexContainer={this.changeRegex.bind(this)} name={"TTT"} learner={new TTT(teacher)} />; break
     }
     this.setState({ cnt })

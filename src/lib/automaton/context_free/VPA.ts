@@ -1,9 +1,10 @@
+import ToDot from "../../ToDot.interface";
 import { todo, toEps } from "../../tools";
 import FSM from "../FSM_interface";
 import AlphabetVPA, { ALPHABET_TYPE, ALPH_TYPE_LIST } from "./AlphabetVPA";
 import StateVPA from "./StateVPA";
 
-export default class VPA implements FSM<AlphabetVPA, StateVPA> {
+export default class VPA implements FSM<AlphabetVPA, StateVPA>, ToDot {
   states: Map<string, StateVPA>;
   initialStates: StateVPA[];
   alphabet: AlphabetVPA;
@@ -481,7 +482,7 @@ export default class VPA implements FSM<AlphabetVPA, StateVPA> {
     return txt
   }
 
-  toString(): String {
+  toString(): string {
     throw todo();
   }
 }

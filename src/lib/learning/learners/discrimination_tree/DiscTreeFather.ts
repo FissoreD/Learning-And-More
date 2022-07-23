@@ -1,6 +1,7 @@
+import ToDot from "../../../ToDot.interface";
 import LearningDataStructure from "../LearningDataStructure";
 
-export class InnerNode<LblType> {
+export class InnerNode<LblType>  {
   name: LblType;
   right: InnerNode<LblType> | Leaf<LblType> | undefined;
   left: InnerNode<LblType> | Leaf<LblType> | undefined;
@@ -61,7 +62,7 @@ export class Leaf<LblType> {
 
 export type TreeElt<LblType> = InnerNode<LblType> | Leaf<LblType>
 
-export default abstract class DiscTreeFather<LblType> implements LearningDataStructure {
+export default abstract class DiscTreeFather<LblType> implements LearningDataStructure, ToDot {
   protected root: InnerNode<LblType>;
   protected leaves: Map<string, Leaf<LblType>>;
   protected innerNodes: Set<InnerNode<LblType>>;

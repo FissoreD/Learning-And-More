@@ -3,7 +3,7 @@ import { Button, ButtonGroup, Card, Col, Row } from "react-bootstrap";
 import { BootstrapReboot } from "react-bootstrap-icons";
 import Automaton from "../../lib/automaton/regular/DFA_NFA";
 import Dialog from "../components/Dialog";
-import AutomatonC from "./Automaton";
+import GraphDotRender from "../components/GraphDotRender";
 
 type Operation = "∪" | "∩" | "△" | "/" | "Det" | "~"
 const binaryOp: Operation[] = ["∪", "∩", "△", "/"]
@@ -71,7 +71,7 @@ export default class AutomatonContainerC extends React.Component<{}, State>{
           }}><BootstrapReboot /></a>}
       </Card.Header>
       <div className="h-100 d-flex justify-content-center align-items-center" style={{ minHeight: "130px" }}>
-        <AutomatonC automaton={Automaton.regex2automaton(r)} />
+        <GraphDotRender dot={Automaton.regex2automaton(r)} />
       </div>
       <Card.Body className="py-1">
         <Card.Title className="my-0 text-nowrap text-center" style={{ overflowY: "hidden" }}>{r}</Card.Title>
@@ -149,7 +149,7 @@ export default class AutomatonContainerC extends React.Component<{}, State>{
           <Card key={pos} className="border-primary text-primary my-2">
             <Card.Header>{this.createOpHeader(e.operation, e.is_a1)}</Card.Header>
             <Row className="justify-content-center">
-              <Col xs={12} className="align-self-center" ><AutomatonC automaton={e.res} /></Col>
+              <Col xs={12} className="align-self-center" ><GraphDotRender dot={e.res} /></Col>
             </Row>
           </Card>)}
       </div>
