@@ -57,9 +57,10 @@ export default class StateVPA {
     }
   }
 
-  addTransition(p: { type?: ALPHABET_TYPE, symbol: string, topStack?: string, successor?: StateVPA }) {
+  addTransition(p: { type?: ALPHABET_TYPE, symbol: string, topStack?: string, successor: StateVPA }) {
+    if (p.successor === undefined)
+      throw new Error("p.successor is undefined !")
     p.topStack = p.topStack || undefined
-    p.successor = p.successor || undefined
     let succ: StateVPA[] = [], pred: StateVPA[] = [];
     p.type = p.type || this.mapAlphSymbolToType.get(p.symbol)!
     if (p.topStack && !this.stackAlphabet.includes(p.topStack))
@@ -83,9 +84,10 @@ export default class StateVPA {
         break;
       }
       case "RET": {
-        let succ1, pred1;
         if (p.topStack === undefined)
           throw new Error("Top stack should not be undefined")
+
+        let succ1, pred1;
         succ1 = (this.outTransitions.RET[p.symbol] = (this.outTransitions.RET[p.symbol] || {}))
         if (p.successor)
           pred1 = (p.successor.inTransitions.RET[p.symbol] = (p.successor.inTransitions.RET[p.symbol] || {}))
@@ -126,27 +128,27 @@ export default class StateVPA {
   }
 
   getSuccessor(p: { type?: ALPHABET_TYPE, symbol: string, topStack?: string, stack?: string[] }): StateVPA[] {
-    let type = p.type || this.mapAlphSymbolToType.get(p.symbol)
-    if (type === undefined)
+    p.type = p.type || this.mapAlphSymbolToType.get(p.symbol)
+    if (p.type === undefined)
       throw new Error(`You should specify a type for this symbol : ${p.symbol}`)
 
     try {
-      if (type === "INT")
-        return this.outTransitions[type][p.symbol]
-      if (type === "CALL") {
-        let tr = this.outTransitions[type][p.symbol]
-        if (p.stack) p.stack.push(tr.symbolToPush);
-        // else console.warn("Attention, you are looking for a call transition, but you do not provide a stack to make the push operation")
-        return tr.successors
-      }
-      if (type === "RET" && p.topStack) {
-        return this.outTransitions[type][p.symbol][p.topStack]
+      switch (p.type) {
+        case "INT":
+          return this.outTransitions[p.type][p.symbol]
+        case "CALL": {
+          let tr = this.outTransitions[p.type][p.symbol]
+          if (p.stack) p.stack.push(tr.symbolToPush);
+          // else console.warn("Attention, you are looking for a call transition, but you do not provide a stack to make the push operation")
+          return tr.successors
+        }
+        case "RET":
+          if (p.topStack) return this.outTransitions[p.type][p.symbol][p.topStack]
       }
     } catch (e) {
       return []
     }
-
-    throw new Error(`The top stack symbol should be specified for ${p.symbol}`)
+    throw new Error(`The top stack symbol should be specified for ${p.symbol} for a ${p.type} transitions`)
   }
 
   getPredecessor(p: { type?: ALPHABET_TYPE, symbol: string, topStack?: string }) {
@@ -175,8 +177,8 @@ export default class StateVPA {
     return this.outTransitions
   }
 
-  clone(p: { name?: string, alphabet?: AlphabetVPA }) {
-    return new StateVPA({ ...this, name: p.name || this.name, alphabet: p.alphabet || this.alphabet })
+  clone(p?: { name?: string, alphabet?: AlphabetVPA }) {
+    return new StateVPA({ ...this, name: p?.name || this.name, alphabet: p?.alphabet?.union(this.alphabet) || this.alphabet })
   }
 
   static Bottom(alphabet: AlphabetVPA, stackAlphabet: string[]) {

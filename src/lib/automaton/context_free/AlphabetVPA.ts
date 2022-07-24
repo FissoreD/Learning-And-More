@@ -7,10 +7,10 @@ export default class AlphabetVPA {
   CALL: string[]
   RET: string[]
 
-  constructor(p?: { INT: string[], CALL: string[], RET: string[] }) {
-    this.INT = p ? [...p.INT] : []
-    this.CALL = p ? [...p.CALL] : []
-    this.RET = p ? [...p.RET] : []
+  constructor(p?: { INT?: string[], CALL?: string[], RET?: string[] }) {
+    this.INT = p?.INT ? [...p.INT] : []
+    this.CALL = p?.CALL ? [...p.CALL] : []
+    this.RET = p?.RET ? [...p.RET] : []
   }
 
   /**

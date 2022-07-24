@@ -23,7 +23,7 @@ export default interface FSM<Alphabet, State> {
   difference(aut: FSM<Alphabet, State>): FSM<Alphabet, State>;
   symmetricDifference(aut: FSM<Alphabet, State>): FSM<Alphabet, State>;
   clone(): FSM<Alphabet, State>;
-  /** @returns a deterministic complemented automaton */
+  /** @returns a fresh deterministic complemented automaton */
   complement(): FSM<Alphabet, State>;
 
   getStateNumber(): number;

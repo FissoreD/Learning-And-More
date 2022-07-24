@@ -20,13 +20,13 @@ let createVPA1 = (): VPA => {
 }
 
 let createVPA2 = (): VPA => {
-  let alphabet = new AlphabetVPA({ CALL: ["A"], RET: ["B", "C"], INT: ["I"] })
+  let alphabet = new AlphabetVPA({ CALL: ["A"], RET: ["B"], INT: ["I"] })
   let stack_alphabet = ["2"]
-  let state1 = new StateVPA({ name: "1", isAccepting: true, isInitial: true, alphabet, stackAlphabet: stack_alphabet })
-  state1.addTransition({ symbol: "I", successor: state1 })
-  state1.addTransition({ symbol: "A", topStack: "2", successor: state1 })
-  state1.addTransition({ symbol: "B", topStack: "2", successor: state1 })
-  let vpa = new VPA([state1])
+  let s1 = new StateVPA({ name: "3", isAccepting: true, isInitial: true, alphabet, stackAlphabet: stack_alphabet })
+  s1.addTransition({ symbol: "I", successor: s1 })
+  s1.addTransition({ symbol: "A", topStack: "2", successor: s1 })
+  s1.addTransition({ symbol: "B", topStack: "2", successor: s1 })
+  let vpa = new VPA([s1])
   return vpa
 }
 
@@ -56,14 +56,6 @@ test("VPA to DOT", () => {
   console.log(createVPA1().toDot());
 })
 
-test("VPA complete test", () => {
-  let vpa = createVPA1()
-  console.log(vpa.toDot());
-
-  vpa.complete()
-  console.log(vpa.toDot());
-})
-
 test("Word membership VPA", () => {
   let vpa = createVPA1()
   expect(vpa.acceptWord("AAAIBIIII")).toBeFalsy()
@@ -79,16 +71,26 @@ test("Deterministic VPA", () => {
   expect(vpa.isDeterministic()).toBeTruthy();
 })
 
+// test("Complete", () => {
+//   let vpa2 = createVPA2()
+//   console.log(createVPA1().complete({ alphabet: vpa2.alphabet }).toDot());
+
+// })
+
 test("Union VPA", () => {
   let vpa1 = createVPA1()
   let vpa2 = createVPA2()
-  let union = vpa1.union(vpa2)
-  console.log(union.toDot());
+
+  expect(vpa1.union(vpa2).sameLanguage(vpa2.union(vpa1))).toBeTruthy()
+  expect(vpa1.union(vpa1.complement()).isFull()).toBeTruthy()
 })
 
 test("Intersection VPA", () => {
   let vpa1 = createVPA1()
   let vpa2 = createVPA2()
   let intersection = vpa1.intersection(vpa2)
-  console.log(intersection.toDot());
+  expect(vpa1.union(intersection).sameLanguage(vpa1))
+  expect(vpa2.union(intersection).sameLanguage(vpa2))
+  expect(vpa1.intersection(vpa1.complement()).isEmpty()).toBeTruthy()
 })
+

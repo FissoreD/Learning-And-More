@@ -19,9 +19,10 @@ export default class DFA_NFA implements FSM<string[], State>, ToDot {
   }
 
   complete(p?: { bottom?: State, alphabet?: string[] }) {
-    let alphabet = p?.alphabet || this.alphabet
+    let alphabet = p?.alphabet?.concat(this.alphabet) || this.alphabet
     let bottom = p?.bottom || State.Bottom(alphabet)
     let toAdd = false;
+    this.alphabet = alphabet
     for (const symbol of alphabet) {
       bottom.addTransition(symbol, bottom);
       for (const state of this.states.values()) {
@@ -33,6 +34,8 @@ export default class DFA_NFA implements FSM<string[], State>, ToDot {
       }
     }
     if (toAdd) {
+      while (this.states.has(bottom.name))
+        bottom.name += "1"
       this.states.set(bottom.name, bottom)
     }
     return this
@@ -102,17 +105,17 @@ export default class DFA_NFA implements FSM<string[], State>, ToDot {
       let [states, transition] = [x, triples[x].join(",")]
       let split = states.split("&");
       let A = split[0], B = split[1];
-      return `q${toEps(A)} -> q${toEps(B)} [label = "${transition}"]`
+      return `"${toEps(A)}" -> "${toEps(B)}" [label = "${transition}"]`
     }).join("\n"));
 
     this.initialStates.forEach(s => {
-      txt = txt.concat(`\nI${toEps(s.name)} [label="", style=invis, width=0]\nI${toEps(s.name)} -> q${toEps(s.name)}`);
+      txt = txt.concat(`\n"I${toEps(s.name)}" [label="", style=invis, width=0]\n"I${toEps(s.name)}" -> "${toEps(s.name)}"`);
     });
 
     // Accepting states
     allStates.forEach(s => {
       if (s.isAccepting)
-        txt = txt.concat(`\nq${toEps(s.name)} [peripheries=2]`)
+        txt = txt.concat(`\n"${toEps(s.name)}" [peripheries=2]`)
     })
 
     txt += "\n}"
@@ -333,8 +336,6 @@ export default class DFA_NFA implements FSM<string[], State>, ToDot {
     return this.symmetricDifference(aut).isEmpty()
   }
 
-  /** 
-   * @returns a fresh deterministic complemented automaton */
   complement(alphabet?: string[] | string) {
     let res = this.clone();
     res.alphabet = alphabet ? [...alphabet] : res.alphabet
