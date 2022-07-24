@@ -179,11 +179,15 @@ export default class VPA implements FSM<AlphabetVPA, StateVPA>, ToDot {
    * @returns a _deterministic_ VPA
    * @throws an error if one of the two VPA is not deterministic
    */
-  private unionOrInter(aut: VPA, operation: "Union" | "Intersection"): VPA {
-    let isAccepting = (s1: StateVPA, s2: StateVPA) =>
-      operation === "Union" ?
-        (s1.isAccepting || s2.isAccepting) :
-        (s1.isAccepting && s2.isAccepting)
+  private makeOperation(aut: VPA, operation: "Union" | "Intersection" | "SymDiff" | "Diff"): VPA {
+    let isAccepting = (s1: StateVPA, s2: StateVPA) => {
+      switch (operation) {
+        case "Diff": return s1.isAccepting && !s2.isAccepting
+        case "Union": return s1.isAccepting || s2.isAccepting
+        case "Intersection": return s1.isAccepting && s2.isAccepting
+        case "SymDiff": return s1.isAccepting !== s2.isAccepting
+      }
+    }
 
     if (!this.isDeterministic || !aut.isDeterministic)
       throw Error("The union between non deterministic VPA is not implemented");
@@ -290,19 +294,19 @@ export default class VPA implements FSM<AlphabetVPA, StateVPA>, ToDot {
   }
 
   union(aut: VPA): VPA {
-    return this.unionOrInter(aut, "Union")
+    return this.makeOperation(aut, "Union")
   }
 
   intersection(aut: VPA): VPA {
-    return this.unionOrInter(aut, "Intersection")
+    return this.makeOperation(aut, "Intersection")
   }
 
   difference(aut: VPA): VPA {
-    return aut.union(this.complement(aut.alphabet)).complement()
+    return this.makeOperation(aut, "Diff")
   }
 
   symmetricDifference(aut: VPA): VPA {
-    return this.difference(aut).union(aut.difference(this));
+    return this.makeOperation(aut, "SymDiff");
   }
 
   clone(): VPA {

@@ -1,5 +1,5 @@
 import DFA_NFA from "./DFA_NFA";
-import noam from "./noam";
+// import noam from "./noam";
 import State from "./StateDFA";
 interface HisTransition {
   fromState: number | number[],
@@ -73,11 +73,13 @@ function HisAutomaton2Mine(aut: HisAutomaton): DFA_NFA {
 
 /** Return the mDFA for a regex */
 export default function regexToAutomaton(regex: string): DFA_NFA {
+  const noam = require("./noam");
   let res = noam.re.string.toAutomaton(regex);
   return minimizeAutomaton(res);
 }
 
 function minimizeAutomaton(automatonInput: HisAutomaton): DFA_NFA {
+  const noam = require("./noam");
   let automaton = automatonInput
   automaton = noam.fsm.convertEnfaToNfa(automaton);
   automaton = noam.fsm.convertNfaToDfa(automaton);
