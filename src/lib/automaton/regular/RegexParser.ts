@@ -77,12 +77,6 @@ export default function regexToAutomaton(regex: string): DFA_NFA {
   return minimizeAutomaton(res);
 }
 
-// export function automatonToRegex(automaton: DFA_NFA): string {
-//   // let res = noam.re.tree.toString(noam.re.tree.simplify((noam.fsm.toRegex(MyAutomatonToHis(automaton)))))
-//   // console.log(res);
-//   return ""
-// }
-
 function minimizeAutomaton(automatonInput: HisAutomaton): DFA_NFA {
   let automaton = automatonInput
   automaton = noam.fsm.convertEnfaToNfa(automaton);
@@ -126,8 +120,6 @@ function minimizeAutomaton(automatonInput: HisAutomaton): DFA_NFA {
 //   }
 
 //   static string_to_regex(regex: string, start?: number, end?: number): REGEX {
-//     console.log({ regex: regex.substring(start || 0, end) });
-
 //     if (start === undefined) {
 //       // Remove spaces
 //       regex = start ? regex : regex.replace(" ", "");
@@ -165,8 +157,6 @@ function minimizeAutomaton(automatonInput: HisAutomaton): DFA_NFA {
 //       snd_char = regex[start]
 //     }
 //     if (start === end) return fst_regex;
-//     console.log(snd_char);
-
 //     if (snd_char === "(") {
 //       return new CAT(fst_regex, RegexParser.string_to_regex(regex, start, end))
 //     } else if (snd_char.match(/^[A-Za-z0-9]$/g)) {

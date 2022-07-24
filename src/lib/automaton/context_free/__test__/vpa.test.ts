@@ -52,10 +52,6 @@ test("State VPA creation", () => {
   expect(state1.getPredecessor({ symbol: "B", topStack: "0" })[0]).toBe(state2)
 })
 
-test("VPA to DOT", () => {
-  console.log(createVPA1().toDot());
-})
-
 test("Word membership VPA", () => {
   let vpa = createVPA1()
   expect(vpa.acceptWord("AAAIBIIII")).toBeFalsy()
@@ -70,12 +66,6 @@ test("Deterministic VPA", () => {
   let vpa = createVPA1()
   expect(vpa.isDeterministic()).toBeTruthy();
 })
-
-// test("Complete", () => {
-//   let vpa2 = createVPA2()
-//   console.log(createVPA1().complete({ alphabet: vpa2.alphabet }).toDot());
-
-// })
 
 test("Union VPA", () => {
   let vpa1 = createVPA1()
