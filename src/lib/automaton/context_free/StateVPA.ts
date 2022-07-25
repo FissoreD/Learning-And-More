@@ -79,8 +79,7 @@ export default class StateVPA {
     switch (p.type) {
       case "INT": {
         succ = (this.outTransitions.INT[p.symbol] = this.outTransitions.INT[p.symbol] || [])
-        if (p.successor)
-          pred = (p.successor.inTransitions.INT[p.symbol] = p.successor.inTransitions.INT[p.symbol] || [])
+        pred = (p.successor.inTransitions.INT[p.symbol] = p.successor.inTransitions.INT[p.symbol] || [])
         break;
       }
       case "RET": {
@@ -89,11 +88,9 @@ export default class StateVPA {
 
         let succ1, pred1;
         succ1 = (this.outTransitions.RET[p.symbol] = (this.outTransitions.RET[p.symbol] || {}))
-        if (p.successor)
-          pred1 = (p.successor.inTransitions.RET[p.symbol] = (p.successor.inTransitions.RET[p.symbol] || {}))
+        pred1 = (p.successor.inTransitions.RET[p.symbol] = (p.successor.inTransitions.RET[p.symbol] || {}))
         succ = (succ1[p.topStack] = (succ1[p.topStack] || []))
-        if (pred1)
-          pred = (pred1[p.topStack] = (pred1[p.topStack] || []))
+        pred = (pred1[p.topStack] = (pred1[p.topStack] || []))
         break;
       }
       case "CALL": {
@@ -104,26 +101,23 @@ export default class StateVPA {
           pred1: { successors: StateVPA[], symbolToPush: string };
         succ1 = (this.outTransitions.CALL[p.symbol] = (this.outTransitions.CALL[p.symbol] ||
           { successors: [p.successor], symbolToPush: p.topStack }))
-        if (p.successor) {
-          pred1 = (p.successor.inTransitions.CALL[p.symbol] = (p.successor.inTransitions.CALL[p.symbol] || {}))
-          if (pred1) pred1.symbolToPush = p.topStack;
-          pred = pred1?.successors
-        }
+        pred1 = (p.successor.inTransitions.CALL[p.symbol] = (p.successor.inTransitions.CALL[p.symbol] || {}))
+        pred1.symbolToPush = p.topStack;
+        pred = pred1.successors
         succ1.symbolToPush = p.topStack;
         succ = succ1.successors;
         break;
       }
     }
 
-    if (p.successor) {
-      if ((succ.length === 0 || pred?.length === 0) && !this.alphabet[p.type].includes(p.symbol)) {
-        this.alphabet[p.type].push(p.symbol)
-      }
-      this.successors.add(p.successor)
-      p.successor.predecessor.add(this)
-      succ.push(p.successor)
-      pred.push(this)
+    if ((succ.length === 0 || pred?.length === 0) && !this.alphabet[p.type].includes(p.symbol)) {
+      this.alphabet[p.type].push(p.symbol)
     }
+    this.successors.add(p.successor)
+    p.successor.predecessor.add(this)
+    succ.push(p.successor)
+    pred.push(this)
+
     return succ
   }
 
@@ -153,14 +147,18 @@ export default class StateVPA {
 
   getPredecessor(p: { type?: ALPHABET_TYPE, symbol: string, topStack?: string }) {
     let type = p.type || this.mapAlphSymbolToType.get(p.symbol)
-    if (type === undefined)
-      throw new Error(`You should specify a type for this symbol : ${p.symbol}`)
-    if (type === "INT")
-      return this.inTransitions["INT"][p.symbol]
-    if (type === "CALL")
-      return this.inTransitions["CALL"][p.symbol].successors
-    if (p.topStack)
-      return this.inTransitions["RET"][p.symbol][p.topStack]
+    try {
+      if (type === undefined)
+        throw new Error(`You should specify a type for this symbol : ${p.symbol}`)
+      if (type === "INT")
+        return this.inTransitions["INT"][p.symbol]
+      if (type === "CALL")
+        return this.inTransitions["CALL"][p.symbol].successors
+      if (p.topStack)
+        return this.inTransitions["RET"][p.symbol][p.topStack]
+    } catch (e) {
+      return []
+    }
     throw new Error(`The top stack symbol should be specified for ${p.symbol}`)
   }
 

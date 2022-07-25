@@ -79,8 +79,16 @@ test("Intersection VPA", () => {
   let vpa1 = createVPA1()
   let vpa2 = createVPA2()
   let intersection = vpa1.intersection(vpa2)
-  expect(vpa1.union(intersection).sameLanguage(vpa1))
-  expect(vpa2.union(intersection).sameLanguage(vpa2))
+  expect(vpa1.union(intersection).sameLanguage(vpa1)).toBeTruthy()
+  expect(vpa2.union(intersection).sameLanguage(vpa2)).toBeTruthy()
   expect(vpa1.intersection(vpa1.complement()).isEmpty()).toBeTruthy()
+})
+
+test("Minimize VPA", () => {
+  let vpa1 = createVPA1()
+  let vpa2 = createVPA2()
+  let intersection = vpa1.difference(vpa2)
+  let interMinim = intersection.minimize()
+  expect(interMinim.sameLanguage(intersection)).toBeTruthy()
 })
 

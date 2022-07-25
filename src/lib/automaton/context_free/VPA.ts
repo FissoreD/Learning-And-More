@@ -64,114 +64,125 @@ export default class VPA implements FSM<AlphabetVPA, StateVPA>, ToDot {
     throw todo();
   }
 
-  /** @todo : IMPORTANT : Entirely to control */
+  /** 
+   * @note : the vpa determinization algorithm is not implemented. If the VPA is not deterministic an error will be raised
+   */
   minimize(): VPA {
-    // this.complete()
+    if (!this.isDeterministic())
+      throw new Error("The VPA should be deterministic")
 
-    // let aut = this.isDeterministic() ? this : this.determinize()
+    this.complete()
 
-    // /** List of states reachable from *the* initial state */
-    // let stateList = new Set<string>();
-    // stateList.add(aut.initialStates[0].name)
+    let aut = this.isDeterministic() ? this : this.determinize()
 
-    // // BFS to remove not reachable node from initial state
-    // let toExplore = [aut.initialStates[0]]
-    // while (toExplore.length > 0) {
-    //   let newState = toExplore.shift()!
+    /** List of states reachable from *the* initial state */
+    let stateList = new Set<string>();
+    stateList.add(aut.initialStates[0].name)
 
-    //   for (const successor of newState.getAllSuccessors()) {
-    //     if (!stateList.has(successor.name)) {
-    //       toExplore.push(successor)
-    //       stateList.add(successor.name)
-    //     }
-    //   }
-    // }
+    // BFS to remove not reachable node from initial state
+    let toExplore = [aut.initialStates[0]]
+    while (toExplore.length > 0) {
+      let newState = toExplore.shift()!
 
-    // let P: Set<string>[] = [new Set(), new Set()];  // P := {F, Q \ F} 
-    // stateList.forEach(s => {
-    //   (aut.states.get(s)!.isAccepting ? P[0] : P[1]).add(s)
-    // })
-    // P = P.filter(p => p.size > 0)
+      for (const successor of newState.getAllSuccessors()) {
+        if (!stateList.has(successor.name)) {
+          toExplore.push(successor)
+          stateList.add(successor.name)
+        }
+      }
+    }
 
-    // let pLength = () => P.reduce((a, p) => a + p.size, 0)
-    // let flatAlphabet = this.alphabet.flatAlphabet()
+    let P: Set<string>[] = [new Set(), new Set()];  // P := {F, Q \ F} 
+    stateList.forEach(s => {
+      (aut.states.get(s)!.isAccepting ? P[0] : P[1]).add(s)
+    })
+    P = P.filter(p => p.size > 0)
 
-    // let W: Set<string>[] = Array.from(P)
-    // while (W.length > 0) {
-    //   let A = W.shift()!
-    //   for (const symbol of flatAlphabet) {
-    //     // X = the set of states for which a transition on letter leads to a state in A
-    //     let X: Set<string> = new Set()
-    //     A.forEach(e => {
-    //       aut.states.get(e)!.getPredecessor({
-    //         symbol,
-    //         topStack: todo()
-    //       })?.forEach(s => X.add(s.name))
-    //     })
+    let pLength = () => P.reduce((a, p) => a + p.size, 0)
 
-    //     // let {S1 = X ∩ Y; S2 = Y \ X} fotall Y in P
-    //     let P1 = P.map(Y => {
-    //       let [X_inter_Y, Y_minus_X] = [new Set<string>(), new Set<string>()];
-    //       Y.forEach(state => X.has(state) ? X_inter_Y.add(state) : Y_minus_X.add(state))
-    //       return { Y, X_inter_Y, Y_minus_X }
-    //     }).filter(({ X_inter_Y, Y_minus_X }) => X_inter_Y.size > 0 && Y_minus_X.size > 0);
+    let W: Set<string>[] = Array.from(P)
+    while (W.length > 0) {
+      let A = W.shift()!
+      for (const alphabetType of ALPH_TYPE_LIST) {
+        for (let i = 0; i < (alphabetType === "INT" ? 1 : this.stackAlphabet.length); i++) {
+          for (const symbol of this.alphabet[alphabetType]) {
+            // X = the set of states for which a transition on letter leads to a state in A
+            let X: Set<string> = new Set()
+            A.forEach(e => {
+              aut.states.get(e)!.getPredecessor({
+                symbol,
+                topStack: (alphabetType === "INT" ? "" : this.stackAlphabet[i])
+              })?.forEach(s => X.add(s.name))
+            })
 
-    //     for (const { Y, X_inter_Y, Y_minus_X } of P1) {
-    //       // replace Y in P by the two sets X ∩ Y and Y \ X
-    //       P.splice(P.indexOf(Y), 1)
-    //       P.push(X_inter_Y)
-    //       P.push(Y_minus_X)
-    //       if (pLength() !== stateList.size) throw new Error(`Wanted ${stateList.size} had ${pLength()}`);
-    //       if (W.includes(Y)) {
-    //         W.splice(W.indexOf(Y), 1)
-    //         W.push(X_inter_Y)
-    //         W.push(Y_minus_X)
-    //       } else {
-    //         W.push(X_inter_Y.size <= Y_minus_X.size ? X_inter_Y : Y_minus_X)
-    //       }
-    //     }
-    //   }
-    // }
+            // let {S1 = X ∩ Y; S2 = Y \ X} fotall Y in P
+            let P1 = P.map(Y => {
+              let [X_inter_Y, Y_minus_X] = [new Set<string>(), new Set<string>()];
+              Y.forEach(state => X.has(state) ? X_inter_Y.add(state) : Y_minus_X.add(state))
+              return { Y, X_inter_Y, Y_minus_X }
+            }).filter(({ X_inter_Y, Y_minus_X }) => X_inter_Y.size > 0 && Y_minus_X.size > 0);
 
-    // let oldStateToNewState: Map<string, StateVPA> = new Map();
+            for (const { Y, X_inter_Y, Y_minus_X } of P1) {
+              // replace Y in P by the two sets X ∩ Y and Y \ X
+              P.splice(P.indexOf(Y), 1)
+              P.push(X_inter_Y)
+              P.push(Y_minus_X)
+              if (pLength() !== stateList.size) throw new Error(`Wanted ${stateList.size} had ${pLength()}`);
+              if (W.includes(Y)) {
+                W.splice(W.indexOf(Y), 1)
+                W.push(X_inter_Y)
+                W.push(Y_minus_X)
+              } else {
+                W.push(X_inter_Y.size <= Y_minus_X.size ? X_inter_Y : Y_minus_X)
+              }
+            }
+          }
+        }
+      }
+    }
 
-    // let newStates = new Set([...P].filter(partition => partition.size > 0).map((partition, pos) => {
-    //   let representant: StateVPA[] = [...partition].map(e => aut.states.get(e)!);
-    //   let newState = new StateVPA({
-    //     name: pos + "",
-    //     isAccepting: representant.some(e => e.isAccepting),
-    //     isInitial: representant.some(e => e.isInitial),
-    //     alphabet: representant[0].alphabet, stackAlphabet: this.stackAlphabet
-    //   })
-    //   partition.forEach(state => oldStateToNewState.set(state, newState))
-    //   return newState;
-    // }));
-    // for (const partition of P) {
-    //   for (const oldState of partition) {
-    //     for (const symbol of flatAlphabet) {
-    //       for (const successor of aut.states.get(oldState)!.getSuccessor({
-    //         symbol,
-    //         topStack: todo()
-    //       })) {
-    //         if (!oldStateToNewState.get(oldState)!.getSuccessor({
-    //           symbol,
-    //           topStack: todo()
-    //         })![0] ||
-    //           (oldStateToNewState.get(oldState)!.getSuccessor({
-    //             symbol,
-    //             topStack: todo()
-    //           })![0].name !== oldStateToNewState.get(successor.name)!.name))
-    //           oldStateToNewState.get(oldState)!.addTransition({
-    //             symbol, successor: oldStateToNewState.get(successor.name),
-    //             topStack: todo()
-    //           }!)
-    //       }
-    //     }
-    //   }
-    // }
+    let oldStateToNewState: Map<string, StateVPA> = new Map();
 
-    // return new VPA(newStates)
-    throw todo()
+    let newStates = new Set([...P].filter(partition => partition.size > 0).map((partition, pos) => {
+      let representant: StateVPA[] = [...partition].map(e => aut.states.get(e)!);
+      let newState = new StateVPA({
+        name: pos + "",
+        isAccepting: representant.some(e => e.isAccepting),
+        isInitial: representant.some(e => e.isInitial),
+        alphabet: representant[0].alphabet, stackAlphabet: this.stackAlphabet
+      })
+      partition.forEach(state => oldStateToNewState.set(state, newState))
+      return newState;
+    }));
+    for (const partition of P) {
+      for (const oldState of partition) {
+        for (const alphabetType of ALPH_TYPE_LIST) {
+          for (let i = 0; i < (alphabetType === "INT" ? 1 : this.stackAlphabet.length); i++)
+            for (const symbol of this.alphabet[alphabetType]) {
+              let topStack = (alphabetType === "INT" ? "" : this.stackAlphabet[i])
+              for (const successor of aut.states.get(oldState)!.getSuccessor({
+                symbol,
+                topStack
+              })) {
+                if (!oldStateToNewState.get(oldState)!.getSuccessor({
+                  symbol,
+                  topStack
+                })![0] ||
+                  (oldStateToNewState.get(oldState)!.getSuccessor({
+                    symbol,
+                    topStack
+                  })![0].name !== oldStateToNewState.get(successor.name)!.name))
+                  oldStateToNewState.get(oldState)!.addTransition({
+                    symbol,
+                    successor: oldStateToNewState.get(successor.name)!,
+                    topStack
+                  }!)
+              }
+            }
+        }
+      }
+    }
+    return new VPA(newStates)
   }
 
   /**
