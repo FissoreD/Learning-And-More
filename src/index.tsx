@@ -1,11 +1,55 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.js';
 import React from 'react';
+import { Container, Row } from "react-bootstrap";
 import ReactDOM from 'react-dom/client';
+import AutomatonContainerC from './reactjs/automaton/AutomatonContainerC';
+import TestVPAViewer from './reactjs/automaton/TestVpaViewer';
+import { NavBar } from './reactjs/components/NavBar';
 import "./reactjs/index.css";
-import { Main } from "./reactjs/main";
+import LearnerContainerC, { LearnerAlgo } from './reactjs/learning/LearnerContainerC';
+import Home from './reactjs/main';
 import reportWebVitals from './reactjs/reportWebVitals';
 
+interface Prop { cnt: React.ReactElement }
+export type AlgosNavBar = "Home" | "Automaton" | "Learning" | "TestVPAViewer"
+
+
+export class Main extends React.Component<{}, Prop> {
+  constructor(prop: {}) {
+    super(prop)
+    this.state = { cnt: this.giveContent(window.location.pathname.substring(1) as AlgosNavBar) }
+  }
+
+  giveContent(section: AlgosNavBar) {
+    let [first, ...second] = section.split("/")
+    let cnt: React.ReactElement;
+    switch (first) {
+      case "Automaton": cnt = <AutomatonContainerC />; break;
+      case "Learning": cnt = <LearnerContainerC cnt={second.join("/") as LearnerAlgo} />; break;
+      case "TestVPAViewer": cnt = <TestVPAViewer />; break;
+      default: cnt = <Home />
+    }
+    return cnt
+  }
+
+  swicthContent(section: AlgosNavBar): void {
+    this.setState(() => { return { cnt: this.giveContent(section) } })
+  }
+
+  render(): React.ReactNode {
+    return <>
+      <NavBar changeCnt={this.swicthContent.bind(this)} />
+      <Container >
+        <Row className="justify-content-center" >
+          <div className="col-xl-8 col-md-10">
+            {this.state.cnt}
+          </div >
+        </Row>
+      </Container>
+    </>
+  }
+}
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement

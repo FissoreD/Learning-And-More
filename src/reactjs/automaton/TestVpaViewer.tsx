@@ -55,7 +55,7 @@ interface State {
 let a1 = createVPA1()
 let a2 = createVPA2()
 
-export default class AutomatonContainerC extends React.Component<{}, State>{
+export default class TestVPAViewer extends React.Component<{}, State>{
 
   constructor(props: {}) {
     super(props)

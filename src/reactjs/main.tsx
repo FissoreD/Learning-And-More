@@ -1,39 +1,18 @@
 import React from "react";
-import { Container, Row } from "react-bootstrap";
-import AutomatonContainerC from "./automaton/AutomatonContainerC";
-import TestVPAViewer from "./automaton/TestVpaViewer";
-import { AlgosNavBar, NavBar } from "./components/NavBar";
-import LearnerContainerC from "./learning/LearnerContainerC";
+import { Row } from "react-bootstrap";
 
-interface Prop { cnt: React.ReactElement }
 
-export class Main extends React.Component<{}, Prop> {
+export default class Home extends React.Component<{}, {}> {
   constructor(prop: {}) {
     super(prop)
-    this.state = { cnt: <LearnerContainerC /> }
-  }
-
-  swicthContent(section: AlgosNavBar): void {
-    let cnt: React.ReactElement;
-    switch (section) {
-      case "Automaton": cnt = <AutomatonContainerC />; break;
-      case "Learning": cnt = <LearnerContainerC />; break;
-      case "TestVPAViewer": cnt = <TestVPAViewer />; break;
-      default: throw new Error("Should not be here")
-    }
-    this.setState(() => { return { cnt } })
+    window.history.pushState("", "", "/")
   }
 
   render(): React.ReactNode {
     return <>
-      <NavBar changeCnt={this.swicthContent.bind(this)} />
-      <Container >
-        <Row className="justify-content-center" >
-          <div className="col-xl-8 col-md-10">
-            {this.state.cnt}
-          </div >
-        </Row>
-      </Container>
+      <Row className="justify-content-center" >
+        This is the home
+      </Row>
     </>
   }
 }

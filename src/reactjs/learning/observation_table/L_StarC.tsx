@@ -6,7 +6,6 @@ import { PropReact } from "../LearnerSectionC";
 import Learner_OT_AbstractC from "./Learner_OT_AbstractC";
 
 export default class LStarC extends Learner_OT_AbstractC {
-
   createNewLearner(regex: string): L_Star {
     return new L_Star(new TeacherAutomaton({ type: "Regex", automaton: regex }))
   }

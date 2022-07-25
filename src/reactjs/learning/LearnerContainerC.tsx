@@ -8,33 +8,41 @@ import TTTC from "./discrimination_tree/TTT_C";
 import LStarC from "./observation_table/L_StarC";
 import NLStarC from "./observation_table/NL_StarC";
 
+export type LearnerAlgo = "L" | "NL" | "TTT" | "TTT-VPA"
 interface State { cnt: React.ReactElement, regex: string }
+interface Prop { cnt: LearnerAlgo }
 
 let regex = "(a+b)*a(a+b)(a+b)"
-export default class LearnerContainerC extends React.Component<{}, State> {
-  constructor(prop: {}) {
+export default class LearnerContainerC extends React.Component<Prop, State> {
+  constructor(prop: Prop) {
     super(prop)
     this.state = {
-      cnt: <LStarC changeRegexContainer={this.changeRegex.bind(this)} name={"L-Star"} learner={new L_star(new TeacherAutomaton({
-        automaton: regex,
-        type: "Regex"
-      }))} />,
+      cnt: this.giveAlgo(prop.cnt, regex),
       regex
     }
   }
 
-  changeCnt(algo: "L*" | "NL*" | "TTT") {
-    let cnt: React.ReactElement;
+  giveAlgo(algo: LearnerAlgo, regex?: string) {
+    let cnt;
     let teacher = new TeacherAutomaton({
-      automaton: this.state.regex,
+      automaton: (this.state ? this.state.regex : regex)!,
       type: "Regex"
     })
     switch (algo) {
-      case "L*": cnt = <LStarC changeRegexContainer={this.changeRegex.bind(this)} name={"L-Star"} learner={new L_star(teacher)} />; break;
-      case "NL*": cnt = <NLStarC changeRegexContainer={this.changeRegex.bind(this)} name={"NL-Star"} learner={new NL_star(teacher)} />; break;
-      case "TTT": cnt = <TTTC changeRegexContainer={this.changeRegex.bind(this)} name={"TTT"} learner={new TTT(teacher)} />; break
+      case "NL": cnt = <NLStarC changeRegexContainer={this.changeRegex.bind(this)} name={"NL-Star"} learner={new NL_star(teacher)} />; break;
+      case "TTT": cnt = <TTTC changeRegexContainer={this.changeRegex.bind(this)} name={"TTT"} learner={new TTT(teacher)} />; break;
+      case "TTT-VPA":
+      //cnt = <TTTC changeRegexContainer={this.changeRegex.bind(this)} name={"TTT"} learner={new TTT - VPA(teacher)} /> break;
+      default:
+        algo = "L"
+        cnt = <LStarC changeRegexContainer={this.changeRegex.bind(this)} name={"L-Star"} learner={new L_star(teacher)} />;
     }
-    this.setState({ cnt })
+    window.history.pushState("", "", "/" + window.location.pathname.split("/")[1] + "/" + algo)
+    return cnt
+  }
+
+  changeCnt(algo: LearnerAlgo) {
+    this.setState({ cnt: this.giveAlgo(algo) })
   }
 
   changeRegex(regex: string) {
@@ -43,7 +51,7 @@ export default class LearnerContainerC extends React.Component<{}, State> {
 
   render(): React.ReactElement {
     /* @todo : must give a unique key to the generated elements in the map*/
-    let algos: ("L*" | "NL*" | "TTT")[] = ["L*", "NL*", "TTT"]
+    let algos: LearnerAlgo[] = ["L", "NL", "TTT"]
     let createButtons = () => {
       return (
         <ButtonGroup className="d-flex" style={{ maxWidth: "70%", width: "100%" }}>{algos.map(
