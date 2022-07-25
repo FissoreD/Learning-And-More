@@ -2,7 +2,7 @@ import { Engine, KeyMode } from "d3-graphviz";
 
 export const FLEX_CENTER = "d-flex justify-content-center align-items-center"
 
-export const graphvizOptions = {
+export const GRAPHVIZ_OPTIONS = {
   height: undefined,
   width: undefined,
   scale: 1,
@@ -18,3 +18,5 @@ export const graphvizOptions = {
   useWorker: false,
   zoom: false,
 };
+
+export const URL_BASE = "Learning-Automata"

@@ -6,10 +6,12 @@ import LearnerFather from "../../lib/learning/learners/LearnerFather";
 import LearningDataStructure from "../../lib/learning/learners/LearningDataStructure";
 import Dialog from "../components/Dialog";
 import GraphDotRender from "../components/GraphDotRender";
-
-export interface PropReact<Learner extends LearnerFather<LearningDataStructure>> { learner: Learner, name: String, changeRegexContainer: (regex: string) => void }
+import { setUrl, withoutLastSladh } from "../globalFunctions";
+import { URL_BASE } from "../globalVars";
 
 export type MessageType = "END" | "SEND-HYP" | "CE" | "CONSISTENCY" | "CLOSEDNESS" | "DISC-REF" | "HYP-STAB"
+
+export interface PropReact<Learner extends LearnerFather<LearningDataStructure>> { learner: Learner, name: String, changeRegexContainer: (regex: string) => void, pos: number }
 
 export interface StateReact<Learner extends LearnerFather<LearningDataStructure>> {
   doNext: boolean,
@@ -19,25 +21,21 @@ export interface StateReact<Learner extends LearnerFather<LearningDataStructure>
   showRegexDialog: boolean
 }
 
+type Learner = LearnerFather<LearningDataStructure>
 
-export abstract class LearnerSection<LearnerT extends LearnerFather<LearningDataStructure>> extends React.Component<PropReact<LearnerT>, StateReact<LearnerT>>{
-  constructor(prop: PropReact<LearnerT>) {
+export abstract class LearnerSection extends React.Component<PropReact<Learner>, StateReact<Learner>>{
+  constructor(prop: PropReact<Learner>) {
     super(prop)
-    this.state = {
-      doNext: true,
-      memory: [{
-        message: { type: "CE", val: "Learning with " + prop.name },
-        dataStructure: prop.learner.dataStructure.clone(),
-        automaton: undefined
-      }], position: 0, learner: prop.learner,
-      showRegexDialog: false,
-    };
+    console.log(prop.pos);
+    this.state = this.allSteps(this.createNewState(prop.learner.teacher.regex), prop.pos);
+    if (!window.location.pathname.endsWith("/" + prop.pos))
+      setUrl(window.location.pathname.substring(URL_BASE.length + 1) + "/" + prop.pos)
   }
 
   abstract dataStructureToNodeElement(ds: LearningDataStructure): React.ReactElement;
-  abstract nextOpChild(state: StateReact<LearnerT>): StateReact<LearnerT>;
+  abstract nextOpChild(state: StateReact<Learner>): StateReact<Learner>;
 
-  nextOp(state: StateReact<LearnerT>): StateReact<LearnerT> {
+  nextOp(state: StateReact<Learner>): StateReact<Learner> {
     if (state.position === state.memory.length - 1) {
       state = this.nextOpChild(state)
     } else {
@@ -52,12 +50,16 @@ export abstract class LearnerSection<LearnerT extends LearnerFather<LearningData
     }
   }
 
-  allSteps() {
-    let state = { ...this.state }
-    if (state.position === state.memory.length) return
-    while (!this.state.learner.finish) state = this.nextOp(state)
-    this.setState({ ...state })
-    this.setState({ position: this.state.memory.length - 1 })
+  allSteps(state: StateReact<Learner>, pos?: number) {
+    if (state.position === state.memory.length || state.learner.finish) return state
+
+    let i: number;
+    for (i = 0; pos === undefined || (pos !== undefined && i < pos); i++) {
+      if (state.learner.finish) break;
+      state = this.nextOp(state)
+    }
+    state.position = (i || state.memory.length) - 1
+    return state
   }
 
   reload() {
@@ -90,9 +92,9 @@ export abstract class LearnerSection<LearnerT extends LearnerFather<LearningData
     return <p className="text-center m-0">{msg}</p>
   }
 
-  abstract createNewLearner(regex: string): LearnerT;
+  abstract createNewLearner(regex: string): Learner;
 
-  createNewState(regex: string): StateReact<LearnerT> {
+  createNewState(regex: string): StateReact<Learner> {
     let learner = this.createNewLearner(regex)
     return {
       doNext: true,
@@ -108,6 +110,7 @@ export abstract class LearnerSection<LearnerT extends LearnerFather<LearningData
   render(): React.ReactElement {
     let position = this.state.position
     let memoryCell = this.state.memory[position]
+    setUrl(withoutLastSladh(window.location.pathname.substring(URL_BASE.length + 1)) + "/" + position)
 
     return <div className="body-container">
       <Dialog show={this.state.showRegexDialog} fn={this.changeLearner.bind(this)} />
@@ -129,7 +132,8 @@ export abstract class LearnerSection<LearnerT extends LearnerFather<LearningData
             position = n.position
             memoryCell = n.memory[position]
           }}><CaretRightFill /></button>
-          <button type="button" className="btn btn-secondary" onClick={() => this.allSteps()}><ArrowClockwise /></button>
+          <button type="button" className="btn btn-secondary" onClick={() =>
+            this.setState(this.allSteps({ ...this.state }))}><ArrowClockwise /></button>
         </div>
       </div>
       {this.createCard("Language to Learn", this.createText(this.state.learner.teacher.regex))}

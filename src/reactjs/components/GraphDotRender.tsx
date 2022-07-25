@@ -1,7 +1,7 @@
 import { graphviz } from 'd3-graphviz';
 import * as React from 'react';
 import ToDot from '../../lib/ToDot.interface';
-import { graphvizOptions } from '../globalVars';
+import { GRAPHVIZ_OPTIONS } from '../globalVars';
 
 interface Props {
   dot: ToDot;
@@ -33,7 +33,7 @@ export default class GraphDotToRender extends React.Component<Props, any> {
   private renderGraph = () => {
     const { dot } = this.props;
     graphviz(`#${this.id}`)
-      .options(graphvizOptions)
+      .options(GRAPHVIZ_OPTIONS)
       .renderDot(dot.toDot());
   };
 }

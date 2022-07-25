@@ -6,7 +6,9 @@ import { TeacherAutomaton } from "../../../lib/learning/teachers/TeacherAutomato
 import { LearnerSection, MessageType, StateReact } from "../LearnerSectionC";
 import DiscriminationTreeC from "./DiscriminationTreeC";
 
-export default class TTTC extends LearnerSection<TTT> {
+export default class TTTC extends LearnerSection {
+
+
   createNewLearner(regex: string): TTT {
     return new TTT(new TeacherAutomaton({ type: "Regex", automaton: regex }))
   }
@@ -16,7 +18,7 @@ export default class TTTC extends LearnerSection<TTT> {
   }
 
   nextOpChild(state: StateReact<TTT>): StateReact<TTT> {
-    let learner = this.state.learner
+    let learner = state.learner as TTT
     if (learner.finish) return state;
     var message: { type: MessageType, val: string };
     if (state.doNext) {
@@ -26,7 +28,7 @@ export default class TTTC extends LearnerSection<TTT> {
         message = { type: "SEND-HYP", val: `${learner.lastCe?.value} is finally correctly placed in the automaton.\nThis automaton will be sent as a conjecture` }
       }
     } else {
-      this.state.learner.makeNextQuery()
+      state.learner.makeNextQuery()
       let oldMsg = state.memory[state.position].message
       message = { ...oldMsg };
       if (learner.finish) {

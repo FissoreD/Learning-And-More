@@ -6,6 +6,7 @@ import ReactDOM from 'react-dom/client';
 import AutomatonContainerC from './reactjs/automaton/AutomatonContainerC';
 import TestVPAViewer from './reactjs/automaton/TestVpaViewer';
 import { NavBar } from './reactjs/components/NavBar';
+import { setUrl } from './reactjs/globalFunctions';
 import "./reactjs/index.css";
 import LearnerContainerC, { LearnerAlgo } from './reactjs/learning/LearnerContainerC';
 import Home from './reactjs/main';
@@ -18,11 +19,14 @@ export type AlgosNavBar = "Home" | "Automaton" | "Learning" | "TestVPAViewer"
 export class Main extends React.Component<{}, Prop> {
   constructor(prop: {}) {
     super(prop)
+    if (window.location.pathname === "/")
+      setUrl("")
     this.state = { cnt: this.giveContent(window.location.pathname.substring(1) as AlgosNavBar) }
   }
 
   giveContent(section: AlgosNavBar) {
-    let [first, ...second] = section.split("/")
+    let [, first, ...second] = section.split("/")
+    if (!section.includes("/")) first = section
     let cnt: React.ReactElement;
     switch (first) {
       case "Automaton": cnt = <AutomatonContainerC />; break;

@@ -2,6 +2,7 @@ import React from "react";
 import { Container, Nav, Navbar } from "react-bootstrap";
 import { Bank } from "react-bootstrap-icons";
 import { AlgosNavBar } from "../..";
+import { setUrl } from "../globalFunctions";
 
 
 interface ChangeCnt { changeCnt: (algo: AlgosNavBar) => void; }
@@ -10,8 +11,7 @@ export class NavBar extends React.Component<ChangeCnt> {
   render(): React.ReactElement {
     let links = (["Automaton", "Learning", "TestVPAViewer"] as AlgosNavBar[]).map((e, pos) => <Nav.Link key={pos} onClick={() => {
       this.props.changeCnt(e);
-      if (window.location.pathname.split("/")[1] !== e)
-        window.history.pushState("", "", "/" + e);
+      setUrl("/" + e)
     }}>{e}</Nav.Link>)
     return (
       <Navbar bg="light" expand="lg">
