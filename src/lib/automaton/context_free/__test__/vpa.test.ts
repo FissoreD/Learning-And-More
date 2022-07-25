@@ -87,8 +87,17 @@ test("Intersection VPA", () => {
 test("Minimize VPA", () => {
   let vpa1 = createVPA1()
   let vpa2 = createVPA2()
-  let intersection = vpa1.difference(vpa2)
-  let interMinim = intersection.minimize()
-  expect(interMinim.sameLanguage(intersection)).toBeTruthy()
+  let functions = [
+    VPA.prototype.intersection,
+    VPA.prototype.union,
+    VPA.prototype.difference,
+    VPA.prototype.symmetricDifference,
+    VPA.prototype.minimize
+  ]
+  let aut: VPA[];
+  functions.forEach(e => {
+    aut = [e.apply(vpa1, [vpa2]), e.apply(vpa2, [vpa1]), e.apply(vpa2, [vpa2])]
+    aut.forEach(aut => expect(aut.sameLanguage(aut.minimize())).toBeTruthy())
+  })
 })
 
