@@ -41,6 +41,84 @@ export default class DFA_NFA implements FSM<string[], StateDFA>, ToDot {
     return this
   }
 
+  private makeOperation(aut: DFA_NFA, operation: "Union" | "Intersection" | "SymDiff" | "Diff"): DFA_NFA {
+    let isAccepting = (s1: StateDFA, s2: StateDFA) => {
+      switch (operation) {
+        case "Diff": return s1.isAccepting && !s2.isAccepting
+        case "Union": return s1.isAccepting || s2.isAccepting
+        case "Intersection": return s1.isAccepting && s2.isAccepting
+        case "SymDiff": return s1.isAccepting !== s2.isAccepting
+      }
+    }
+
+    let a1 = this.isDeterministic() ? this : this.determinize()
+    aut = aut.isDeterministic() ? aut : aut.determinize()
+
+    /**
+     * The alphabet of the new VPA is made by the union of the alphabets
+     * of the alphabets of {@link a1} and {@link aut}
+     */
+    let alphabet = [...new Set([...a1.alphabet, ...aut.alphabet])];
+
+    a1.complete({ alphabet });
+    aut.complete({ alphabet });
+
+    /** Start with the initial states of {@link a1} and {@link aut} */
+    let initState1 = a1.initialStates[0];
+    let initState2 = aut.initialStates[0];
+
+    let mapNewStateOldState = new Map<string, [StateDFA, StateDFA]>();
+    let mapNewStateNameState = new Map<string, StateDFA>()
+    let startState = new StateDFA(initState1.name + initState2.name,
+      isAccepting(initState1, initState2),
+      true, alphabet);
+    let toExplore = new Set([startState]);
+    mapNewStateOldState.set(startState.name, [initState1, initState2]);
+    mapNewStateNameState.set(startState.name, startState)
+
+    let explored = new Set<string>();
+
+    /** 
+     * Creates a new states from the two passed in parameter  
+     * At least one of them can be undefined  
+     * It pushes the new state in the toExplore list if if has
+     * not already been explored
+     */
+    let buildState = (successor1: StateDFA, successor2: StateDFA) => {
+      let name = successor1.name + successor2.name
+      let newState = mapNewStateNameState.get(name) || new StateDFA(
+        name, isAccepting(successor1, successor2),
+        false, alphabet
+      )
+      if (!explored.has(name)) {
+        mapNewStateOldState.set(newState.name, [successor1, successor2])
+        mapNewStateNameState.set(newState.name, newState)
+        toExplore.add(newState)
+      }
+      return newState
+    }
+
+    while (toExplore.size) {
+      let current = toExplore.keys().next().value! as StateDFA;
+      if (!toExplore.delete(current))
+        throw new Error("Should delete an item from the set")
+      explored.add(current.name);
+
+      let [nextA, nextB] = mapNewStateOldState.get(current.name)!;
+      if (nextA === undefined || nextB === undefined) {
+        throw new Error("At least one state should be present")
+      } else {
+        let outA = nextA.getAllOutTransitions()
+        let outB = nextB.getAllOutTransitions()
+
+        alphabet.forEach(a1 => current.addTransition(
+          a1!, buildState(outA.get(a1)![0], outB.get(a1)![0])
+        ))
+      }
+    }
+    return new DFA_NFA([...mapNewStateNameState.values()])
+  }
+
   readWord(word: string): [StateDFA | undefined, boolean] {
     if (word.length === 0)
       return [this.initialStates.find(e => e.isAccepting) || this.initialStates[0], this.initialStates.some(e => e.isAccepting)];
@@ -142,6 +220,10 @@ export default class DFA_NFA implements FSM<string[], StateDFA>, ToDot {
    * @returns a fresh Determinized Automaton 
    */
   determinize(): DFA_NFA {
+    console.log("Determinizing");
+    console.log(this.toDot());
+
+
     this.complete()
     let allStates = this.allStates()
     let newStates = new Map<string, StateDFA>();
@@ -271,7 +353,8 @@ export default class DFA_NFA implements FSM<string[], StateDFA>, ToDot {
       }
     }
 
-    return new DFA_NFA(newStates)
+    let res = new DFA_NFA(newStates)
+    return res;
   }
 
   clone(alphabet?: string[]) {
@@ -285,40 +368,19 @@ export default class DFA_NFA implements FSM<string[], StateDFA>, ToDot {
   }
 
   union(aut: DFA_NFA): DFA_NFA {
-    let res;
-    let states = [
-      ...aut.allStates().map(e => e.clone({ name: "1" + e.name })),
-      ...this.allStates().map(e => e.clone({ name: "2" + e.name }))
-    ];
-    let alphabet = [...new Set(states.map(e => e.alphabet).flat())];
-    states.forEach(e => e.alphabet = alphabet)
-    res = new DFA_NFA(states);
-    res.complete()
-
-    alphabet.forEach(l => {
-      aut.allStates().forEach((e, pos) => e.getSuccessor(l)?.forEach(succ =>
-        states[pos].addTransition(l, states[aut.allStates().indexOf(succ)])
-      ))
-      this.allStates().forEach((e, pos) => e.getSuccessor(l)?.forEach(succ =>
-        states[pos + aut.allStates().length].addTransition(l, states[this.allStates().indexOf(succ) + aut.allStates().length])
-      ))
-    });
-    if (this.isDeterministic() && aut.isDeterministic()) {
-      return res.determinize()
-    }
-    return res;
+    return this.makeOperation(aut, "Union")
   }
 
   intersection(aut: DFA_NFA): DFA_NFA {
-    return aut.complement([...this.alphabet, ...aut.alphabet]).union(this.complement([...this.alphabet, ...aut.alphabet])).complement([...this.alphabet, ...aut.alphabet])
+    return this.makeOperation(aut, "Intersection")
   }
 
   difference(aut: DFA_NFA): DFA_NFA {
-    return aut.union(this.complement([...aut.alphabet, ...this.alphabet])).complement()
+    return this.makeOperation(aut, "Diff")
   }
 
   symmetricDifference(aut: DFA_NFA): DFA_NFA {
-    return this.difference(aut).union(aut.difference(this));
+    return this.makeOperation(aut, "SymDiff")
   }
 
   isEmpty() {

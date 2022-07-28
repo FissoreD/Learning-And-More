@@ -50,7 +50,7 @@ export abstract class LearnerSection<AlphabetType, StateType> extends React.Comp
   }
 
   allSteps(state: StateReact<AlphabetType, StateType, Learner<AlphabetType, StateType>>, pos?: number) {
-    if (state.position === state.memory.length || state.learner.finish) return state
+    if (state.position === state.memory.length) return state
 
     let i: number;
     for (i = 0; pos === undefined || (pos !== undefined && i < pos); i++) {

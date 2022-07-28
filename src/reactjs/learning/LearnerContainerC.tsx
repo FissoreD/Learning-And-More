@@ -1,6 +1,6 @@
 import React from "react";
 import { ButtonGroup } from "react-bootstrap";
-import TTT from "../../lib/learning/learners/discrimination_tree/TTT";
+import TTT from "../../lib/learning/learners/discrimination_tree/TTT_DFA";
 import L_star from "../../lib/learning/learners/observation_table/L_star";
 import NL_star from "../../lib/learning/learners/observation_table/NL_Star";
 import { TeacherAutomaton } from "../../lib/learning/teachers/TeacherDFA";

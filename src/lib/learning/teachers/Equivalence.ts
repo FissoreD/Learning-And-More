@@ -44,15 +44,6 @@ export let equivalenceFunction = (teacher: Teacher<string[], StateDFA>, automato
     return "";
   }
 
-  let automMinimized = automaton.minimize();
-  let diff1 = teacher.automaton!.difference(automMinimized);
-  let counterEx1 = counterExemple(diff1);
-
-  let diff2 = teacher.automaton!.difference(automMinimized);
-  let counterEx2 = counterExemple(diff2);
-
-  if (counterEx1 === undefined) return counterEx2;
-  if (counterEx2 === undefined) return counterEx1;
-
-  return counterEx1.length < counterEx2.length ? counterEx1 : counterEx2;
+  let symDiff = teacher.automaton?.symmetricDifference(automaton) as DFA_NFA
+  return counterExemple(symDiff)
 }

@@ -1,9 +1,10 @@
-import aut from "../../../../../json/automata.json"
-import { TeacherAutomaton } from "../../../teachers/TeacherDFA"
-import TTT from "../TTT"
+import aut from "../../../../../json/automata.json";
+
+import { TeacherAutomaton } from "../../../teachers/TeacherDFA";
+import TTT from "../TTT_DFA";
 
 test("TTT learn a+bb", () => {
-  let t = new TeacherAutomaton({ type: "Dot", automaton: aut.a_or_bb })
+  let t = new TeacherAutomaton({ type: "Regex", automaton: "a+bb" })
   let learner = new TTT(t);
 
   expect(learner.dataStructure.sift("aaa", t)?.name).toBe("")
@@ -19,10 +20,28 @@ test("TTT learn a+bb", () => {
   expect(learner.finish).toBeTruthy()
 })
 
-test("TTT learn (a+b)*a(a+b)^5", () => {
-  let t = new TeacherAutomaton({ type: "Dot", automaton: aut["(a+b)*a(a+b)^4"] })
+test("TTT learn (a+b)*a(a+b)^2", () => {
+  aut.regex.filter((_, pos) => pos === 1).forEach(regex => {
+    let t = new TeacherAutomaton({ type: "Regex", automaton: regex })
+    let learner = new TTT(t)
+    learner.makeAllQueries()
+    expect(t.automaton.sameLanguage(learner.automaton!)).toBeTruthy()
+    expect(learner.finish).toBeTruthy()
+  })
+})
+
+test("TEST ME", () => {
+  let regex = aut.regex[0]
+  let t = new TeacherAutomaton({ type: "Regex", automaton: regex })
   let learner = new TTT(t)
-  learner.makeAllQueries()
-  expect(t.automaton.sameLanguage(learner.automaton!)).toBeTruthy()
-  expect(learner.finish).toBeTruthy()
+  console.log(learner.dataStructure.toDot());
+  learner.makeNextQuery()
+  console.log(learner.dataStructure.toDot());
+  learner.makeNextQuery()
+  console.log(learner.dataStructure.toDot());
+  learner.makeNextQuery()
+  console.log(learner.dataStructure.toDot());
+  learner.makeNextQuery()
+  console.log(learner.dataStructure.toDot());
+
 })

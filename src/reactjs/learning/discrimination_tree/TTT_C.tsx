@@ -2,7 +2,7 @@ import { ReactElement } from "react";
 import StateDFA from "../../../lib/automaton/regular/StateDFA";
 import Clonable from "../../../lib/Clonable.interface";
 import DiscTreeDFA from "../../../lib/learning/learners/discrimination_tree/DiscTreeDFA";
-import TTT from "../../../lib/learning/learners/discrimination_tree/TTT";
+import TTT from "../../../lib/learning/learners/discrimination_tree/TTT_DFA";
 import { TeacherAutomaton } from "../../../lib/learning/teachers/TeacherDFA";
 import { LearnerSection, MessageType, StateReact } from "../LearnerSectionC";
 import DiscriminationTreeC from "./DiscriminationTreeC";

@@ -59,6 +59,6 @@ export default class StateDFA {
   }
 
   clone(p: { name?: string, alphabet?: string[] }) {
-    return new StateDFA(p.name || this.name, this.isAccepting, this.isInitial, p.alphabet || this.alphabet)
+    return new StateDFA(p.name || this.name, this.isAccepting, this.isInitial, this.alphabet.concat(p.alphabet || []))
   }
 }

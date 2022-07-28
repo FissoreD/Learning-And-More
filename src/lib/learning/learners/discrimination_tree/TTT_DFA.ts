@@ -20,10 +20,11 @@ export default class TTT extends LearnerFather<DiscTreeDFA, string[], StateDFA> 
     let [addedRight, addedLeft] = [false, false]
     for (const symbol of ["", ...this.alphabet]) {
       if (addedRight && addedLeft) break
-      if (this.teacher.member(symbol) && addedRight === false) {
+      let memberAnsower = this.teacher.member(symbol)
+      if (memberAnsower && addedRight === false) {
         this.dataStructure.addRightChild({ parent: root, name: symbol });
         addedRight = true;
-      } else if (addedLeft === false) {
+      } else if (!memberAnsower && addedLeft === false) {
         this.dataStructure.addLeftChild({ parent: root, name: symbol });
         addedLeft = true;
       }
@@ -48,6 +49,7 @@ export default class TTT extends LearnerFather<DiscTreeDFA, string[], StateDFA> 
       ce = this.teacher.equiv(this.automaton!)
       isTeacher = true
     }
+
     if (ce === undefined) { this.finish = true; return }
     let { a, v, uaState, uState, u } = this.split_ce_in_uav(ce)
     this.lastSplit = { u, a, v, uaState: uaState!, uState: uState! }
