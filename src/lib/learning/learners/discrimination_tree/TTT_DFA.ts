@@ -1,3 +1,4 @@
+import AlphabetDFA from "../../../automaton/regular/AlphabetDFA";
 import DFA_NFA from "../../../automaton/regular/DFA_NFA";
 import StateDFA from "../../../automaton/regular/StateDFA";
 import { toEps } from "../../../tools";
@@ -5,20 +6,22 @@ import Teacher from "../../teachers/Teacher";
 import LearnerFather from "../LearnerFather";
 import DiscTreeDFA from "./DiscTreeDFA";
 
-export default class TTT extends LearnerFather<DiscTreeDFA, string[], StateDFA> {
+export default class TTT extends LearnerFather<DiscTreeDFA, StateDFA> {
   finish = false;
   lastCe: { value: string, accepted: boolean, isTeacher: boolean } | undefined;
   lastSplit: { u: string, a: string, v: string, uaState: string, uState: string } | undefined;
+  alphabet: AlphabetDFA;
 
-  constructor(teacher: Teacher<string[], StateDFA>) {
+  constructor(teacher: Teacher<StateDFA>) {
     super(teacher, new DiscTreeDFA(""))
+    this.alphabet = super.alphabet as AlphabetDFA
     this.initiate()
   }
 
   initiate() {
     let root = this.dataStructure.getRoot();
     let [addedRight, addedLeft] = [false, false]
-    for (const symbol of ["", ...this.alphabet]) {
+    for (const symbol of ["", ...this.alphabet.symbols]) {
       if (addedRight && addedLeft) break
       let memberAnsower = this.teacher.member(symbol)
       if (memberAnsower && addedRight === false) {
@@ -72,7 +75,7 @@ export default class TTT extends LearnerFather<DiscTreeDFA, string[], StateDFA> 
 
     while (L.length > 0) {
       const state = L.pop()!
-      for (const symbol of this.alphabet) {
+      for (const symbol of this.alphabet.symbols) {
         let newWord = state + symbol
         let res = this.dataStructure.sift(newWord, this.teacher)
 

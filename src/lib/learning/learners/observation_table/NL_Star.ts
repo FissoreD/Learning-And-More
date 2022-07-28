@@ -8,7 +8,7 @@ export default class NL_star extends Learner_OT_Abstract {
 
   constructor(teacher: TeacherAutomaton) {
     super(teacher);
-    this.primeLines = Array.from(this.alphabet).concat("");
+    this.primeLines = Array.from(this.alphabet.symbols).concat("");
   }
 
   isPrime(rowKey: string): boolean {
@@ -83,7 +83,7 @@ export default class NL_star extends Learner_OT_Abstract {
       let value_s1 = this.dataStructure.assoc[s1];
       let value_s2 = this.dataStructure.assoc[s2];
       if (this.isCovered(value_s1, value_s2)) {
-        for (const a of this.alphabet) {
+        for (const a of this.alphabet.symbols) {
           let value_s1_p = this.dataStructure.assoc[s1 + a]
           let value_s2_p = this.dataStructure.assoc[s2 + a]
           if (!this.isCovered(value_s1_p, value_s2_p)) {
@@ -131,7 +131,7 @@ export default class NL_star extends Learner_OT_Abstract {
     })
     for (const word of wordForState) {
       let name = this.dataStructure.assoc[word]
-      for (const symbol of this.alphabet) {
+      for (const symbol of this.alphabet.symbols) {
         let rowNext = this.dataStructure.assoc[word + symbol]
         for (const [name1, state] of statesMap) {
           if (this.isCovered(name1, rowNext))

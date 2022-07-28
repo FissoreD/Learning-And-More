@@ -1,13 +1,14 @@
 import ToDot from "../../ToDot.interface";
 import { sameVector, toEps } from "../../tools";
 import FSM from "../FSM_interface";
+import AlphabetDFA from "./AlphabetDFA";
 import regexToAutomaton from "./RegexParser";
 import StateDFA from "./StateDFA";
 
-export default class DFA_NFA implements FSM<string[], StateDFA>, ToDot {
+export default class DFA_NFA implements FSM<StateDFA>, ToDot {
   states: Map<string, StateDFA>;
   initialStates: StateDFA[];
-  alphabet: string[];
+  alphabet: AlphabetDFA;
 
   constructor(stateList: Set<StateDFA> | StateDFA[]) {
     stateList = new Set(stateList);
@@ -15,15 +16,15 @@ export default class DFA_NFA implements FSM<string[], StateDFA>, ToDot {
     stateList.forEach(e => this.states.set(e.name, e));
 
     this.initialStates = this.allStates().filter(s => s.isInitial);
-    this.alphabet = [...new Set([...stateList].map(e => e.alphabet).flat())];
+    this.alphabet = new AlphabetDFA().union(...[...stateList].map(e => e.alphabet).flat());
   }
 
-  complete(p?: { bottom?: StateDFA, alphabet?: string[] }) {
-    let alphabet = p?.alphabet?.concat(this.alphabet) || this.alphabet
+  complete(p?: { bottom?: StateDFA, alphabet?: AlphabetDFA }) {
+    let alphabet = p?.alphabet?.union(this.alphabet) || this.alphabet;
     let bottom = p?.bottom || StateDFA.Bottom(alphabet)
     let toAdd = false;
     this.alphabet = alphabet
-    for (const symbol of alphabet) {
+    for (const symbol of alphabet.symbols) {
       bottom.addTransition(symbol, bottom);
       for (const state of this.states.values()) {
         let transintion = this.findTransition(state, symbol)
@@ -58,7 +59,7 @@ export default class DFA_NFA implements FSM<string[], StateDFA>, ToDot {
      * The alphabet of the new VPA is made by the union of the alphabets
      * of the alphabets of {@link a1} and {@link aut}
      */
-    let alphabet = [...new Set([...a1.alphabet, ...aut.alphabet])];
+    let alphabet = a1.alphabet.union(aut.alphabet);
 
     a1.complete({ alphabet });
     aut.complete({ alphabet });
@@ -111,7 +112,7 @@ export default class DFA_NFA implements FSM<string[], StateDFA>, ToDot {
         let outA = nextA.getAllOutTransitions()
         let outB = nextB.getAllOutTransitions()
 
-        alphabet.forEach(a1 => current.addTransition(
+        alphabet.symbols.forEach(a1 => current.addTransition(
           a1!, buildState(outA.get(a1)![0], outB.get(a1)![0])
         ))
       }
@@ -126,7 +127,7 @@ export default class DFA_NFA implements FSM<string[], StateDFA>, ToDot {
     for (let index = 0; index < word.length && nextStates.size > 0; index++) {
       let nextStates2: Set<StateDFA> = new Set();
       const symbol = word[index];
-      if (!this.alphabet.includes(symbol)) {
+      if (!this.alphabet.symbols.includes(symbol)) {
         return [undefined, false]
       }
       for (const state of nextStates) {
@@ -158,16 +159,17 @@ export default class DFA_NFA implements FSM<string[], StateDFA>, ToDot {
 
   /* istanbul ignore next */
   toDot() {
+    let symbols = this.alphabet.symbols
     let txt = "digraph {rankdir = LR\nfixedsize=true\n"
     let triples: { [id: string]: string[] } = {}
     for (const [name, state] of this.states) {
-      for (let j = 0; j < this.alphabet.length; j++) {
-        for (const nextState of this.findTransition(state, this.alphabet[j])) {
+      for (let j = 0; j < symbols.length; j++) {
+        for (const nextState of this.findTransition(state, symbols[j])) {
           let stateA_concat_stateB = name + '&' + nextState.name;
           if (triples[stateA_concat_stateB]) {
-            triples[stateA_concat_stateB].push(this.alphabet[j])
+            triples[stateA_concat_stateB].push(symbols[j])
           } else {
-            triples[stateA_concat_stateB] = [this.alphabet[j]]
+            triples[stateA_concat_stateB] = [symbols[j]]
           }
         }
       }
@@ -213,7 +215,7 @@ export default class DFA_NFA implements FSM<string[], StateDFA>, ToDot {
   }
 
   isDeterministic(): boolean {
-    return this.allStates().every(e => this.alphabet.every(l => e.getSuccessor(l) === undefined || e.getSuccessor(l).length === 1)) && this.initialStates.length <= 1
+    return this.allStates().every(e => this.alphabet.symbols.every(l => e.getSuccessor(l) === undefined || e.getSuccessor(l).length === 1)) && this.initialStates.length <= 1
   }
 
   /** 
@@ -247,7 +249,7 @@ export default class DFA_NFA implements FSM<string[], StateDFA>, ToDot {
     while (toTreat.length > 0) {
       let current = toTreat.shift()!;
       done.push(current)
-      for (const letter of this.alphabet) {
+      for (const letter of this.alphabet.symbols) {
         let successor = [...new Set(current.map(e => allStates[e].getSuccessor(letter)).flat())].map(e => stateMap.get(e.name)!).sort();
 
         if (newStates.has(JSON.stringify(successor))) {
@@ -299,7 +301,7 @@ export default class DFA_NFA implements FSM<string[], StateDFA>, ToDot {
     let W: Set<string>[] = Array.from(P)
     while (W.length > 0) {
       let A = W.shift()!
-      for (const letter of aut.alphabet) {
+      for (const letter of aut.alphabet.symbols) {
         // X = the set of states for which a transition on letter leads to a state in A
         let X: Set<string> = new Set()
         A.forEach(e => { aut.states.get(e)!.getPredecessor(letter)?.forEach(s => X.add(s.name)) })
@@ -343,7 +345,7 @@ export default class DFA_NFA implements FSM<string[], StateDFA>, ToDot {
 
     for (const partition of P) {
       for (const oldState of partition) {
-        for (const letter of aut.alphabet) {
+        for (const letter of aut.alphabet.symbols) {
           for (const successor of aut.states.get(oldState)!.getSuccessor(letter)) {
             if (!oldStateToNewState.get(oldState)!.getSuccessor(letter)![0] ||
               (oldStateToNewState.get(oldState)!.getSuccessor(letter)![0].name !== oldStateToNewState.get(successor.name)!.name))
@@ -357,10 +359,10 @@ export default class DFA_NFA implements FSM<string[], StateDFA>, ToDot {
     return res;
   }
 
-  clone(alphabet?: string[]) {
+  clone(alphabet?: AlphabetDFA) {
     let all_states = this.allStates()
     let res = new DFA_NFA(all_states.map(e => e.clone({ alphabet })));
-    this.alphabet.forEach(l =>
+    this.alphabet.symbols.forEach(l =>
       all_states.forEach((e, pos) =>
         e.getSuccessor(l).forEach(succ => res.allStates()[pos].addTransition(l, res.allStates()[all_states.indexOf(succ)]))
       ))
@@ -398,9 +400,9 @@ export default class DFA_NFA implements FSM<string[], StateDFA>, ToDot {
     return this.symmetricDifference(aut).isEmpty()
   }
 
-  complement(alphabet?: string[] | string) {
+  complement(alphabet?: AlphabetDFA) {
     let res = this.clone();
-    res.alphabet = alphabet ? [...alphabet] : res.alphabet
+    res.alphabet = alphabet ? res.alphabet.union(alphabet) : res.alphabet.clone()
     res.complete()
     if (!res.isDeterministic()) {
       res = this.determinize();
@@ -470,7 +472,7 @@ export default class DFA_NFA implements FSM<string[], StateDFA>, ToDot {
         alphabetSet.add(symbol);
       }
     }
-    let alphabet = Array.from(alphabetSet);
+    let alphabet = new AlphabetDFA(...alphabetSet);
     let stateMap: Map<string, StateDFA> = new Map();
     let stateSet: Set<StateDFA> = new Set();
     statesName.forEach(e => {

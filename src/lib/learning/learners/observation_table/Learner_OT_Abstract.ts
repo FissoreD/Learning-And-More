@@ -1,16 +1,19 @@
+import AlphabetDFA from "../../../automaton/regular/AlphabetDFA";
 import StateDFA from "../../../automaton/regular/StateDFA";
 import { boolToString, generatePrefixList, generateSuffixList } from "../../../tools";
 import { TeacherAutomaton } from "../../teachers/TeacherDFA";
 import LearnerFather from "../LearnerFather";
 import ObservationTable from "./ObservationTable";
 
-export default abstract class Learner_OT_Abstract extends LearnerFather<ObservationTable, string[], StateDFA> {
+export default abstract class Learner_OT_Abstract extends LearnerFather<ObservationTable, StateDFA> {
   closednessCounter: number;
   consistenceCounter: number;
   counterExample: string | undefined = "";
+  alphabet: AlphabetDFA;
 
   constructor(teacher: TeacherAutomaton) {
-    super(teacher, new ObservationTable([...teacher.alphabet]))
+    super(teacher, new ObservationTable(teacher.alphabet.clone()))
+    this.alphabet = super.alphabet as AlphabetDFA
     this.closednessCounter = 0;
     this.consistenceCounter = 0;
     this.addRow("")
@@ -64,7 +67,7 @@ export default abstract class Learner_OT_Abstract extends LearnerFather<Observat
       if (this.dataStructure.S.includes(prefix)) return;
       if (this.dataStructure.SA.includes(prefix)) {
         this.moveFrom_SA_to_S(prefix);
-        for (const a of this.alphabet) {
+        for (const a of this.alphabet.symbols) {
           const newWord = prefix + a;
           if (!this.dataStructure.SA.includes(newWord) && !this.dataStructure.S.includes(newWord)) {
             this.addRow(newWord, isAfterMember);
@@ -76,7 +79,7 @@ export default abstract class Learner_OT_Abstract extends LearnerFather<Observat
         this.dataStructure.S.push(prefix);
         this.addRow(prefix, isAfterMember);
         addedList.push(prefix);
-        this.alphabet.forEach(a => {
+        this.alphabet.symbols.forEach(a => {
           let newWord = prefix + a;
           if (!this.dataStructure.SA.includes(newWord) && !this.dataStructure.S.includes(newWord)) {
             this.dataStructure.SA.push(prefix + a);

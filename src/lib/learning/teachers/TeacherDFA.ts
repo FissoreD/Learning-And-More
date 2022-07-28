@@ -1,4 +1,5 @@
 import FSM from "../../automaton/FSM_interface";
+import AlphabetDFA from "../../automaton/regular/AlphabetDFA";
 import DFA_NFA from "../../automaton/regular/DFA_NFA";
 import StateDFA from "../../automaton/regular/StateDFA";
 import { equivalenceFunction } from "./Equivalence";
@@ -7,11 +8,11 @@ import Teacher from "./Teacher";
 /**
  * This Teacher takes an Automaton Instance as parameter
  */
-export class TeacherAutomaton implements Teacher<string[], StateDFA> {
+export class TeacherAutomaton implements Teacher<StateDFA> {
   description: string;
-  alphabet: string[];
+  alphabet: AlphabetDFA;
   regex: string;
-  automaton: FSM<string[], StateDFA>;
+  automaton: FSM<StateDFA>;
   counterExamples?: string[];
 
   constructor(params: {
@@ -31,7 +32,7 @@ export class TeacherAutomaton implements Teacher<string[], StateDFA> {
         break;
     }
     this.automaton = automaton.minimize();
-    this.alphabet = [...automaton.alphabet];
+    this.alphabet = automaton.alphabet.clone();
     this.regex = params.type === "Regex" ? params.automaton as string : "Teacher with automaton"
     this.description = this.regex;
     this.counterExamples = [];

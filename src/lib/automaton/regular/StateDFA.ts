@@ -1,24 +1,27 @@
+import AlphabetDFA from "./AlphabetDFA";
+
 export default class StateDFA {
-  static Bottom = (alphabet: string | string[]) => new StateDFA("⊥", false, false, alphabet)
+  static Bottom = (alphabet: AlphabetDFA) => new StateDFA("⊥", false, false, alphabet)
   isAccepting: boolean;
   isInitial: boolean;
-  alphabet: string[];
+  alphabet: AlphabetDFA;
   private outTransitions: Map<string, StateDFA[]>;
   private inTransitions: Map<string, StateDFA[]>;
   private successors: Set<StateDFA>;
   private predecessor: Set<StateDFA>;
   name: string;
 
-  constructor(name: string, isAccepting: boolean, isInitial: boolean, alphabet: string[] | string) {
+  constructor(name: string, isAccepting: boolean, isInitial: boolean, alphabet: AlphabetDFA | string[]) {
     this.name = name;
     this.isAccepting = isAccepting;
+    alphabet = alphabet instanceof AlphabetDFA ? alphabet : new AlphabetDFA(...alphabet)
     this.isInitial = isInitial;
-    this.alphabet = Array.from(alphabet);
+    this.alphabet = alphabet;
     this.outTransitions = new Map();
     this.inTransitions = new Map();
     this.successors = new Set();
     this.predecessor = new Set();
-    for (const symbol of alphabet) {
+    for (const symbol of alphabet.symbols) {
       this.outTransitions.set(symbol, []);
       this.inTransitions.set(symbol, []);
     }
@@ -58,7 +61,7 @@ export default class StateDFA {
     return this.outTransitions
   }
 
-  clone(p: { name?: string, alphabet?: string[] }) {
-    return new StateDFA(p.name || this.name, this.isAccepting, this.isInitial, this.alphabet.concat(p.alphabet || []))
+  clone(p: { name?: string, alphabet?: AlphabetDFA }) {
+    return new StateDFA(p.name || this.name, this.isAccepting, this.isInitial, p.alphabet ? this.alphabet.union(p.alphabet) : this.alphabet)
   }
 }

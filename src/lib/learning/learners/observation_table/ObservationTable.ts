@@ -1,3 +1,4 @@
+import AlphabetDFA from "../../../automaton/regular/AlphabetDFA";
 import { sameVector } from "../../../tools";
 
 export default class ObservationTable {
@@ -10,7 +11,8 @@ export default class ObservationTable {
   assoc: { [key: string]: string }
   alphabet: string[];
 
-  constructor(alphabet: string[]) {
+  constructor(alphabet: string[] | AlphabetDFA) {
+    alphabet = alphabet instanceof AlphabetDFA ? alphabet.symbols : alphabet
     this.columns = []
     this.rows = []
     this.matrix = [[]];

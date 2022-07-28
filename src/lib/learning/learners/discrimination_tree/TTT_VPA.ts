@@ -3,40 +3,53 @@ import StateVPA from "../../../automaton/context_free/StateVPA";
 import VPA from "../../../automaton/context_free/VPA";
 import { todo, toEps } from "../../../tools";
 import Teacher from "../../teachers/Teacher";
+import LearnerFather from "../LearnerFather";
 import DiscTreeVPA, { StringCouple } from "./DiscTreeVPA";
 
-export default class TTT_VPA {
+export default class TTT_VPA extends LearnerFather<DiscTreeVPA, StateVPA> {
   finish = false;
   lastCe: { value: string, accepted: boolean, isTeacher: boolean } | undefined;
   lastSplit: { u: string, a: string, v: string, uaState: string, uState: string } | undefined;
-  teacher: Teacher<AlphabetVPA, StateVPA>;
   alphabet: AlphabetVPA;
-  dataStructure: DiscTreeVPA;
-  automaton: undefined | VPA;
-  learner: TTT_VPA;
 
-  constructor(teacher: Teacher<AlphabetVPA, StateVPA>, learner: TTT_VPA) {
-    this.alphabet = learner.alphabet;
+  constructor(teacher: Teacher<StateVPA>) {
+    super(teacher, new DiscTreeVPA(["", ""]))
+    this.alphabet = teacher.alphabet as AlphabetVPA;
     this.teacher = teacher;
     this.dataStructure = new DiscTreeVPA(["", ""])
-    this.learner = learner
     this.initiate()
   }
 
   initiate() {
     let root = this.dataStructure.getRoot();
     let [addedRight, addedLeft] = [false, false]
-    let alph = this.alphabet
-    for (const symbol of alph.INT) {
+    let alph = this.alphabet as AlphabetVPA
+    for (const symbol of ["", ...alph.INT]) {
       if (addedRight && addedLeft) break
-      if (this.teacher.member(symbol) && addedRight === false) {
+      let isOk = this.teacher.member(symbol)
+      if (isOk && addedRight === false) {
         this.dataStructure.addRightChild({ parent: root, name: symbol });
         addedRight = true;
-      } else if (addedLeft === false) {
+      } else if (!isOk && addedLeft === false) {
         this.dataStructure.addLeftChild({ parent: root, name: symbol });
         addedLeft = true;
       }
     }
+    for (const call of alph.CALL) {
+      for (const ret of alph.RET) {
+        if (addedRight && addedLeft) break
+        let isOk = this.teacher.member(call + ret)
+        if (isOk && addedRight === false) {
+          this.dataStructure.addRightChild({ parent: root, name: `${call},${ret}` });
+          addedRight = true;
+        } else if (!isOk && addedLeft === false) {
+          this.dataStructure.addLeftChild({ parent: root, name: `${call},${ret}` });
+          addedLeft = true;
+        }
+      }
+    }
+    console.log(this.dataStructure.toDot());
+
     this.makeAutomaton()
   }
 
@@ -73,28 +86,53 @@ export default class TTT_VPA {
 
   makeAutomaton(): VPA {
     let initial_state = this.dataStructure.sift("", this.teacher)!
+    let stackAlphabet: string[] = []
     let states = new Map([...this.dataStructure.getLeaves().values()].map(e => [e.name,
     new StateVPA({
-      name: e.name, isAccepting: e.isAccepting!, isInitial: e === initial_state, alphabet: this.alphabet, stackAlphabet: todo()
+      name: e.name, isAccepting: e.isAccepting!, isInitial: e === initial_state,
+      alphabet: this.alphabet, stackAlphabet
     })]))
 
     let L = [...states.keys()]
 
     while (L.length > 0) {
       const state = L.pop()!
-      for (const symbol of [todo()]) {
+      /**
+       * TODO: 
+       * boucler sur les lettres INT avec append sur le label de l'état courant
+       * boucler sur les couple (l1, l2) such that l1 \in CALL and l2 \in RET
+       *         et tester si l1.(label de l'etat).l2 with member question
+       */
+      for (const symbol of this.alphabet.INT) {
         let newWord = state + symbol
         let res = this.dataStructure.sift(newWord, this.teacher)
 
         if (res === undefined) {
           res = this.dataStructure.addRoot(newWord)
           L.push(res.name)
-          states.set(newWord, new StateVPA({ name: newWord, isAccepting: res.isAccepting!, isInitial: false, alphabet: this.alphabet, stackAlphabet: todo() }))
+          states.set(newWord, new StateVPA({ name: newWord, isAccepting: res.isAccepting!, isInitial: false, alphabet: this.alphabet, stackAlphabet }))
         }
         /** @todo TOP-STACK if it is a CALL / RET transition */
         states.get(state)!.addTransition({ symbol, successor: states.get(res.name)! })
       }
+      for (const pred of states.keys()) {
+        for (const call of this.alphabet.CALL) {
+          for (const ret of this.alphabet.RET) {
+            let newWord = pred + call + state + ret
+            let res = this.dataStructure.sift(newWord, this.teacher)
+
+            if (res === undefined) {
+              res = this.dataStructure.addRoot(newWord)
+              L.push(res.name)
+              states.set(newWord, new StateVPA({ name: newWord, isAccepting: res.isAccepting!, isInitial: false, alphabet: this.alphabet, stackAlphabet }))
+            }
+            states.get(state)!.addTransition({ symbol: ret, successor: states.get(res.name)!, topStack: `(${toEps(pred)},${toEps(call)})` })
+            stackAlphabet.push(`${pred},${call}`)
+          }
+        }
+      }
     }
+    stackAlphabet = [...new Set(stackAlphabet)]
     return (this.automaton = new VPA([...states.values()]))
   }
 

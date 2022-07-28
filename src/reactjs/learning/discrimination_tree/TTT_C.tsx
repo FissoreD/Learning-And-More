@@ -7,7 +7,7 @@ import { TeacherAutomaton } from "../../../lib/learning/teachers/TeacherDFA";
 import { LearnerSection, MessageType, StateReact } from "../LearnerSectionC";
 import DiscriminationTreeC from "./DiscriminationTreeC";
 
-export default class TTTC extends LearnerSection<string[], StateDFA> {
+export default class TTTC extends LearnerSection<StateDFA> {
 
 
   createNewLearner(regex: string): TTT {
@@ -18,7 +18,7 @@ export default class TTTC extends LearnerSection<string[], StateDFA> {
     return <DiscriminationTreeC dt={ds.clone() as DiscTreeDFA} />
   }
 
-  nextOpChild(state: StateReact<string[], StateDFA, TTT>): StateReact<string[], StateDFA, TTT> {
+  nextOpChild(state: StateReact<StateDFA>): StateReact<StateDFA> {
     let learner = state.learner as TTT
     if (learner.finish) return state;
     var message: { type: MessageType, val: string };

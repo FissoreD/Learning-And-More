@@ -10,8 +10,8 @@ import Teacher from "./Teacher";
  * @param automaton 
  * @returns undifined if res = empty else the shortes word in res
  */
-export let equivalenceFunction = (teacher: Teacher<string[], StateDFA>, automaton: DFA_NFA): string | undefined => {
-  let counterExemple = (automatonDiff: FSM<string[], StateDFA>): string | undefined => {
+export let equivalenceFunction = (teacher: Teacher<StateDFA>, automaton: DFA_NFA): string | undefined => {
+  let counterExemple = (automatonDiff: FSM<StateDFA>): string | undefined => {
     let stateList = automatonDiff.allStates()
     if (automatonDiff.acceptingStates().length === 0) return undefined;
     let toExplore = Array.from(automatonDiff.initialStates)
@@ -29,7 +29,6 @@ export let equivalenceFunction = (teacher: Teacher<string[], StateDFA>, automato
           if (!toExplore.includes(states[0])) toExplore.push(states[0])
         }
       }
-
 
       if (automatonDiff.acceptingStates().includes(current)) {
         let id = stateList.indexOf(current);

@@ -1,16 +1,17 @@
+import Alphabet from "../../automaton/Alphabet.interface";
 import FSM from "../../automaton/FSM_interface";
 import Teacher from "../teachers/Teacher";
 
-export default abstract class LearnerFather<DataStType, AlphabetType, StateType> {
-  alphabet: AlphabetType;
+export default abstract class LearnerFather<DataStType, StateType> {
+  alphabet: Alphabet;
   memberNumber = 0;
   equivNumber = 0;
   finish = false;
-  automaton: undefined | FSM<AlphabetType, StateType>;
-  teacher: Teacher<AlphabetType, StateType>;
+  automaton: undefined | FSM<StateType>;
+  teacher: Teacher<StateType>;
   dataStructure: DataStType;
 
-  constructor(teacher: Teacher<AlphabetType, StateType>, dataStructure: DataStType) {
+  constructor(teacher: Teacher<StateType>, dataStructure: DataStType) {
     this.alphabet = teacher.alphabet;
     this.teacher = teacher;
     this.dataStructure = dataStructure;
@@ -24,13 +25,13 @@ export default abstract class LearnerFather<DataStType, AlphabetType, StateType>
    * @param a an Automaton
    * @returns undefined if {@link a} recognize the teacher's language, a counter-example (as a string) otherwise.
    */
-  makeEquiv(a: FSM<AlphabetType, StateType>) {
+  makeEquiv(a: FSM<StateType>) {
     let answer = this.teacher.equiv(a);
     this.equivNumber++;
     return answer;
   }
 
-  abstract makeAutomaton(): FSM<AlphabetType, StateType>;
+  abstract makeAutomaton(): FSM<StateType>;
   abstract makeNextQuery(): void;
 
   makeAllQueries() {

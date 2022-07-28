@@ -1,8 +1,10 @@
+import Clonable from "../../Clonable.interface"
+import Alphabet from "../Alphabet.interface"
 
 export type ALPHABET_TYPE = "INT" | "RET" | "CALL"
 export const ALPH_TYPE_LIST: ALPHABET_TYPE[] = ["INT", "RET", "CALL"]
 
-export default class AlphabetVPA {
+export default class AlphabetVPA implements Clonable, Alphabet {
   INT: string[]
   CALL: string[]
   RET: string[]
@@ -11,6 +13,7 @@ export default class AlphabetVPA {
     this.INT = p?.INT ? [...p.INT] : []
     this.CALL = p?.CALL ? [...p.CALL] : []
     this.RET = p?.RET ? [...p.RET] : []
+    this.makeSet()
   }
 
   /**
@@ -21,7 +24,7 @@ export default class AlphabetVPA {
   }
 
   /**
-   * @returns a fresh Alphabet from the union of two of them
+   * @returns a fresh Alphabet from the union of an ellipsis of AlphabetVPA
    * @throws Error if INT, RET & CALL are not in disjoint union
    */
   union(...alphabet: AlphabetVPA[]) {
@@ -33,16 +36,7 @@ export default class AlphabetVPA {
     }, this.clone())
     // Remove Duplicata
     // Check if it is a disjoint union of three sets
-    res.makeSet()
     res.isValidAlphabet()
-    return res
-  }
-
-  difference(alphabet: AlphabetVPA): AlphabetVPA {
-    let res = alphabet.clone()
-    res.INT = res.INT.filter(e => !alphabet.INT.includes(e))
-    res.CALL = res.CALL.filter(e => !alphabet.CALL.includes(e))
-    res.RET = res.RET.filter(e => !alphabet.RET.includes(e))
     return res
   }
 
@@ -53,19 +47,6 @@ export default class AlphabetVPA {
     this.INT = [...new Set(this.INT)]
     this.RET = [...new Set(this.RET)]
     this.CALL = [...new Set(this.CALL)]
-  }
-
-  /** 
-   * @returns a fresh alphabet from the intersection of all the alphabets passed in parameter 
-   */
-  intersection(...alphabet: AlphabetVPA[]): AlphabetVPA {
-    let res = alphabet.reduce((prev, curr) => {
-      prev.INT = prev.INT.filter(e => curr.INT.includes(e))
-      prev.RET = prev.RET.filter(e => curr.RET.includes(e))
-      prev.CALL = prev.CALL.filter(e => curr.CALL.includes(e))
-      return prev
-    }, this.clone())
-    return res
   }
 
   toString() {

@@ -3,23 +3,22 @@ import StateVPA from "../StateVPA";
 import VPA from "../VPA";
 
 /**
- * @returns a VPA for the test
+ * @returns a VPA st G = A^n II* B^n
  */
-let createVPA1 = (): VPA => {
+export let createVPA1 = (): VPA => {
   let alphabet = new AlphabetVPA({ CALL: ["A"], RET: ["B", "C"], INT: ["I"] })
   let stack_alphabet = ["0"]
   let state1 = new StateVPA({ name: "1", isAccepting: true, alphabet, stackAlphabet: stack_alphabet })
   let state2 = new StateVPA({ name: "2", isInitial: true, alphabet, stackAlphabet: stack_alphabet })
   state1.addTransition({ symbol: "I", successor: state1 })
   state2.addTransition({ symbol: "I", successor: state1 })
-  state2.addTransition({ symbol: "B", topStack: "0", successor: state1 })
   state1.addTransition({ symbol: "B", topStack: "0", successor: state1 })
   state2.addTransition({ symbol: "A", topStack: "0", successor: state2 })
   let vpa = new VPA([state1, state2])
   return vpa
 }
 
-let createVPA2 = (): VPA => {
+export let createVPA2 = (): VPA => {
   let alphabet = new AlphabetVPA({ CALL: ["A"], RET: ["B"], INT: ["I"] })
   let stack_alphabet = ["2"]
   let s1 = new StateVPA({ name: "3", isAccepting: true, isInitial: true, alphabet, stackAlphabet: stack_alphabet })
@@ -59,7 +58,7 @@ test("Word membership VPA", () => {
   expect(vpa.acceptWord("AAAIBIIIIB")).toBeFalsy();
   expect(vpa.acceptWord("AAAIBIIIIBBB")).toBeFalsy();
   expect(vpa.acceptWord("I")).toBeTruthy()
-  expect(vpa.acceptWord("AB")).toBeTruthy()
+  expect(vpa.acceptWord("AIB")).toBeTruthy()
 })
 
 test("Deterministic VPA", () => {

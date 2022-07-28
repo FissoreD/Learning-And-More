@@ -25,7 +25,7 @@ export default class L_star extends Learner_OT_Abstract {
 
     for (const word of wordForState) {
       let name = this.dataStructure.assoc[word]
-      for (const symbol of this.alphabet) {
+      for (const symbol of this.alphabet.symbols) {
         statesMap.get(name)!.addTransition(symbol, statesMap.get(this.dataStructure.assoc[word + symbol])!)
       }
     }
@@ -54,7 +54,7 @@ export default class L_star extends Learner_OT_Abstract {
         let s1 = this.dataStructure.S[s1_ind];
         let s2 = this.dataStructure.S[s2_ind];
         if (this.sameRow(s1, s2)) {
-          for (const a of this.alphabet) {
+          for (const a of this.alphabet.symbols) {
             for (let i = 0; i < this.dataStructure.E.length; i++) {
               if (this.dataStructure.assoc[s1 + a][i] !== this.dataStructure.assoc[s2 + a][i] && !this.dataStructure.E.includes(a + this.dataStructure.E[i])) {
                 this.consistenceCounter++;

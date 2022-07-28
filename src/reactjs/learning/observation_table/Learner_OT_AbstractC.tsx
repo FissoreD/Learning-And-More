@@ -6,10 +6,10 @@ import ObservationTable from "../../../lib/learning/learners/observation_table/O
 import { LearnerSection, MessageType, PropReact, StateReact } from "../LearnerSectionC";
 import { ObservationTableC } from "./ObservationTableC";
 
-export default abstract class Learner_OT_AbstractC extends LearnerSection<string[], StateDFA> {
+export default abstract class Learner_OT_AbstractC extends LearnerSection<StateDFA> {
   tableToModifyAfterCe: string;
 
-  constructor(prop: PropReact<string[], StateDFA, Learner_OT_Abstract>, tableToModif: string) {
+  constructor(prop: PropReact<StateDFA>, tableToModif: string) {
     super(prop)
     this.tableToModifyAfterCe = tableToModif
 
@@ -21,7 +21,7 @@ export default abstract class Learner_OT_AbstractC extends LearnerSection<string
   abstract closeMessage(closeRep: string): string;
   abstract consistentMessage(s1: string, s2: string, newCol: string): string;
 
-  nextOpChild(state: StateReact<string[], StateDFA, Learner_OT_Abstract>): StateReact<string[], StateDFA, Learner_OT_Abstract> {
+  nextOpChild(state: StateReact<StateDFA>): StateReact<StateDFA> {
     let learner = state.learner as Learner_OT_Abstract;
     if (learner.finish) return state
     var message: { type: MessageType, val: string };

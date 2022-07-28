@@ -34,14 +34,8 @@ test("TEST ME", () => {
   let regex = aut.regex[0]
   let t = new TeacherAutomaton({ type: "Regex", automaton: regex })
   let learner = new TTT(t)
-  console.log(learner.dataStructure.toDot());
   learner.makeNextQuery()
-  console.log(learner.dataStructure.toDot());
   learner.makeNextQuery()
-  console.log(learner.dataStructure.toDot());
   learner.makeNextQuery()
-  console.log(learner.dataStructure.toDot());
-  learner.makeNextQuery()
-  console.log(learner.dataStructure.toDot());
-
+  console.log(learner.automaton?.toDot());
 })

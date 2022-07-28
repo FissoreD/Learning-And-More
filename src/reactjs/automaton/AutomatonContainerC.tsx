@@ -9,7 +9,7 @@ type Operation = "∪" | "∩" | "△" | "/" | "Det" | "~"
 const binaryOp: Operation[] = ["∪", "∩", "△", "/"]
 const unaryOp: Operation[] = ["Det", "~"]
 
-interface State {
+interface StateReact {
   r1: string,
   r2: string,
   opeartionList: {
@@ -26,7 +26,7 @@ interface State {
 let regex1 = "(ac+b)*(b+c)"
 let regex2 = "(a+b)*c"
 
-export default class AutomatonContainerC extends React.Component<{}, State>{
+export default class AutomatonContainerC extends React.Component<{}, StateReact>{
 
   constructor(props: {}) {
     super(props)
@@ -135,14 +135,18 @@ export default class AutomatonContainerC extends React.Component<{}, State>{
     return <>
       <Dialog fn={this.setRegex.bind(this)} show={this.state.showRegexSetter} />
       <Row>
-        <Col xs={5}>{this.createCardAutomaton(this.state.r1, 1)}</Col>
+        <Col className="mb-3 mb-sm-0" sm={5}>{this.createCardAutomaton(this.state.r1, 1)}</Col>
         <Col className="d-flex text-center align-self-center justify-content-center">
-          <ButtonGroup vertical className="secondary">
+          <ButtonGroup vertical className="secondary d-none d-sm-inline-flex">
+            {binaryOp.map(e => <Button key={e} onClick={() => this.addNewAut(e)}>{e}</Button>)}
+            <Button onClick={() => this.switchAutomata()}>⇌</Button>
+          </ButtonGroup>
+          <ButtonGroup className="secondary d-sm-none">
             {binaryOp.map(e => <Button key={e} onClick={() => this.addNewAut(e)}>{e}</Button>)}
             <Button onClick={() => this.switchAutomata()}>⇌</Button>
           </ButtonGroup>
         </Col>
-        <Col xs={5}>{this.createCardAutomaton(this.state.r2, 2)}</Col>
+        <Col className="mt-3 mt-sm-0" sm={5}>{this.createCardAutomaton(this.state.r2, 2)}</Col>
       </Row>
       <div className="my-2">
         {this.state.opeartionList.map((e, pos) =>

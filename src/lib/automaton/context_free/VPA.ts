@@ -4,7 +4,7 @@ import FSM from "../FSM_interface";
 import AlphabetVPA, { ALPHABET_TYPE, ALPH_TYPE_LIST } from "./AlphabetVPA";
 import StateVPA from "./StateVPA";
 
-export default class VPA implements FSM<AlphabetVPA, StateVPA>, ToDot {
+export default class VPA implements FSM<StateVPA>, ToDot {
   states: Map<string, StateVPA>;
   initialStates: StateVPA[];
   alphabet: AlphabetVPA;

@@ -38,7 +38,7 @@ type Operation = "∪" | "∩" | "△" | "/" | "Det" | "~"
 const binaryOp: Operation[] = ["∪", "∩", "△", "/"]
 const unaryOp: Operation[] = ["Det", "~"]
 
-interface State {
+interface ReactState {
   a1: VPA,
   a2: VPA,
   opeartionList: {
@@ -55,7 +55,7 @@ interface State {
 let a1 = createVPA1()
 let a2 = createVPA2()
 
-export default class TestVPAViewer extends React.Component<{}, State>{
+export default class TestVPAViewer extends React.Component<{}, ReactState>{
 
   constructor(props: {}) {
     super(props)
