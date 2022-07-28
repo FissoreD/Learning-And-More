@@ -26,7 +26,6 @@ type Learner = LearnerFather<Clonable>
 export abstract class LearnerSection extends React.Component<PropReact<Learner>, StateReact<Learner>>{
   constructor(prop: PropReact<Learner>) {
     super(prop)
-    console.log(prop.pos);
     this.state = this.allSteps(this.createNewState(prop.learner.teacher.regex), prop.pos);
     if (!window.location.pathname.endsWith(URL_SEPARATOR + prop.pos))
       setUrl(removeFirstUrlPath() + URL_SEPARATOR + prop.pos)
@@ -110,7 +109,7 @@ export abstract class LearnerSection extends React.Component<PropReact<Learner>,
   render(): React.ReactElement {
     let position = this.state.position
     let memoryCell = this.state.memory[position]
-    setUrl(withoutLastSeparator(removeFirstUrlPath() + URL_SEPARATOR + position))
+    setUrl(withoutLastSeparator(removeFirstUrlPath()) + URL_SEPARATOR + position)
 
     return <div className="body-container">
       <Dialog show={this.state.showRegexDialog} fn={this.changeLearner.bind(this)} />

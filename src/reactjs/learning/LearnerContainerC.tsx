@@ -20,8 +20,6 @@ export default class LearnerContainerC extends React.Component<Prop, State> {
   constructor(prop: Prop) {
     super(prop)
     let [fstElt, sndElt] = prop.cnt.split(URL_SEPARATOR) as [LearnerAlgo, string, string[]]
-    console.log({ fstElt, sndElt });
-
     this.state = {
       cnt: algos.includes(fstElt) ? fstElt : "L",
       regex,
