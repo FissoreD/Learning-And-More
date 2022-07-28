@@ -1,15 +1,17 @@
+import FSM from "../../automaton/FSM_interface";
 import DFA_NFA from "../../automaton/regular/DFA_NFA";
+import StateDFA from "../../automaton/regular/StateDFA";
 import { equivalenceFunction } from "./Equivalence";
 import Teacher from "./Teacher";
 
 /**
  * This Teacher takes an Automaton Instance as parameter
  */
-export class TeacherAutomaton implements Teacher {
+export class TeacherAutomaton implements Teacher<string[], StateDFA> {
   description: string;
   alphabet: string[];
   regex: string;
-  automaton: DFA_NFA;
+  automaton: FSM<string[], StateDFA>;
   counterExamples?: string[];
 
   constructor(params: {

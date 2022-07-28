@@ -1,3 +1,5 @@
+import AlphabetVPA from "../../../automaton/context_free/AlphabetVPA";
+import StateVPA from "../../../automaton/context_free/StateVPA";
 import { toEps } from "../../../tools";
 import Teacher from "../../teachers/Teacher";
 import DiscTreeFather, { InnerNode, Leaf, TreeElt } from "./DiscTreeFather";
@@ -16,7 +18,7 @@ export default class DiscTreeVPA extends DiscTreeFather<StringCouple> {
     return new DiscTreeVPA(name)
   }
 
-  sift(word: string, teacher: Teacher): Leaf<StringCouple> | undefined {
+  sift(word: string, teacher: Teacher<AlphabetVPA, StateVPA>): Leaf<StringCouple> | undefined {
     let currentNode: InnerNode<StringCouple> | Leaf<StringCouple> | undefined = this.root;
     while (currentNode instanceof InnerNode) {
       currentNode = teacher.member(currentNode.name[0] + word + currentNode.name[1]) ? currentNode.right : currentNode.left

@@ -1,12 +1,12 @@
 import DFA_NFA from "../../../automaton/regular/DFA_NFA";
-import State from "../../../automaton/regular/StateDFA";
-import Teacher from "../../teachers/Teacher";
+import StateDFA from "../../../automaton/regular/StateDFA";
+import { TeacherAutomaton } from "../../teachers/TeacherDFA";
 import Learner_OT_Abstract from "./Learner_OT_Abstract";
 
 export default class NL_star extends Learner_OT_Abstract {
   primeLines: string[];
 
-  constructor(teacher: Teacher) {
+  constructor(teacher: TeacherAutomaton) {
     super(teacher);
     this.primeLines = Array.from(this.alphabet).concat("");
   }
@@ -114,13 +114,13 @@ export default class NL_star extends Learner_OT_Abstract {
   }
 
   makeAutomaton() {
-    let wordForState: string[] = [], statesMap: Map<string, State> = new Map(),
-      acceptingStates: State[] = [], initialStates: State[] = [], stateSet: Set<State> = new Set();
+    let wordForState: string[] = [], statesMap: Map<string, StateDFA> = new Map(),
+      acceptingStates: StateDFA[] = [], initialStates: StateDFA[] = [], stateSet: Set<StateDFA> = new Set();
     this.primeLines.forEach(s => {
       if (this.dataStructure.S.includes(s)) {
         let name = this.dataStructure.assoc[s];
         if (!statesMap.get(name)) {
-          let state = new State(name, name[0] === "1", this.isCovered(name, this.dataStructure.assoc[""]), this.alphabet);
+          let state = new StateDFA(name, name[0] === "1", this.isCovered(name, this.dataStructure.assoc[""]), this.alphabet);
           wordForState.push(s);
           if (state.isAccepting) acceptingStates.push(state)
           if (state.isInitial) initialStates.push(state)

@@ -1,12 +1,13 @@
 import { ReactElement } from "react";
+import StateDFA from "../../../lib/automaton/regular/StateDFA";
 import Clonable from "../../../lib/Clonable.interface";
 import DiscTreeDFA from "../../../lib/learning/learners/discrimination_tree/DiscTreeDFA";
 import TTT from "../../../lib/learning/learners/discrimination_tree/TTT";
-import { TeacherAutomaton } from "../../../lib/learning/teachers/TeacherAutomaton";
+import { TeacherAutomaton } from "../../../lib/learning/teachers/TeacherDFA";
 import { LearnerSection, MessageType, StateReact } from "../LearnerSectionC";
 import DiscriminationTreeC from "./DiscriminationTreeC";
 
-export default class TTTC extends LearnerSection {
+export default class TTTC extends LearnerSection<string[], StateDFA> {
 
 
   createNewLearner(regex: string): TTT {
@@ -17,7 +18,7 @@ export default class TTTC extends LearnerSection {
     return <DiscriminationTreeC dt={ds.clone() as DiscTreeDFA} />
   }
 
-  nextOpChild(state: StateReact<TTT>): StateReact<TTT> {
+  nextOpChild(state: StateReact<string[], StateDFA, TTT>): StateReact<string[], StateDFA, TTT> {
     let learner = state.learner as TTT
     if (learner.finish) return state;
     var message: { type: MessageType, val: string };

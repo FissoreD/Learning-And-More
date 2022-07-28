@@ -1,16 +1,16 @@
 import DFA_NFA from "../../../automaton/regular/DFA_NFA";
-import State from "../../../automaton/regular/StateDFA";
+import StateDFA from "../../../automaton/regular/StateDFA";
 import { toEps } from "../../../tools";
 import Teacher from "../../teachers/Teacher";
 import LearnerFather from "../LearnerFather";
 import DiscTreeDFA from "./DiscTreeDFA";
 
-export default class TTT extends LearnerFather<DiscTreeDFA> {
+export default class TTT extends LearnerFather<DiscTreeDFA, string[], StateDFA> {
   finish = false;
   lastCe: { value: string, accepted: boolean, isTeacher: boolean } | undefined;
   lastSplit: { u: string, a: string, v: string, uaState: string, uState: string } | undefined;
 
-  constructor(teacher: Teacher) {
+  constructor(teacher: Teacher<string[], StateDFA>) {
     super(teacher, new DiscTreeDFA(""))
     this.initiate()
   }
@@ -64,7 +64,7 @@ export default class TTT extends LearnerFather<DiscTreeDFA> {
 
   makeAutomaton(): DFA_NFA {
     let initial_state = this.dataStructure.sift("", this.teacher)!
-    let states = new Map([...this.dataStructure.getLeaves().values()].map(e => [e.name, new State(e.name, e.isAccepting!, e === initial_state, this.alphabet)]))
+    let states = new Map([...this.dataStructure.getLeaves().values()].map(e => [e.name, new StateDFA(e.name, e.isAccepting!, e === initial_state, this.alphabet)]))
 
     let L = [...states.keys()]
 
@@ -77,7 +77,7 @@ export default class TTT extends LearnerFather<DiscTreeDFA> {
         if (res === undefined) {
           res = this.dataStructure.addRoot(newWord)
           L.push(res.name)
-          states.set(newWord, new State(newWord, res.isAccepting!, false, this.alphabet))
+          states.set(newWord, new StateDFA(newWord, res.isAccepting!, false, this.alphabet))
         }
         states.get(state)!.addTransition(symbol, states.get(res.name)!)
       }

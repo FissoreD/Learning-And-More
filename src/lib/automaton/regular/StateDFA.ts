@@ -1,12 +1,12 @@
-export default class State {
-  static Bottom = (alphabet: string | string[]) => new State("⊥", false, false, alphabet)
+export default class StateDFA {
+  static Bottom = (alphabet: string | string[]) => new StateDFA("⊥", false, false, alphabet)
   isAccepting: boolean;
   isInitial: boolean;
   alphabet: string[];
-  private outTransitions: Map<string, State[]>;
-  private inTransitions: Map<string, State[]>;
-  private successors: Set<State>;
-  private predecessor: Set<State>;
+  private outTransitions: Map<string, StateDFA[]>;
+  private inTransitions: Map<string, StateDFA[]>;
+  private successors: Set<StateDFA>;
+  private predecessor: Set<StateDFA>;
   name: string;
 
   constructor(name: string, isAccepting: boolean, isInitial: boolean, alphabet: string[] | string) {
@@ -24,8 +24,8 @@ export default class State {
     }
   }
 
-  addTransition(symbol: string, state: State) {
-    state = state || State.Bottom
+  addTransition(symbol: string, state: StateDFA) {
+    state = state || StateDFA.Bottom
     if (!this.outTransitions.has(symbol)) {
       this.outTransitions.set(symbol, [state])
     }
@@ -37,7 +37,7 @@ export default class State {
       state.inTransitions.get(symbol)!.push(this);
   }
 
-  getSuccessor(symbol: string): State[] {
+  getSuccessor(symbol: string): StateDFA[] {
     return this.outTransitions.get(symbol)!
   }
 
@@ -59,6 +59,6 @@ export default class State {
   }
 
   clone(p: { name?: string, alphabet?: string[] }) {
-    return new State(p.name || this.name, this.isAccepting, this.isInitial, p.alphabet || this.alphabet)
+    return new StateDFA(p.name || this.name, this.isAccepting, this.isInitial, p.alphabet || this.alphabet)
   }
 }

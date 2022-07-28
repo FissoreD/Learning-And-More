@@ -2,14 +2,14 @@ import ToDot from "../../ToDot.interface";
 import { sameVector, toEps } from "../../tools";
 import FSM from "../FSM_interface";
 import regexToAutomaton from "./RegexParser";
-import State from "./StateDFA";
+import StateDFA from "./StateDFA";
 
-export default class DFA_NFA implements FSM<string[], State>, ToDot {
-  states: Map<string, State>;
-  initialStates: State[];
+export default class DFA_NFA implements FSM<string[], StateDFA>, ToDot {
+  states: Map<string, StateDFA>;
+  initialStates: StateDFA[];
   alphabet: string[];
 
-  constructor(stateList: Set<State> | State[]) {
+  constructor(stateList: Set<StateDFA> | StateDFA[]) {
     stateList = new Set(stateList);
     this.states = new Map();
     stateList.forEach(e => this.states.set(e.name, e));
@@ -18,9 +18,9 @@ export default class DFA_NFA implements FSM<string[], State>, ToDot {
     this.alphabet = [...new Set([...stateList].map(e => e.alphabet).flat())];
   }
 
-  complete(p?: { bottom?: State, alphabet?: string[] }) {
+  complete(p?: { bottom?: StateDFA, alphabet?: string[] }) {
     let alphabet = p?.alphabet?.concat(this.alphabet) || this.alphabet
-    let bottom = p?.bottom || State.Bottom(alphabet)
+    let bottom = p?.bottom || StateDFA.Bottom(alphabet)
     let toAdd = false;
     this.alphabet = alphabet
     for (const symbol of alphabet) {
@@ -41,12 +41,12 @@ export default class DFA_NFA implements FSM<string[], State>, ToDot {
     return this
   }
 
-  readWord(word: string): [State | undefined, boolean] {
+  readWord(word: string): [StateDFA | undefined, boolean] {
     if (word.length === 0)
       return [this.initialStates.find(e => e.isAccepting) || this.initialStates[0], this.initialStates.some(e => e.isAccepting)];
-    let nextStates: Set<State> = new Set(this.initialStates);
+    let nextStates: Set<StateDFA> = new Set(this.initialStates);
     for (let index = 0; index < word.length && nextStates.size > 0; index++) {
-      let nextStates2: Set<State> = new Set();
+      let nextStates2: Set<StateDFA> = new Set();
       const symbol = word[index];
       if (!this.alphabet.includes(symbol)) {
         return [undefined, false]
@@ -66,7 +66,7 @@ export default class DFA_NFA implements FSM<string[], State>, ToDot {
     return [nextStates.values().next().value, false];
   }
 
-  giveState(word: string): State | undefined {
+  giveState(word: string): StateDFA | undefined {
     return this.readWord(word)[0]
   }
 
@@ -74,7 +74,7 @@ export default class DFA_NFA implements FSM<string[], State>, ToDot {
     return this.readWord(word)[1]
   }
 
-  findTransition(state: State, symbol: string) {
+  findTransition(state: StateDFA, symbol: string) {
     return state!.getSuccessor(symbol)!
   }
 
@@ -144,7 +144,7 @@ export default class DFA_NFA implements FSM<string[], State>, ToDot {
   determinize(): DFA_NFA {
     this.complete()
     let allStates = this.allStates()
-    let newStates = new Map<string, State>();
+    let newStates = new Map<string, StateDFA>();
     let stateMap = new Map(allStates.map((e, pos) => [e.name, pos]))
 
     let initState = [...this.initialStates].sort((a, b) => stateMap.get(a.name)! - stateMap.get(b.name)!);
@@ -153,7 +153,7 @@ export default class DFA_NFA implements FSM<string[], State>, ToDot {
     let findState = (n: number[]) => newStates.get(JSON.stringify(n))!;
     let addState = (name: number[], isInitial = false) =>
       newStates.set(JSON.stringify(name),
-        new State(JSON.stringify(name),
+        new StateDFA(JSON.stringify(name),
           name.some(e => allStates[e].isAccepting),
           isInitial, this.alphabet));
     let addSuccessor = (current: number[], letter: string, successor: number[]) =>
@@ -246,11 +246,11 @@ export default class DFA_NFA implements FSM<string[], State>, ToDot {
       }
     }
 
-    let oldStateToNewState: Map<string, State> = new Map();
+    let oldStateToNewState: Map<string, StateDFA> = new Map();
 
     let newStates = new Set([...P].filter(partition => partition.size > 0).map((partition, pos) => {
-      let representant: State[] = [...partition].map(e => aut.states.get(e)!);
-      let newState = new State(pos + "",
+      let representant: StateDFA[] = [...partition].map(e => aut.states.get(e)!);
+      let newState = new StateDFA(pos + "",
         representant.some(e => e.isAccepting),
         representant.some(e => e.isInitial),
         representant[0].alphabet
@@ -409,10 +409,10 @@ export default class DFA_NFA implements FSM<string[], State>, ToDot {
       }
     }
     let alphabet = Array.from(alphabetSet);
-    let stateMap: Map<string, State> = new Map();
-    let stateSet: Set<State> = new Set();
+    let stateMap: Map<string, StateDFA> = new Map();
+    let stateSet: Set<StateDFA> = new Set();
     statesName.forEach(e => {
-      let state = new State(e, acceptingStates.includes(e), initalState.includes(e), alphabet)
+      let state = new StateDFA(e, acceptingStates.includes(e), initalState.includes(e), alphabet)
       stateMap.set(e, state);
       stateSet.add(state)
     });

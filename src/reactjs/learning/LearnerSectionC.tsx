@@ -1,7 +1,7 @@
 import React from "react";
 import { Button, Card } from "react-bootstrap";
 import { ArrowClockwise, ArrowCounterclockwise, CaretLeftFill, CaretRightFill } from "react-bootstrap-icons";
-import DFA_NFA from "../../lib/automaton/regular/DFA_NFA";
+import FSM from "../../lib/automaton/FSM_interface";
 import Clonable from "../../lib/Clonable.interface";
 import LearnerFather from "../../lib/learning/learners/LearnerFather";
 import Dialog from "../components/Dialog";
@@ -11,20 +11,20 @@ import { URL_SEPARATOR } from "../globalVars";
 
 export type MessageType = "END" | "SEND-HYP" | "CE" | "CONSISTENCY" | "CLOSEDNESS" | "DISC-REF" | "HYP-STAB"
 
-export interface PropReact<Learner extends LearnerFather<Clonable>> { learner: Learner, name: String, changeRegexContainer: (regex: string) => void, pos: number }
+export interface PropReact<AlphabetType, StateType, Learner extends LearnerFather<Clonable, AlphabetType, StateType>> { learner: Learner, name: String, changeRegexContainer: (regex: string) => void, pos: number }
 
-export interface StateReact<Learner extends LearnerFather<Clonable>> {
+export interface StateReact<AlphabetType, StateType, Learner extends LearnerFather<Clonable, AlphabetType, StateType>> {
   doNext: boolean,
-  memory: { dataStructure: Clonable, automaton: DFA_NFA | undefined, message: { type: MessageType, val: string } }[],
+  memory: { dataStructure: Clonable, automaton: FSM<AlphabetType, StateType> | undefined, message: { type: MessageType, val: string } }[],
   position: number,
   learner: Learner,
   showRegexDialog: boolean
 }
 
-type Learner = LearnerFather<Clonable>
+type Learner<AlphabetType, StateType> = LearnerFather<Clonable, AlphabetType, StateType>
 
-export abstract class LearnerSection extends React.Component<PropReact<Learner>, StateReact<Learner>>{
-  constructor(prop: PropReact<Learner>) {
+export abstract class LearnerSection<AlphabetType, StateType> extends React.Component<PropReact<AlphabetType, StateType, Learner<AlphabetType, StateType>>, StateReact<AlphabetType, StateType, Learner<AlphabetType, StateType>>>{
+  constructor(prop: PropReact<AlphabetType, StateType, Learner<AlphabetType, StateType>>) {
     super(prop)
     this.state = this.allSteps(this.createNewState(prop.learner.teacher.regex), prop.pos);
     if (!window.location.pathname.endsWith(URL_SEPARATOR + prop.pos))
@@ -32,9 +32,9 @@ export abstract class LearnerSection extends React.Component<PropReact<Learner>,
   }
 
   abstract dataStructureToNodeElement(ds: Clonable): React.ReactElement;
-  abstract nextOpChild(state: StateReact<Learner>): StateReact<Learner>;
+  abstract nextOpChild(state: StateReact<AlphabetType, StateType, Learner<AlphabetType, StateType>>): StateReact<AlphabetType, StateType, Learner<AlphabetType, StateType>>;
 
-  nextOp(state: StateReact<Learner>): StateReact<Learner> {
+  nextOp(state: StateReact<AlphabetType, StateType, Learner<AlphabetType, StateType>>): StateReact<AlphabetType, StateType, Learner<AlphabetType, StateType>> {
     if (state.position === state.memory.length - 1) {
       state = this.nextOpChild(state)
     } else {
@@ -49,7 +49,7 @@ export abstract class LearnerSection extends React.Component<PropReact<Learner>,
     }
   }
 
-  allSteps(state: StateReact<Learner>, pos?: number) {
+  allSteps(state: StateReact<AlphabetType, StateType, Learner<AlphabetType, StateType>>, pos?: number) {
     if (state.position === state.memory.length || state.learner.finish) return state
 
     let i: number;
@@ -91,9 +91,9 @@ export abstract class LearnerSection extends React.Component<PropReact<Learner>,
     return <p className="text-center m-0">{msg}</p>
   }
 
-  abstract createNewLearner(regex: string): Learner;
+  abstract createNewLearner(regex: string): Learner<AlphabetType, StateType>;
 
-  createNewState(regex: string): StateReact<Learner> {
+  createNewState(regex: string): StateReact<AlphabetType, StateType, Learner<AlphabetType, StateType>> {
     let learner = this.createNewLearner(regex)
     return {
       doNext: true,

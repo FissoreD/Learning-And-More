@@ -3,7 +3,7 @@ import { ButtonGroup } from "react-bootstrap";
 import TTT from "../../lib/learning/learners/discrimination_tree/TTT";
 import L_star from "../../lib/learning/learners/observation_table/L_star";
 import NL_star from "../../lib/learning/learners/observation_table/NL_Star";
-import { TeacherAutomaton } from "../../lib/learning/teachers/TeacherAutomaton";
+import { TeacherAutomaton } from "../../lib/learning/teachers/TeacherDFA";
 import { removeFirstUrlPath, setUrl } from "../globalFunctions";
 import { URL_SEPARATOR } from "../globalVars";
 import TTTC from "./discrimination_tree/TTT_C";

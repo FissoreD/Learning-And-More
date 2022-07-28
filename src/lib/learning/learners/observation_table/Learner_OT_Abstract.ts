@@ -1,14 +1,15 @@
+import StateDFA from "../../../automaton/regular/StateDFA";
 import { boolToString, generatePrefixList, generateSuffixList } from "../../../tools";
-import Teacher from "../../teachers/Teacher";
+import { TeacherAutomaton } from "../../teachers/TeacherDFA";
 import LearnerFather from "../LearnerFather";
 import ObservationTable from "./ObservationTable";
 
-export default abstract class Learner_OT_Abstract extends LearnerFather<ObservationTable> {
+export default abstract class Learner_OT_Abstract extends LearnerFather<ObservationTable, string[], StateDFA> {
   closednessCounter: number;
   consistenceCounter: number;
   counterExample: string | undefined = "";
 
-  constructor(teacher: Teacher) {
+  constructor(teacher: TeacherAutomaton) {
     super(teacher, new ObservationTable([...teacher.alphabet]))
     this.closednessCounter = 0;
     this.consistenceCounter = 0;

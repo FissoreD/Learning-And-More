@@ -1,6 +1,6 @@
 import DFA_NFA from "./DFA_NFA";
 // import noam from "./noam";
-import State from "./StateDFA";
+import StateDFA from "./StateDFA";
 interface HisTransition {
   fromState: number | number[],
   toStates: number[] | number[][],
@@ -17,15 +17,15 @@ interface HisAutomaton {
 
 function HisAutomaton2Mine(aut: HisAutomaton): DFA_NFA {
 
-  let states: State[] = aut.states.map(
-    e => new State(
+  let states: StateDFA[] = aut.states.map(
+    e => new StateDFA(
       e + "",
       aut.acceptingStates.some(x => x + "" === e + ""),
       (typeof aut.initialState === "number" ? aut.initialState + "" === e + "" : aut.initialState?.some(x => x + "" === e + "")) || false,
       aut.alphabet))
 
-  let statesMap: Map<string, State> = new Map(),
-    statesSet: Set<State> = new Set();
+  let statesMap: Map<string, StateDFA> = new Map(),
+    statesSet: Set<StateDFA> = new Set();
   for (const state of states) {
     statesMap.set(state.name, state)
     statesSet.add(state)

@@ -43,4 +43,5 @@ export default interface FSM<Alphabet, State> {
   allStates(): State[];
 
   toString(): string;
+  toDot(): string;
 }

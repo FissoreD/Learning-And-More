@@ -1,5 +1,5 @@
 import DFA_NFA from "../../../../automaton/regular/DFA_NFA";
-import { TeacherAutomaton } from "../../../teachers/TeacherAutomaton";
+import { TeacherAutomaton } from "../../../teachers/TeacherDFA";
 import NL_star from "../NL_Star";
 
 test("Learner NL-Star Bollig et al", () => {
@@ -11,6 +11,6 @@ test("Learner NL-Star Bollig et al", () => {
   let teacher = new TeacherAutomaton({ type: "Automaton", automaton })
   let learner = new NL_star(teacher)
   learner.makeAllQueries()
-  expect(automaton.sameLanguage(learner.automaton!));
+  expect(learner.automaton!.sameLanguage(automaton));
 })
 

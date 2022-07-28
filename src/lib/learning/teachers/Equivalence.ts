@@ -1,5 +1,6 @@
+import FSM from "../../automaton/FSM_interface";
 import DFA_NFA from "../../automaton/regular/DFA_NFA";
-import State from "../../automaton/regular/StateDFA";
+import StateDFA from "../../automaton/regular/StateDFA";
 import Teacher from "./Teacher";
 
 /**
@@ -9,13 +10,13 @@ import Teacher from "./Teacher";
  * @param automaton 
  * @returns undifined if res = empty else the shortes word in res
  */
-export let equivalenceFunction = (teacher: Teacher, automaton: DFA_NFA): string | undefined => {
-  let counterExemple = (automatonDiff: DFA_NFA): string | undefined => {
+export let equivalenceFunction = (teacher: Teacher<string[], StateDFA>, automaton: DFA_NFA): string | undefined => {
+  let counterExemple = (automatonDiff: FSM<string[], StateDFA>): string | undefined => {
     let stateList = automatonDiff.allStates()
     if (automatonDiff.acceptingStates().length === 0) return undefined;
     let toExplore = Array.from(automatonDiff.initialStates)
-    let explored: State[] = []
-    type parentChild = { parent: State | undefined, symbol: string }
+    let explored: StateDFA[] = []
+    type parentChild = { parent: StateDFA | undefined, symbol: string }
     let parent: parentChild[] = new Array(stateList.length).fill({ parent: undefined, symbol: "" });
     while (toExplore.length > 0) {
       const current = toExplore.shift()!
@@ -47,7 +48,7 @@ export let equivalenceFunction = (teacher: Teacher, automaton: DFA_NFA): string 
   let diff1 = teacher.automaton!.difference(automMinimized);
   let counterEx1 = counterExemple(diff1);
 
-  let diff2 = automMinimized.difference(teacher.automaton!);
+  let diff2 = teacher.automaton!.difference(automMinimized);
   let counterEx2 = counterExemple(diff2);
 
   if (counterEx1 === undefined) return counterEx2;

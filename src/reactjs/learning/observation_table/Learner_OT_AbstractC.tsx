@@ -1,14 +1,15 @@
 import { ReactElement } from "react";
+import StateDFA from "../../../lib/automaton/regular/StateDFA";
 import Clonable from "../../../lib/Clonable.interface";
 import Learner_OT_Abstract from "../../../lib/learning/learners/observation_table/Learner_OT_Abstract";
 import ObservationTable from "../../../lib/learning/learners/observation_table/ObservationTable";
 import { LearnerSection, MessageType, PropReact, StateReact } from "../LearnerSectionC";
 import { ObservationTableC } from "./ObservationTableC";
 
-export default abstract class Learner_OT_AbstractC extends LearnerSection {
+export default abstract class Learner_OT_AbstractC extends LearnerSection<string[], StateDFA> {
   tableToModifyAfterCe: string;
 
-  constructor(prop: PropReact<Learner_OT_Abstract>, tableToModif: string) {
+  constructor(prop: PropReact<string[], StateDFA, Learner_OT_Abstract>, tableToModif: string) {
     super(prop)
     this.tableToModifyAfterCe = tableToModif
 
@@ -20,7 +21,7 @@ export default abstract class Learner_OT_AbstractC extends LearnerSection {
   abstract closeMessage(closeRep: string): string;
   abstract consistentMessage(s1: string, s2: string, newCol: string): string;
 
-  nextOpChild(state: StateReact<Learner_OT_Abstract>): StateReact<Learner_OT_Abstract> {
+  nextOpChild(state: StateReact<string[], StateDFA, Learner_OT_Abstract>): StateReact<string[], StateDFA, Learner_OT_Abstract> {
     let learner = state.learner as Learner_OT_Abstract;
     if (learner.finish) return state
     var message: { type: MessageType, val: string };

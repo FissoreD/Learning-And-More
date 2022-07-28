@@ -9,13 +9,13 @@ export default class TTT_VPA {
   finish = false;
   lastCe: { value: string, accepted: boolean, isTeacher: boolean } | undefined;
   lastSplit: { u: string, a: string, v: string, uaState: string, uState: string } | undefined;
-  teacher: Teacher;
+  teacher: Teacher<AlphabetVPA, StateVPA>;
   alphabet: AlphabetVPA;
   dataStructure: DiscTreeVPA;
   automaton: undefined | VPA;
   learner: TTT_VPA;
 
-  constructor(teacher: Teacher, learner: TTT_VPA) {
+  constructor(teacher: Teacher<AlphabetVPA, StateVPA>, learner: TTT_VPA) {
     this.alphabet = learner.alphabet;
     this.teacher = teacher;
     this.dataStructure = new DiscTreeVPA(["", ""])

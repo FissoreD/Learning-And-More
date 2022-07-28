@@ -1,20 +1,20 @@
 import DFA_NFA from "../../../automaton/regular/DFA_NFA";
-import State from "../../../automaton/regular/StateDFA";
+import StateDFA from "../../../automaton/regular/StateDFA";
 import Learner_OT_Abstract from "./Learner_OT_Abstract";
 
 
 export default class L_star extends Learner_OT_Abstract {
-  makeAutomaton(): DFA_NFA {
+  makeAutomaton() {
     const
       wordForState: string[] = [],
-      statesMap: Map<string, State> = new Map(),
-      acceptingStates: State[] = [],
-      initialStates: State[] = [],
-      statesSet: Set<State> = new Set();
+      statesMap: Map<string, StateDFA> = new Map(),
+      acceptingStates: StateDFA[] = [],
+      initialStates: StateDFA[] = [],
+      statesSet: Set<StateDFA> = new Set();
     this.dataStructure.S.forEach(s => {
       let name = this.dataStructure.assoc[s];
       if (!statesMap.get(name)) {
-        let state = new State(name, name[0] === "1", s === "", this.alphabet);
+        let state = new StateDFA(name, name[0] === "1", s === "", this.alphabet);
         wordForState.push(s);
         if (state.isAccepting) acceptingStates.push(state)
         if (state.isInitial) initialStates.push(state)
