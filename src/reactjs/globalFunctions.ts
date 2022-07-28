@@ -22,11 +22,13 @@ export const changeUrl = (p?: { path: string, operation?: "Append" | "Root" | "R
 }
 
 export const setUrl = (url: string) => {
-  console.log(url);
-
   window.history.pushState("", "", "/" + URL_BASE + "/" + url)
 }
 
 export const withoutLastSeparator = (url: string) => {
   return url.substring(0, url.lastIndexOf(URL_SEPARATOR))
+}
+
+export const removeFirstUrlPath = () => {
+  return window.location.pathname.substring(URL_BASE.length + 2)
 }

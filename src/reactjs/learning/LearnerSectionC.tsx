@@ -6,8 +6,8 @@ import Clonable from "../../lib/Clonable.interface";
 import LearnerFather from "../../lib/learning/learners/LearnerFather";
 import Dialog from "../components/Dialog";
 import GraphDotRender from "../components/GraphDotRender";
-import { setUrl, withoutLastSeparator } from "../globalFunctions";
-import { URL_BASE, URL_SEPARATOR } from "../globalVars";
+import { removeFirstUrlPath, setUrl, withoutLastSeparator } from "../globalFunctions";
+import { URL_SEPARATOR } from "../globalVars";
 
 export type MessageType = "END" | "SEND-HYP" | "CE" | "CONSISTENCY" | "CLOSEDNESS" | "DISC-REF" | "HYP-STAB"
 
@@ -29,7 +29,7 @@ export abstract class LearnerSection extends React.Component<PropReact<Learner>,
     console.log(prop.pos);
     this.state = this.allSteps(this.createNewState(prop.learner.teacher.regex), prop.pos);
     if (!window.location.pathname.endsWith(URL_SEPARATOR + prop.pos))
-      setUrl(window.location.pathname.substring(URL_BASE.length + 2) + URL_SEPARATOR + prop.pos)
+      setUrl(removeFirstUrlPath() + URL_SEPARATOR + prop.pos)
   }
 
   abstract dataStructureToNodeElement(ds: Clonable): React.ReactElement;
@@ -110,7 +110,7 @@ export abstract class LearnerSection extends React.Component<PropReact<Learner>,
   render(): React.ReactElement {
     let position = this.state.position
     let memoryCell = this.state.memory[position]
-    setUrl(withoutLastSeparator(window.location.pathname.substring(URL_BASE.length + 2)) + URL_SEPARATOR + position)
+    setUrl(withoutLastSeparator(removeFirstUrlPath() + URL_SEPARATOR + position))
 
     return <div className="body-container">
       <Dialog show={this.state.showRegexDialog} fn={this.changeLearner.bind(this)} />
