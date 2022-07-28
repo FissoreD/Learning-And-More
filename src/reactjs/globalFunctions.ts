@@ -1,6 +1,6 @@
-import { URL_BASE } from "./globalVars";
+import { URL_BASE, URL_SEPARATOR } from "./globalVars";
 
-const intervalSlash = (...values: string[]) => values.reduce((prev, next) => `${prev}/${next}`)
+const intervalSlash = (...values: string[]) => values.reduce((prev, next) => `${prev}${URL_SEPARATOR}${next}`)
 
 /** Modifies the current URL, with _no_ page realod */
 export const changeUrl = (p?: { path: string, operation?: "Append" | "Root" | "ReplaceLast", position?: number }) => {
@@ -22,9 +22,11 @@ export const changeUrl = (p?: { path: string, operation?: "Append" | "Root" | "R
 }
 
 export const setUrl = (url: string) => {
-  window.history.pushState("", "", "/" + URL_BASE + url)
+  console.log(url);
+
+  window.history.pushState("", "", "/" + URL_BASE + "/" + url)
 }
 
-export const withoutLastSladh = (url: string) => {
-  return url.substring(0, url.lastIndexOf("/"))
+export const withoutLastSeparator = (url: string) => {
+  return url.substring(0, url.lastIndexOf(URL_SEPARATOR))
 }

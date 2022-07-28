@@ -1,5 +1,5 @@
 import { ReactElement } from "react";
-import LearningDataStructure from "../../../lib/learning/learners/LearningDataStructure";
+import Clonable from "../../../lib/Clonable.interface";
 import Learner_OT_Abstract from "../../../lib/learning/learners/observation_table/Learner_OT_Abstract";
 import ObservationTable from "../../../lib/learning/learners/observation_table/ObservationTable";
 import { LearnerSection, MessageType, PropReact, StateReact } from "../LearnerSectionC";
@@ -13,7 +13,7 @@ export default abstract class Learner_OT_AbstractC extends LearnerSection {
     this.tableToModifyAfterCe = tableToModif
 
   }
-  dataStructureToNodeElement(ds: LearningDataStructure): ReactElement {
+  dataStructureToNodeElement(ds: Clonable): ReactElement {
     return <ObservationTableC dataStructure={ds.clone() as ObservationTable} />
   }
 

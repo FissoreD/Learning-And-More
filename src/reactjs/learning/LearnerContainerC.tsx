@@ -5,6 +5,7 @@ import L_star from "../../lib/learning/learners/observation_table/L_star";
 import NL_star from "../../lib/learning/learners/observation_table/NL_Star";
 import { TeacherAutomaton } from "../../lib/learning/teachers/TeacherAutomaton";
 import { setUrl } from "../globalFunctions";
+import { URL_BASE, URL_SEPARATOR } from "../globalVars";
 import TTTC from "./discrimination_tree/TTT_C";
 import LStarC from "./observation_table/L_StarC";
 import NLStarC from "./observation_table/NL_StarC";
@@ -18,7 +19,9 @@ let regex = "(a+b)*a(a+b)(a+b)"
 export default class LearnerContainerC extends React.Component<Prop, State> {
   constructor(prop: Prop) {
     super(prop)
-    let [fstElt, sndElt] = prop.cnt.split("/") as [LearnerAlgo, string, string[]]
+    let [fstElt, sndElt] = prop.cnt.split(URL_SEPARATOR) as [LearnerAlgo, string, string[]]
+    console.log({ fstElt, sndElt });
+
     this.state = {
       cnt: algos.includes(fstElt) ? fstElt : "L",
       regex,
@@ -45,7 +48,8 @@ export default class LearnerContainerC extends React.Component<Prop, State> {
         algo = "L"
         cnt = <LStarC pos={this.state.pos} changeRegexContainer={this.changeRegex.bind(this)} name={"L-Star"} learner={new L_star(teacher)} />;
     }
-    setUrl("/" + window.location.pathname.split("/")[2] + "/" + algo)
+    // @todo ?
+    setUrl(window.location.pathname.substring(URL_BASE.length + 2).split("&")[0] + URL_SEPARATOR + algo)
     return cnt
   }
 

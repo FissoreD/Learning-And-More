@@ -11,7 +11,7 @@ export class NavBar extends React.Component<ChangeCnt> {
   render(): React.ReactElement {
     let links = (["Automaton", "Learning", "TestVPAViewer"] as AlgosNavBar[]).map((e, pos) => <Nav.Link key={pos} onClick={() => {
       this.props.changeCnt(e);
-      setUrl("/" + e)
+      setUrl(e)
     }}>{e}</Nav.Link>)
     return (
       <Navbar bg="light" expand="lg">

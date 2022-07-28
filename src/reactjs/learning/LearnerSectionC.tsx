@@ -2,37 +2,37 @@ import React from "react";
 import { Button, Card } from "react-bootstrap";
 import { ArrowClockwise, ArrowCounterclockwise, CaretLeftFill, CaretRightFill } from "react-bootstrap-icons";
 import DFA_NFA from "../../lib/automaton/regular/DFA_NFA";
+import Clonable from "../../lib/Clonable.interface";
 import LearnerFather from "../../lib/learning/learners/LearnerFather";
-import LearningDataStructure from "../../lib/learning/learners/LearningDataStructure";
 import Dialog from "../components/Dialog";
 import GraphDotRender from "../components/GraphDotRender";
-import { setUrl, withoutLastSladh } from "../globalFunctions";
-import { URL_BASE } from "../globalVars";
+import { setUrl, withoutLastSeparator } from "../globalFunctions";
+import { URL_BASE, URL_SEPARATOR } from "../globalVars";
 
 export type MessageType = "END" | "SEND-HYP" | "CE" | "CONSISTENCY" | "CLOSEDNESS" | "DISC-REF" | "HYP-STAB"
 
-export interface PropReact<Learner extends LearnerFather<LearningDataStructure>> { learner: Learner, name: String, changeRegexContainer: (regex: string) => void, pos: number }
+export interface PropReact<Learner extends LearnerFather<Clonable>> { learner: Learner, name: String, changeRegexContainer: (regex: string) => void, pos: number }
 
-export interface StateReact<Learner extends LearnerFather<LearningDataStructure>> {
+export interface StateReact<Learner extends LearnerFather<Clonable>> {
   doNext: boolean,
-  memory: { dataStructure: LearningDataStructure, automaton: DFA_NFA | undefined, message: { type: MessageType, val: string } }[],
+  memory: { dataStructure: Clonable, automaton: DFA_NFA | undefined, message: { type: MessageType, val: string } }[],
   position: number,
   learner: Learner,
   showRegexDialog: boolean
 }
 
-type Learner = LearnerFather<LearningDataStructure>
+type Learner = LearnerFather<Clonable>
 
 export abstract class LearnerSection extends React.Component<PropReact<Learner>, StateReact<Learner>>{
   constructor(prop: PropReact<Learner>) {
     super(prop)
     console.log(prop.pos);
     this.state = this.allSteps(this.createNewState(prop.learner.teacher.regex), prop.pos);
-    if (!window.location.pathname.endsWith("/" + prop.pos))
-      setUrl(window.location.pathname.substring(URL_BASE.length + 1) + "/" + prop.pos)
+    if (!window.location.pathname.endsWith(URL_SEPARATOR + prop.pos))
+      setUrl(window.location.pathname.substring(URL_BASE.length + 2) + URL_SEPARATOR + prop.pos)
   }
 
-  abstract dataStructureToNodeElement(ds: LearningDataStructure): React.ReactElement;
+  abstract dataStructureToNodeElement(ds: Clonable): React.ReactElement;
   abstract nextOpChild(state: StateReact<Learner>): StateReact<Learner>;
 
   nextOp(state: StateReact<Learner>): StateReact<Learner> {
@@ -110,7 +110,7 @@ export abstract class LearnerSection extends React.Component<PropReact<Learner>,
   render(): React.ReactElement {
     let position = this.state.position
     let memoryCell = this.state.memory[position]
-    setUrl(withoutLastSladh(window.location.pathname.substring(URL_BASE.length + 1)) + "/" + position)
+    setUrl(withoutLastSeparator(window.location.pathname.substring(URL_BASE.length + 2)) + URL_SEPARATOR + position)
 
     return <div className="body-container">
       <Dialog show={this.state.showRegexDialog} fn={this.changeLearner.bind(this)} />

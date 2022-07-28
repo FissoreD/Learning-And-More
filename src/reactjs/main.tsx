@@ -6,7 +6,7 @@ import { setUrl } from "./globalFunctions";
 export default class Home extends React.Component<{}, {}> {
   constructor(prop: {}) {
     super(prop)
-    setUrl("/")
+    setUrl("")
   }
 
   render(): React.ReactNode {

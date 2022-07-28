@@ -7,6 +7,7 @@ import AutomatonContainerC from './reactjs/automaton/AutomatonContainerC';
 import TestVPAViewer from './reactjs/automaton/TestVpaViewer';
 import { NavBar } from './reactjs/components/NavBar';
 import { setUrl } from './reactjs/globalFunctions';
+import { URL_BASE, URL_SEPARATOR } from './reactjs/globalVars';
 import "./reactjs/index.css";
 import LearnerContainerC, { LearnerAlgo } from './reactjs/learning/LearnerContainerC';
 import Home from './reactjs/main';
@@ -25,12 +26,15 @@ export class Main extends React.Component<{}, Prop> {
   }
 
   giveContent(section: AlgosNavBar) {
-    let [, first, ...second] = section.split("/")
+    let [first, ...second] = section.split(URL_SEPARATOR)
+    first = first.substring(URL_BASE.length + 1)
+    console.log({ first, second });
+
     if (!section.includes("/")) first = section
     let cnt: React.ReactElement;
     switch (first) {
       case "Automaton": cnt = <AutomatonContainerC />; break;
-      case "Learning": cnt = <LearnerContainerC cnt={second.join("/") as LearnerAlgo} />; break;
+      case "Learning": cnt = <LearnerContainerC cnt={second.join(URL_SEPARATOR) as LearnerAlgo} />; break;
       case "TestVPAViewer": cnt = <TestVPAViewer />; break;
       default: cnt = <Home />
     }

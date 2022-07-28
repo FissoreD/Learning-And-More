@@ -20,3 +20,5 @@ export const GRAPHVIZ_OPTIONS = {
 };
 
 export const URL_BASE = "Learning-Automata"
+
+export const URL_SEPARATOR = "&"

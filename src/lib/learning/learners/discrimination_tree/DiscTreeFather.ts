@@ -1,5 +1,5 @@
+import Clonable from "../../../Clonable.interface";
 import ToDot from "../../../ToDot.interface";
-import LearningDataStructure from "../LearningDataStructure";
 
 export class InnerNode<LblType>  {
   name: LblType;
@@ -62,7 +62,7 @@ export class Leaf<LblType> {
 
 export type TreeElt<LblType> = InnerNode<LblType> | Leaf<LblType>
 
-export default abstract class DiscTreeFather<LblType> implements LearningDataStructure, ToDot {
+export default abstract class DiscTreeFather<LblType> implements Clonable, ToDot {
   protected root: InnerNode<LblType>;
   protected leaves: Map<string, Leaf<LblType>>;
   protected innerNodes: Set<InnerNode<LblType>>;

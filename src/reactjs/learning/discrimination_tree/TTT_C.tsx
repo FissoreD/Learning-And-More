@@ -1,7 +1,7 @@
 import { ReactElement } from "react";
+import Clonable from "../../../lib/Clonable.interface";
 import DiscTreeDFA from "../../../lib/learning/learners/discrimination_tree/DiscTreeDFA";
 import TTT from "../../../lib/learning/learners/discrimination_tree/TTT";
-import LearningDataStructure from "../../../lib/learning/learners/LearningDataStructure";
 import { TeacherAutomaton } from "../../../lib/learning/teachers/TeacherAutomaton";
 import { LearnerSection, MessageType, StateReact } from "../LearnerSectionC";
 import DiscriminationTreeC from "./DiscriminationTreeC";
@@ -13,7 +13,7 @@ export default class TTTC extends LearnerSection {
     return new TTT(new TeacherAutomaton({ type: "Regex", automaton: regex }))
   }
 
-  dataStructureToNodeElement(ds: LearningDataStructure): ReactElement {
+  dataStructureToNodeElement(ds: Clonable): ReactElement {
     return <DiscriminationTreeC dt={ds.clone() as DiscTreeDFA} />
   }
 
