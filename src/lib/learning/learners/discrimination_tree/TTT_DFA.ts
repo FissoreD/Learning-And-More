@@ -14,7 +14,7 @@ export default class TTT extends LearnerFather<DiscTreeDFA, StateDFA> {
 
   constructor(teacher: Teacher<StateDFA>) {
     super(teacher, new DiscTreeDFA(""))
-    this.alphabet = super.alphabet as AlphabetDFA
+    this.alphabet = teacher.alphabet as AlphabetDFA
     this.initiate()
   }
 

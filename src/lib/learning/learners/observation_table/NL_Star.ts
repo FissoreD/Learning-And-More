@@ -8,7 +8,7 @@ export default class NL_star extends Learner_OT_Abstract {
 
   constructor(teacher: TeacherAutomaton) {
     super(teacher);
-    this.primeLines = Array.from(this.alphabet.symbols).concat("");
+    this.primeLines = teacher.alphabet.symbols.concat("");
   }
 
   isPrime(rowKey: string): boolean {

@@ -125,3 +125,12 @@ test("Automaton Difference", () => {
   expect(a2_comp.acceptWord('a')).toBeFalsy();
   expect(a1.difference(a2).sameLanguage(diff)).toBe(true)
 })
+
+// test("DFA counter-example", () => {
+//   let aut = DFA_NFA.regex2automaton("a*b")
+//   console.log(aut.findWordAccepted(0));
+//   console.log(aut.findWordAccepted(1));
+//   console.log(aut.findWordAccepted(2));
+//   console.log(aut.findWordAccepted(3));
+//   console.log(aut.findWordAccepted(4));
+// })

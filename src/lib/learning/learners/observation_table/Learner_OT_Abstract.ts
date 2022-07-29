@@ -13,7 +13,7 @@ export default abstract class Learner_OT_Abstract extends LearnerFather<Observat
 
   constructor(teacher: TeacherAutomaton) {
     super(teacher, new ObservationTable(teacher.alphabet.clone()))
-    this.alphabet = super.alphabet as AlphabetDFA
+    this.alphabet = teacher.alphabet
     this.closednessCounter = 0;
     this.consistenceCounter = 0;
     this.addRow("")

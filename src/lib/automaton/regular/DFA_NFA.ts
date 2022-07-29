@@ -222,10 +222,6 @@ export default class DFA_NFA implements FSM<StateDFA>, ToDot {
    * @returns a fresh Determinized Automaton 
    */
   determinize(): DFA_NFA {
-    console.log("Determinizing");
-    console.log(this.toDot());
-
-
     this.complete()
     let allStates = this.allStates()
     let newStates = new Map<string, StateDFA>();
@@ -504,5 +500,32 @@ export default class DFA_NFA implements FSM<StateDFA>, ToDot {
       state.getAllOutTransitions().forEach((nextStates, symbol) => nextStates.forEach(next => txt.push(`${symbol},[${state.name}]->[${next.name}]`))));
     this.acceptingStates().forEach(e => txt.push("[" + e.name + "]"));
     return txt.join('\n');
+  }
+
+  /**
+   * @goal : find a path from the initial states to an accepting one
+   * @param minLength : the length of the word to find (note : by default its zero) 
+   * @returns a words of length at least minLength if it exists else the word of nearest length
+   */
+  findWordAccepted(minLength = 0) {
+    if (this.acceptingStates().length === 0) return undefined;
+    let toExplore = [...this.initialStates].map(state => ({ state, word: "" }))
+    while (toExplore.length) {
+      let newToExplore = []
+      for (const { state, word } of toExplore) {
+        for (const symbol of this.alphabet.symbols) {
+          let successors = state.getSuccessor(symbol)
+          if (successors)
+            for (const state of successors) {
+              newToExplore.push({ state, word: word + symbol });
+              if (word.length + 1 === minLength)
+                return word + symbol
+            }
+        }
+      }
+      if (newToExplore.length === 0) break
+      toExplore = newToExplore;
+    }
+    return toExplore.reduce((old, n) => n.word.length > old.length ? n.word : old, "")
   }
 }
