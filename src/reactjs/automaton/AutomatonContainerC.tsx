@@ -35,10 +35,10 @@ export default class AutomatonContainerC extends React.Component<{}, StateReact>
       r2: regex2,
       opeartionList: [
         {
-          a1: Automaton.regex2automaton(regex1),
-          a2: Automaton.regex2automaton(regex2),
+          a1: Automaton.regexToAutomaton(regex1),
+          a2: Automaton.regexToAutomaton(regex2),
           operation: "∪",
-          res: Automaton.regex2automaton(regex1).union(Automaton.regex2automaton(regex2)).minimize(),
+          res: Automaton.regexToAutomaton(regex1).union(Automaton.regexToAutomaton(regex2)).minimize(),
           is_a1: true,
         }
       ],
@@ -71,7 +71,7 @@ export default class AutomatonContainerC extends React.Component<{}, StateReact>
           }}><BootstrapReboot /></a>}
       </Card.Header>
       <div className="h-100 d-flex justify-content-center align-items-center" style={{ minHeight: "130px" }}>
-        <GraphDotRender dot={Automaton.regex2automaton(r)} />
+        <GraphDotRender dot={Automaton.regexToAutomaton(r)} />
       </div>
       <Card.Body className="py-1">
         <Card.Title className="my-0 text-nowrap text-center" style={{ overflowY: "hidden" }}>{r}</Card.Title>
@@ -89,7 +89,7 @@ export default class AutomatonContainerC extends React.Component<{}, StateReact>
   addNewAut(operation: Operation, is_a1 = true) {
     this.setState((state) => {
       let { r1, r2 } = state
-      let [a1, a2] = [r1, r2].map(e => Automaton.regex2automaton(e))
+      let [a1, a2] = [r1, r2].map(e => Automaton.regexToAutomaton(e))
       let res: Automaton;
       switch (operation) {
         case "/": res = a1.difference(a2).minimize(); break;

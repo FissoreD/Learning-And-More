@@ -485,7 +485,7 @@ export default class DFA_NFA implements FSM<StateDFA>, ToDot {
     return new DFA_NFA(stateSet);
   }
 
-  static regex2automaton(regex: string) {
+  static regexToAutomaton(regex: string) {
     return regexToAutomaton(regex)
   }
 
@@ -508,24 +508,42 @@ export default class DFA_NFA implements FSM<StateDFA>, ToDot {
    * @returns a words of length at least minLength if it exists else the word of nearest length
    */
   findWordAccepted(minLength = 0) {
-    if (this.acceptingStates().length === 0) return undefined;
-    let toExplore = [...this.initialStates].map(state => ({ state, word: "" }))
+    let aut = this.minimize()
+    if (aut.isEmpty()) return undefined;
+
+    let acceptedWords: string[] = []
+    let toExplore = [...aut.initialStates].map(state => ({ state, word: "" }))
+
+    if (aut.initialStates.some(e => e.isAccepting))
+      acceptedWords.push("")
+
+    if (minLength === 0 && acceptedWords.length)
+      return ""
+
     while (toExplore.length) {
       let newToExplore = []
       for (const { state, word } of toExplore) {
-        for (const symbol of this.alphabet.symbols) {
+        for (const symbol of aut.alphabet.symbols) {
           let successors = state.getSuccessor(symbol)
-          if (successors)
+          if (successors) {
             for (const state of successors) {
-              newToExplore.push({ state, word: word + symbol });
-              if (word.length + 1 === minLength)
-                return word + symbol
+              if (!state.isAccepting &&
+                state.getAllSuccessors().size === 1 &&
+                state.getAllSuccessors().has(state))
+                continue
+              let newWord = word + symbol
+              if (state.isAccepting) {
+                acceptedWords.push(newWord)
+                if (newWord.length >= minLength) return newWord
+              }
+              newToExplore.push({ state, word: newWord });
             }
+          }
         }
       }
       if (newToExplore.length === 0) break
       toExplore = newToExplore;
     }
-    return toExplore.reduce((old, n) => n.word.length > old.length ? n.word : old, "")
+    return toExplore.reduce((old, n) => n.word.length > old.length ? n.word : old, acceptedWords[acceptedWords.length - 1])
   }
 }

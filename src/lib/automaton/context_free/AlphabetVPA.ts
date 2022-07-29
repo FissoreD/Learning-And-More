@@ -54,6 +54,7 @@ export default class AlphabetVPA implements Clonable, Alphabet {
   }
 
   isValidAlphabet() {
+    this.makeSet()
     let a = new Set([...this.CALL, ...this.INT, ...this.RET])
     if (a.size !== this.CALL.length + this.INT.length + this.RET.length)
       throw new Error("This alphabet is not valid since INT, CALL and RET are not union" + this.toString())

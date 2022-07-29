@@ -9,16 +9,16 @@ test("TTT_VPA for G = A^n II^n B^n", () => {
   console.log(learner.automaton!.toDot());
 
 
-  expect(learner.dataStructure.sift("aaa", t)?.name).toBe("")
-  expect(learner.dataStructure.sift("aab", t)?.name).toBe("")
-  expect(learner.dataStructure.sift("bba", t)?.name).toBe("")
-  expect(learner.dataStructure.sift("bb", t)?.name).toBe("a")
-  expect(learner.dataStructure.sift("a", t)?.name).toBe("a")
+  // expect(learner.dataStructure.sift("aaa", t)?.name).toBe("")
+  // expect(learner.dataStructure.sift("aab", t)?.name).toBe("")
+  // expect(learner.dataStructure.sift("bba", t)?.name).toBe("")
+  // expect(learner.dataStructure.sift("bb", t)?.name).toBe("a")
+  // expect(learner.dataStructure.sift("a", t)?.name).toBe("a")
 
-  expect(learner.makeAutomaton().acceptWord("a")).toBeTruthy()
-  expect(learner.makeAutomaton().acceptWord("bb")).toBeFalsy()
+  // expect(learner.makeAutomaton().acceptWord("a")).toBeTruthy()
+  // expect(learner.makeAutomaton().acceptWord("bb")).toBeFalsy()
 
-  learner.makeAllQueries()
-  expect(learner.finish).toBeTruthy()
+  // learner.makeAllQueries()
+  // expect(learner.finish).toBeTruthy()
 })
 

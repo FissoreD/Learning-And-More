@@ -1,5 +1,4 @@
 import aut from "../../../../../json/automata.json";
-
 import { TeacherAutomaton } from "../../../teachers/TeacherDFA";
 import TTT from "../TTT_DFA";
 
@@ -28,14 +27,4 @@ test("TTT learn (a+b)*a(a+b)^2", () => {
     expect(t.automaton.sameLanguage(learner.automaton!)).toBeTruthy()
     expect(learner.finish).toBeTruthy()
   })
-})
-
-test("TEST ME", () => {
-  let regex = aut.regex[0]
-  let t = new TeacherAutomaton({ type: "Regex", automaton: regex })
-  let learner = new TTT(t)
-  learner.makeNextQuery()
-  learner.makeNextQuery()
-  learner.makeNextQuery()
-  console.log(learner.automaton?.toDot());
 })

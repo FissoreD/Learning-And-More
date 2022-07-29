@@ -2,7 +2,6 @@ import FSM from "../../automaton/FSM_interface";
 import AlphabetDFA from "../../automaton/regular/AlphabetDFA";
 import DFA_NFA from "../../automaton/regular/DFA_NFA";
 import StateDFA from "../../automaton/regular/StateDFA";
-import { equivalenceFunction } from "./Equivalence";
 import Teacher from "./Teacher";
 
 /**
@@ -25,7 +24,7 @@ export class TeacherAutomaton implements Teacher<StateDFA> {
         automaton = (params.automaton as DFA_NFA).minimize()
         break;
       case "Regex":
-        automaton = DFA_NFA.regex2automaton(params.automaton as string).minimize()
+        automaton = DFA_NFA.regexToAutomaton(params.automaton as string).minimize()
         break;
       case "Dot":
         automaton = DFA_NFA.strToAutomaton(params.automaton as string).minimize()
@@ -43,6 +42,7 @@ export class TeacherAutomaton implements Teacher<StateDFA> {
   }
 
   equiv(automaton: DFA_NFA): string | undefined {
-    return equivalenceFunction(this, automaton)
+    let symDiff = this.automaton?.symmetricDifference(automaton) as DFA_NFA
+    return symDiff.findWordAccepted()
   }
 }

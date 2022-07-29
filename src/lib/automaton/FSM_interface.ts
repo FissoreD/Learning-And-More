@@ -5,12 +5,12 @@ export default interface FSM<State> {
   initialStates: State[];
   alphabet: Alphabet;
 
+  /** In place method to add missing transitions to a new created ⊥ state */
   complete(p?: { bottom?: State, alphabet?: Alphabet }): FSM<State>;
   /** @returns a fresh Determinized FSM */
   determinize(): FSM<State>;
   /**
    * Hopcroft minimization Algorithm
-   * If the automaton is not deterministic, it is determinized 
    * @returns A fresh determinized & minimized automaton 
    * @link https://en.wikipedia.org/wiki/DFA_minimization
    */
