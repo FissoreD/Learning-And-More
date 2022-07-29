@@ -1,6 +1,6 @@
-import DFA_NFA from "./DFA_NFA";
+import DFA_NFA from "../DFA_NFA";
 // import noam from "./noam";
-import StateDFA from "./StateDFA";
+import StateDFA from "../StateDFA";
 interface HisTransition {
   fromState: number | number[],
   toStates: number[] | number[][],

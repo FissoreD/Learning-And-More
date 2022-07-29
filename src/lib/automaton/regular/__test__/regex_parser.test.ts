@@ -1,5 +1,5 @@
 import DFA_NFA from "../DFA_NFA"
-import regexToAutomaton from "../RegexParser"
+import regexToAutomaton from "../parser/RegexParser"
 
 test("Regex parser", () => {
   let aut = regexToAutomaton("(a+b)*a+$")

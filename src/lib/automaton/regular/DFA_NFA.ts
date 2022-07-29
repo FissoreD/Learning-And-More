@@ -2,7 +2,7 @@ import ToDot from "../../ToDot.interface";
 import { sameVector, toEps } from "../../tools";
 import FSM from "../FSM_interface";
 import AlphabetDFA from "./AlphabetDFA";
-import regexToAutomaton from "./RegexParser";
+import regexToAutomaton from "./parser/RegexParser";
 import StateDFA from "./StateDFA";
 
 export default class DFA_NFA implements FSM<StateDFA>, ToDot {
