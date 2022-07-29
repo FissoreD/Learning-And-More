@@ -48,8 +48,6 @@ export default class TTT_VPA extends LearnerFather<DiscTreeVPA, StateVPA> {
         }
       }
     }
-    console.log(this.dataStructure.toDot());
-
     this.makeAutomaton()
   }
 
