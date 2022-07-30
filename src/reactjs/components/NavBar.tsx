@@ -12,7 +12,7 @@ export class NavBar extends React.Component<ChangeCnt> {
       this.props.changeCnt(e);
     }}>{e}</Nav.Link>)
     return (
-      <Navbar bg="light" expand="lg">
+      <Navbar bg="light" expand="lg" className="mb-2">
         <Container>
           <Navbar.Brand ><Bank /></Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />

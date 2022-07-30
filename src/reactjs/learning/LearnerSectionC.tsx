@@ -5,7 +5,7 @@ import FSM from "../../lib/automaton/FSM_interface";
 import Clonable from "../../lib/Clonable.interface";
 import LearnerFather from "../../lib/learning/learners/LearnerFather";
 import Dialog from "../components/Dialog";
-import GraphDotRender from "../components/GraphDotRender";
+import GraphDotRender from "../components/DotRender";
 import { setFromPosition } from "../globalFunctions";
 
 export type MessageType = "END" | "SEND-HYP" | "CE" | "CONSISTENCY" | "CLOSEDNESS" | "DISC-REF" | "HYP-STAB"
@@ -116,24 +116,19 @@ export abstract class LearnerSection<StateType> extends React.Component<PropReac
 
     return <div className="body-container">
       <Dialog show={this.state.showRegexDialog} fn={this.changeLearner.bind(this)} />
-      <div className="text-end sticky-top text-end sticky-top d-flex justify-content-between">
+      <div className="text-end sticky-top d-flex justify-content-between">
         <div className="d-flex">
           <Button className="btn-secondary" onClick={() => {
             this.setState({ showRegexDialog: true })
-          }}>
-            Enter Regex
-          </Button>
+          }}> Enter Regex </Button>
         </div>
 
         <div className="btn-group" role="group" aria-label="Btn-group8">
           <button type="button" className="btn btn-secondary" onClick={() => this.reload()} >           <ArrowCounterclockwise /></button >
           <button type="button" className="btn btn-secondary" disabled={position === 0} onClick={() => this.prevOp()} ><CaretLeftFill /></button >
-          <button type="button" className="btn btn-secondary" disabled={position === this.state.memory.length - 1 && this.state.learner.finish} onClick={() => {
-            let n = this.nextOp(this.state);
-            this.setState(n)
-            position = n.position
-            memoryCell = n.memory[position]
-          }}><CaretRightFill /></button>
+          <button type="button" className="btn btn-secondary" disabled={position === this.state.memory.length - 1 && this.state.learner.finish} onClick={() =>
+            this.setState(this.nextOp(this.state))
+          }><CaretRightFill /></button>
           <button type="button" className="btn btn-secondary" onClick={() =>
             this.setState(this.allSteps({ ...this.state }))}><ArrowClockwise /></button>
         </div>

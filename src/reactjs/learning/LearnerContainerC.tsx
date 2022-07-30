@@ -1,11 +1,11 @@
 import React from "react";
-import { ButtonGroup } from "react-bootstrap";
+import { ButtonGroup, Col, Row } from "react-bootstrap";
 import TTT from "../../lib/learning/learners/discrimination_tree/TTT_DFA";
 import L_star from "../../lib/learning/learners/observation_table/L_star";
 import NL_star from "../../lib/learning/learners/observation_table/NL_Star";
 import { TeacherAutomaton } from "../../lib/learning/teachers/TeacherDFA";
 import { setFromPosition } from "../globalFunctions";
-import { FLEX_CENTER, URL_SEPARATOR } from "../globalVars";
+import { URL_SEPARATOR } from "../globalVars";
 import TTTC from "./discrimination_tree/TTT_C";
 import LStarC from "./observation_table/L_StarC";
 import NLStarC from "./observation_table/NL_StarC";
@@ -61,19 +61,21 @@ export default class LearnerContainerC extends React.Component<Prop, State> {
   render(): React.ReactElement {
     let createButtons = () => {
       return (
-        <ButtonGroup>{algos.map(
+        <ButtonGroup vertical className="position-sticky top-50 translate-middle-y">{algos.map(
           (algo, pos) =>
             <React.Fragment key={pos}>
               <input type="radio" className="btn-check" name="btnradio" id={"btnradio" + pos} autoComplete="off" defaultChecked={algo === this.state.cnt} />
-              <label className="btn btn-outline-primary" htmlFor={"btnradio" + pos} onClick={
+              <label className="btn btn-outline-secondary" htmlFor={"btnradio" + pos} onClick={
                 () => this.changeCnt(algo)
               }>{algo}</label>
             </React.Fragment>)}
         </ButtonGroup>)
     }
     return < >
-      <div className={"my-2 " + FLEX_CENTER}>{createButtons()}</div>
-      {this.giveAlgo(this.state.cnt as LearnerAlgo)}
+      <Row>
+        <Col sm={"auto"}>{createButtons()}</Col>
+        <Col>{this.giveAlgo(this.state.cnt as LearnerAlgo)}</Col>
+      </Row>
     </ >
   }
 }

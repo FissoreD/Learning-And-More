@@ -1,6 +1,6 @@
 import React from "react";
 import DiscTreeDFA from "../../../lib/learning/learners/discrimination_tree/DiscTreeDFA";
-import GraphDotRender from "../../components/GraphDotRender";
+import GraphDotRender from "../../components/DotRender";
 
 
 export default class DiscriminationTreeC extends React.Component<{ dt: DiscTreeDFA }>{

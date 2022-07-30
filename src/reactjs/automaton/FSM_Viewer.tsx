@@ -8,9 +8,8 @@ import FSM from "../../lib/automaton/FSM_interface";
 import DFA_NFA from "../../lib/automaton/regular/DFA_NFA";
 import StateDFA from "../../lib/automaton/regular/StateDFA";
 import Dialog from "../components/Dialog";
-import GraphDotRender from "../components/GraphDotRender";
+import GraphDotRender from "../components/DotRender";
 import { setFromPosition } from "../globalFunctions";
-import { FLEX_CENTER } from "../globalVars";
 
 let createVPA1 = (): VPA => {
   let alphabet = new AlphabetVPA({ CALL: ["A"], RET: ["B", "C"], INT: ["I"] })
@@ -181,52 +180,56 @@ export default class FSM_Viewer extends React.Component<ReactProp, ReactState>{
   render(): React.ReactNode {
     let createButtons = () => {
       return (
-        <ButtonGroup className="d-flex">{algosList.map(
+        <ButtonGroup vertical className={"position-sticky top-50 translate-middle-y"}>{algosList.map(
           (algo, pos) =>
             <React.Fragment key={pos}>
               <input type="radio" className="btn-check" name="btnradio" id={"btnradio" + pos} autoComplete="off" defaultChecked={algo === this.state.currentAlgo} />
-              <label className="btn btn-outline-primary" htmlFor={"btnradio" + pos} onClick={
+              <label className="btn btn-outline-secondary" htmlFor={"btnradio" + pos} onClick={
                 () => this.setState(this.changeCnt(algo))
               }>{algo}</label>
             </React.Fragment>)}
         </ButtonGroup>)
     }
     return <>
-      <div className={"my-2 " + FLEX_CENTER}>{createButtons()}</div>
       <Dialog fn={this.setRegex.bind(this)} show={this.state.showRegexSetter} />
       <Row>
-        <Col className="mb-3 mb-sm-0" sm={5}>{this.createCardAutomaton(this.state.a1, 1)}</Col>
-        <Col className="d-flex text-center align-self-center justify-content-center">
-          <ButtonGroup vertical className="secondary d-none d-sm-inline-flex">
-            {binaryOp.map(e => <Button key={e} onClick={() => this.addNewAut(e)}>{e}</Button>)}
-            <Button onClick={() => this.switchAutomata()}>⇌</Button>
-          </ButtonGroup>
-          <ButtonGroup className="secondary d-sm-none">
-            {binaryOp.map(e => <Button key={e} onClick={() => this.addNewAut(e)}>{e}</Button>)}
-            <Button onClick={() => this.switchAutomata()}>⇌</Button>
-          </ButtonGroup>
+        <Col sm={"auto"}>{createButtons()}</Col>
+        <Col>
+          <Row>
+            <Col className="mb-3 mb-sm-0" sm={5}>{this.createCardAutomaton(this.state.a1, 1)}</Col>
+            <Col className="d-flex text-center align-self-center justify-content-center">
+              <ButtonGroup vertical className="secondary d-none d-sm-inline-flex">
+                {binaryOp.map(e => <Button key={e} onClick={() => this.addNewAut(e)}>{e}</Button>)}
+                <Button onClick={() => this.switchAutomata()}>⇌</Button>
+              </ButtonGroup>
+              <ButtonGroup className="secondary d-sm-none">
+                {binaryOp.map(e => <Button key={e} onClick={() => this.addNewAut(e)}>{e}</Button>)}
+                <Button onClick={() => this.switchAutomata()}>⇌</Button>
+              </ButtonGroup>
+            </Col>
+            <Col className="mt-3 mt-sm-0" sm={5}>{this.createCardAutomaton(this.state.a2, 2)}</Col>
+          </Row>
+          <Accordion defaultActiveKey={['0']} alwaysOpen className="mt-3">
+
+            {this.state.opeartionList.map((e, pos) =>
+              <Accordion.Item eventKey={pos + ""} key={pos} >
+                <Accordion.Header>{this.createOpHeader(e.operation, e.is_a1)} - Normal</Accordion.Header>
+                <Accordion.Body className="justify-content-center">
+                  <Col xs={12} className="align-self-center" ><GraphDotRender dot={e.res} /></Col>
+                </Accordion.Body>
+              </Accordion.Item>)}
+
+            {this.state.opeartionList.map((e, pos) =>
+              <Accordion.Item eventKey={(1 + pos) + ""} key={pos} >
+                <Accordion.Header>{this.createOpHeader(e.operation, e.is_a1)} - Minimized</Accordion.Header>
+                <Accordion.Body className="justify-content-center">
+                  <Col xs={12} className="align-self-center" ><GraphDotRender dot={e.res.minimize()} /></Col>
+                </Accordion.Body>
+              </Accordion.Item>)}
+
+          </Accordion>
         </Col>
-        <Col className="mt-3 mt-sm-0" sm={5}>{this.createCardAutomaton(this.state.a2, 2)}</Col>
       </Row>
-      <Accordion defaultActiveKey={['0']} alwaysOpen className="mt-3">
-
-        {this.state.opeartionList.map((e, pos) =>
-          <Accordion.Item eventKey={pos + ""} key={pos} >
-            <Accordion.Header>{this.createOpHeader(e.operation, e.is_a1)} - Normal</Accordion.Header>
-            <Accordion.Body className="justify-content-center">
-              <Col xs={12} className="align-self-center" ><GraphDotRender dot={e.res} /></Col>
-            </Accordion.Body>
-          </Accordion.Item>)}
-
-        {this.state.opeartionList.map((e, pos) =>
-          <Accordion.Item eventKey={(1 + pos) + ""} key={pos} >
-            <Accordion.Header>{this.createOpHeader(e.operation, e.is_a1)} - Minimized</Accordion.Header>
-            <Accordion.Body className="justify-content-center">
-              <Col xs={12} className="align-self-center" ><GraphDotRender dot={e.res.minimize()} /></Col>
-            </Accordion.Body>
-          </Accordion.Item>)}
-
-      </Accordion>
     </>
   }
 }
