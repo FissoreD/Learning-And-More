@@ -20,14 +20,15 @@ export default class DFA_NFA implements FSM<StateDFA>, ToDot {
   }
 
   complete(p?: { bottom?: StateDFA, alphabet?: AlphabetDFA }) {
-    let alphabet = p?.alphabet?.union(this.alphabet) || this.alphabet;
+    let res = this.clone()
+    let alphabet = p?.alphabet?.union(res.alphabet) || res.alphabet;
     let bottom = p?.bottom || StateDFA.Bottom(alphabet)
     let toAdd = false;
-    this.alphabet = alphabet
+    res.alphabet = alphabet
     for (const symbol of alphabet.symbols) {
       bottom.addTransition(symbol, bottom);
-      for (const state of this.states.values()) {
-        let transintion = this.findTransition(state, symbol)
+      for (const state of res.states.values()) {
+        let transintion = res.findTransition(state, symbol)
         if (transintion === undefined || transintion.length === 0) {
           state.addTransition(symbol, bottom);
           toAdd = true;
@@ -35,11 +36,11 @@ export default class DFA_NFA implements FSM<StateDFA>, ToDot {
       }
     }
     if (toAdd) {
-      while (this.states.has(bottom.name))
+      while (res.states.has(bottom.name))
         bottom.name += "1"
-      this.states.set(bottom.name, bottom)
+      res.states.set(bottom.name, bottom)
     }
-    return this
+    return res
   }
 
   private makeOperation(aut: DFA_NFA, operation: "Union" | "Intersection" | "SymDiff" | "Diff"): DFA_NFA {
@@ -61,8 +62,8 @@ export default class DFA_NFA implements FSM<StateDFA>, ToDot {
      */
     let alphabet = a1.alphabet.union(aut.alphabet);
 
-    a1.complete({ alphabet });
-    aut.complete({ alphabet });
+    a1 = a1.complete({ alphabet });
+    aut = aut.complete({ alphabet });
 
     /** Start with the initial states of {@link a1} and {@link aut} */
     let initState1 = a1.initialStates[0];
@@ -222,12 +223,12 @@ export default class DFA_NFA implements FSM<StateDFA>, ToDot {
    * @returns a fresh Determinized Automaton 
    */
   determinize(): DFA_NFA {
-    this.complete()
+    let aut = this.complete()
     let allStates = this.allStates()
     let newStates = new Map<string, StateDFA>();
     let stateMap = new Map(allStates.map((e, pos) => [e.name, pos]))
 
-    let initState = [...this.initialStates].sort((a, b) => stateMap.get(a.name)! - stateMap.get(b.name)!);
+    let initState = [...aut.initialStates].sort((a, b) => stateMap.get(a.name)! - stateMap.get(b.name)!);
     let toTreat = [initState.map(e => stateMap.get(e.name)!)];
 
     let findState = (n: number[]) => newStates.get(JSON.stringify(n))!;
@@ -235,7 +236,7 @@ export default class DFA_NFA implements FSM<StateDFA>, ToDot {
       newStates.set(JSON.stringify(name),
         new StateDFA(JSON.stringify(name),
           name.some(e => allStates[e].isAccepting),
-          isInitial, this.alphabet));
+          isInitial, aut.alphabet));
     let addSuccessor = (current: number[], letter: string, successor: number[]) =>
       findState(current).addTransition(letter, findState(successor));
 
@@ -245,7 +246,7 @@ export default class DFA_NFA implements FSM<StateDFA>, ToDot {
     while (toTreat.length > 0) {
       let current = toTreat.shift()!;
       done.push(current)
-      for (const letter of this.alphabet.symbols) {
+      for (const letter of aut.alphabet.symbols) {
         let successor = [...new Set(current.map(e => allStates[e].getSuccessor(letter)).flat())].map(e => stateMap.get(e.name)!).sort();
 
         if (newStates.has(JSON.stringify(successor))) {
@@ -264,9 +265,8 @@ export default class DFA_NFA implements FSM<StateDFA>, ToDot {
   }
 
   minimize(): DFA_NFA {
-    this.complete()
-
-    let aut = this.isDeterministic() ? this : this.determinize()
+    let aut = this.complete()
+    aut = aut.isDeterministic() ? aut : aut.determinize()
 
     /** List of states reachable from *the* initial state */
     let stateList = new Set<string>();
@@ -397,9 +397,9 @@ export default class DFA_NFA implements FSM<StateDFA>, ToDot {
   }
 
   complement(alphabet?: AlphabetDFA) {
-    let res = this.clone();
+    let res = this.complete();
     res.alphabet = alphabet ? res.alphabet.union(alphabet) : res.alphabet.clone()
-    res.complete()
+
     if (!res.isDeterministic()) {
       res = this.determinize();
     }
@@ -502,11 +502,6 @@ export default class DFA_NFA implements FSM<StateDFA>, ToDot {
     return txt.join('\n');
   }
 
-  /**
-   * @goal : find a path from the initial states to an accepting one
-   * @param minLength : the length of the word to find (note : by default its zero) 
-   * @returns a words of length at least minLength if it exists else the word of nearest length
-   */
   findWordAccepted(minLength = 0) {
     let aut = this.minimize()
     if (aut.isEmpty()) return undefined;

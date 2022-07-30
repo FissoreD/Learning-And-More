@@ -1,17 +1,15 @@
 import React from "react";
 import { Container, Nav, Navbar } from "react-bootstrap";
 import { Bank } from "react-bootstrap-icons";
-import { AlgosNavBar } from "../..";
-import { setUrl } from "../globalFunctions";
+import { AlgosNavBarType, ALGO_NAVBAR_LIST } from "../..";
 
 
-interface ChangeCnt { changeCnt: (algo: AlgosNavBar) => void; }
+interface ChangeCnt { changeCnt: (algo: AlgosNavBarType) => void; }
 
 export class NavBar extends React.Component<ChangeCnt> {
   render(): React.ReactElement {
-    let links = (["Automaton", "Learning", "TestVPAViewer"] as AlgosNavBar[]).map((e, pos) => <Nav.Link key={pos} onClick={() => {
+    let links = ALGO_NAVBAR_LIST.map((e, pos) => <Nav.Link key={pos} onClick={(event) => {
       this.props.changeCnt(e);
-      setUrl(e)
     }}>{e}</Nav.Link>)
     return (
       <Navbar bg="light" expand="lg">

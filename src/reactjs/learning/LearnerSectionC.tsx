@@ -6,8 +6,7 @@ import Clonable from "../../lib/Clonable.interface";
 import LearnerFather from "../../lib/learning/learners/LearnerFather";
 import Dialog from "../components/Dialog";
 import GraphDotRender from "../components/GraphDotRender";
-import { removeFirstUrlPath, setUrl, withoutLastSeparator } from "../globalFunctions";
-import { URL_SEPARATOR } from "../globalVars";
+import { setFromPosition } from "../globalFunctions";
 
 export type MessageType = "END" | "SEND-HYP" | "CE" | "CONSISTENCY" | "CLOSEDNESS" | "DISC-REF" | "HYP-STAB"
 
@@ -30,9 +29,10 @@ type Learner<StateType> = LearnerFather<Clonable, StateType>
 export abstract class LearnerSection<StateType> extends React.Component<PropReact<StateType>, StateReact<StateType>>{
   constructor(prop: PropReact<StateType>) {
     super(prop)
-    this.state = this.allSteps(this.createNewState(prop.learner.teacher.regex), prop.pos);
-    if (!window.location.pathname.endsWith(URL_SEPARATOR + prop.pos))
-      setUrl(removeFirstUrlPath() + URL_SEPARATOR + prop.pos)
+    this.state = this.allSteps(
+      this.createNewState(prop.learner.teacher.regex), prop.pos
+    );
+    setFromPosition(prop.pos + "", 2)
   }
 
   abstract dataStructureToNodeElement(ds: Clonable): React.ReactElement;
@@ -54,20 +54,19 @@ export abstract class LearnerSection<StateType> extends React.Component<PropReac
   }
 
   allSteps(state: StateReact<StateType>, pos?: number) {
-    if (state.position === state.memory.length) return state
-
+    if (state.position === state.memory.length) return state;
+    debugger
     let i: number;
     for (i = 0; pos === undefined || (pos !== undefined && i < pos); i++) {
-      if (state.learner.finish) break;
-      state = this.nextOp(state)
+      if (state.learner.finish) { if (pos) { i--; } else { i = state.memory.length - 1 }; break; };
+      state = this.nextOp(state);
     }
-    state.position = (i || state.memory.length) - 1
-    return state
+    state.position = i;
+    return state;
   }
 
   reload() {
-    if (this.state.position !== 0)
-      this.setState({ position: 0, })
+    if (this.state.position !== 0) this.setState({ position: 0, });
   }
 
   createCard(title: string, content: React.ReactElement) {
@@ -113,7 +112,7 @@ export abstract class LearnerSection<StateType> extends React.Component<PropReac
   render(): React.ReactElement {
     let position = this.state.position
     let memoryCell = this.state.memory[position]
-    setUrl(withoutLastSeparator(removeFirstUrlPath()) + URL_SEPARATOR + position)
+    setFromPosition(position + "", 2)
 
     return <div className="body-container">
       <Dialog show={this.state.showRegexDialog} fn={this.changeLearner.bind(this)} />

@@ -1,5 +1,6 @@
 import Clonable from "../../../Clonable.interface";
 import ToDot from "../../../ToDot.interface";
+import ToString from "../../../ToString.interface";
 
 export class InnerNode<LblType>  {
   name: LblType;
@@ -9,13 +10,13 @@ export class InnerNode<LblType>  {
   depth = 0;
   constructor(p: {
     name: LblType,
-    top?: InnerNode<LblType> | Leaf<LblType>,
-    bot?: InnerNode<LblType> | Leaf<LblType>,
+    right?: InnerNode<LblType> | Leaf<LblType>,
+    left?: InnerNode<LblType> | Leaf<LblType>,
     parent?: InnerNode<LblType>
   }) {
     this.name = p.name
-    this.right = p.top
-    this.left = p.bot
+    this.right = p.right
+    this.left = p.left
     this.parent = p.parent
     this.depth = p.parent?.depth || 0
   }
@@ -62,7 +63,7 @@ export class Leaf<LblType> {
 
 export type TreeElt<LblType> = InnerNode<LblType> | Leaf<LblType>
 
-export default abstract class DiscTreeFather<LblType> implements Clonable, ToDot {
+export default abstract class DiscTreeFather<LblType> implements Clonable, ToDot, ToString {
   protected root: InnerNode<LblType>;
   protected leaves: Map<string, Leaf<LblType>>;
   protected innerNodes: Set<InnerNode<LblType>>;

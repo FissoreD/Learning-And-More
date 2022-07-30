@@ -1,12 +1,12 @@
 import React from "react";
 import { Row } from "react-bootstrap";
-import { setUrl } from "./globalFunctions";
+import { setFromPosition } from "./globalFunctions";
 
 
 export default class Home extends React.Component<{}, {}> {
   constructor(prop: {}) {
     super(prop)
-    setUrl("")
+    setFromPosition("", 0)
   }
 
   render(): React.ReactNode {

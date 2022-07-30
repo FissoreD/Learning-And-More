@@ -11,6 +11,7 @@ export default class VPA implements FSM<StateVPA>, ToDot {
   stack: string[];
   stackAlphabet: string[];
 
+
   /** @todo: stack alphabet can be undefined and therefore self-created */
   constructor(stateList: Set<StateVPA> | StateVPA[]) {
     stateList = new Set(stateList);
@@ -31,19 +32,20 @@ export default class VPA implements FSM<StateVPA>, ToDot {
   }
 
   complete(p?: { bottom?: StateVPA, alphabet?: AlphabetVPA }): VPA {
-    let alphabet = p?.alphabet?.union(this.alphabet) || this.alphabet
-    let stackAlph = this.stackAlphabet
+    let res = this.clone()
+    let alphabet = p?.alphabet?.union(res.alphabet) || res.alphabet
+    let stackAlph = res.stackAlphabet
     let bottom = p?.bottom || StateVPA.Bottom(alphabet, stackAlph)
     let toAdd = false;
-    this.alphabet = alphabet;
+    res.alphabet = alphabet;
 
     for (const type of ALPH_TYPE_LIST) {
       for (const symbol of alphabet[type]) {
         for (let pos = 0; pos < (type === "INT" ? 1 : stackAlph.length); pos++) {
           let topStack = type === "INT" ? "" : stackAlph[pos]
           bottom.addTransition({ type: type, symbol, topStack, successor: bottom });
-          for (const state of this.states.values()) {
-            let transition = this.findTransition(state, symbol, type, topStack)
+          for (const state of res.states.values()) {
+            let transition = res.findTransition(state, symbol, type, topStack)
             if (transition === undefined || transition.length === 0) {
               state.addTransition({ type, symbol, topStack, successor: bottom });
               toAdd = true;
@@ -53,11 +55,11 @@ export default class VPA implements FSM<StateVPA>, ToDot {
       }
     }
     if (toAdd) {
-      while (this.states.has(bottom.name))
+      while (res.states.has(bottom.name))
         bottom.name += "1"
-      this.states.set(bottom.name, bottom)
+      res.states.set(bottom.name, bottom)
     }
-    return this
+    return res
   }
 
   determinize(): VPA {
@@ -71,9 +73,9 @@ export default class VPA implements FSM<StateVPA>, ToDot {
     if (!this.isDeterministic())
       throw new Error("The VPA should be deterministic")
 
-    this.complete()
+    let complete = this.complete()
 
-    let aut = this.isDeterministic() ? this : this.determinize()
+    let aut = complete.isDeterministic() ? complete : complete.determinize()
 
     /** List of states reachable from *the* initial state */
     let stateList = new Set<string>();
@@ -104,14 +106,14 @@ export default class VPA implements FSM<StateVPA>, ToDot {
     while (W.length > 0) {
       let A = W.shift()!
       for (const alphabetType of ALPH_TYPE_LIST) {
-        for (let i = 0; i < (alphabetType === "INT" ? 1 : this.stackAlphabet.length); i++) {
-          for (const symbol of this.alphabet[alphabetType]) {
+        for (let i = 0; i < (alphabetType === "INT" ? 1 : complete.stackAlphabet.length); i++) {
+          for (const symbol of complete.alphabet[alphabetType]) {
             // X = the set of states for which a transition on letter leads to a state in A
             let X: Set<string> = new Set()
             A.forEach(e => {
               aut.states.get(e)!.getPredecessor({
                 symbol,
-                topStack: (alphabetType === "INT" ? "" : this.stackAlphabet[i])
+                topStack: (alphabetType === "INT" ? "" : complete.stackAlphabet[i])
               })?.forEach(s => X.add(s.name))
             })
 
@@ -149,7 +151,7 @@ export default class VPA implements FSM<StateVPA>, ToDot {
         name: pos + "",
         isAccepting: representant.some(e => e.isAccepting),
         isInitial: representant.some(e => e.isInitial),
-        alphabet: representant[0].alphabet, stackAlphabet: this.stackAlphabet
+        alphabet: representant[0].alphabet, stackAlphabet: complete.stackAlphabet
       })
       partition.forEach(state => oldStateToNewState.set(state, newState))
       return newState;
@@ -157,9 +159,9 @@ export default class VPA implements FSM<StateVPA>, ToDot {
     for (const partition of P) {
       for (const oldState of partition) {
         for (const alphabetType of ALPH_TYPE_LIST) {
-          for (let i = 0; i < (alphabetType === "INT" ? 1 : this.stackAlphabet.length); i++)
-            for (const symbol of this.alphabet[alphabetType]) {
-              let topStack = (alphabetType === "INT" ? "" : this.stackAlphabet[i])
+          for (let i = 0; i < (alphabetType === "INT" ? 1 : complete.stackAlphabet.length); i++)
+            for (const symbol of complete.alphabet[alphabetType]) {
+              let topStack = (alphabetType === "INT" ? "" : complete.stackAlphabet[i])
               for (const successor of aut.states.get(oldState)!.getSuccessor({
                 symbol,
                 topStack
@@ -217,12 +219,12 @@ export default class VPA implements FSM<StateVPA>, ToDot {
      */
     let alphabet = this.alphabet.union(aut.alphabet);
 
-    this.complete({ alphabet });
-    aut.complete({ alphabet });
+    let a1 = this.complete({ alphabet });
+    let a2 = aut.complete({ alphabet });
 
-    /** Start with the initial states of {@link this} and {@link aut} */
-    let initState1 = this.initialStates[0];
-    let initState2 = aut.initialStates[0];
+    // Start with the initial states of a1 and a2
+    let initState1 = a1.initialStates[0];
+    let initState2 = a2.initialStates[0];
 
     let mapNewStateOldState = new Map<string, [StateVPA, StateVPA]>();
     let mapNewStateNameState = new Map<string, StateVPA>()
@@ -347,8 +349,8 @@ export default class VPA implements FSM<StateVPA>, ToDot {
   }
 
   complement(...alphabet: AlphabetVPA[]): VPA {
-    let res = this.clone();
-    res.complete({ alphabet: this.alphabet.union(...alphabet) })
+    let res = this.complete({ alphabet: this.alphabet.union(...alphabet) })
+
     if (!res.isDeterministic()) {
       res = this.determinize();
     }
@@ -519,4 +521,8 @@ export default class VPA implements FSM<StateVPA>, ToDot {
   toString(): string {
     return this.toDot()
   }
+
+  findWordAccepted(minLength = 0) {
+    return todo();
+  };
 }

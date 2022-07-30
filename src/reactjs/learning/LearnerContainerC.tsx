@@ -4,15 +4,15 @@ import TTT from "../../lib/learning/learners/discrimination_tree/TTT_DFA";
 import L_star from "../../lib/learning/learners/observation_table/L_star";
 import NL_star from "../../lib/learning/learners/observation_table/NL_Star";
 import { TeacherAutomaton } from "../../lib/learning/teachers/TeacherDFA";
-import { removeFirstUrlPath, setUrl } from "../globalFunctions";
-import { URL_SEPARATOR } from "../globalVars";
+import { setFromPosition } from "../globalFunctions";
+import { FLEX_CENTER, URL_SEPARATOR } from "../globalVars";
 import TTTC from "./discrimination_tree/TTT_C";
 import LStarC from "./observation_table/L_StarC";
 import NLStarC from "./observation_table/NL_StarC";
 
 export type LearnerAlgo = "L" | "NL" | "TTT" | "TTT-VPA"
 let algos: LearnerAlgo[] = ["L", "NL", "TTT"]
-interface State { cnt: LearnerAlgo, regex: string, pos: number }
+interface State { cnt: string, regex: string, pos: number }
 interface Prop { cnt: string }
 
 let regex = "(a+b)*a(a+b)(a+b)"
@@ -46,8 +46,7 @@ export default class LearnerContainerC extends React.Component<Prop, State> {
         algo = "L"
         cnt = <LStarC pos={this.state.pos} changeRegexContainer={this.changeRegex.bind(this)} name={"L-Star"} learner={new L_star(teacher)} />;
     }
-    // @todo ?
-    setUrl(removeFirstUrlPath().split("&")[0] + URL_SEPARATOR + algo)
+    setFromPosition(algo, 1)
     return cnt
   }
 
@@ -62,7 +61,7 @@ export default class LearnerContainerC extends React.Component<Prop, State> {
   render(): React.ReactElement {
     let createButtons = () => {
       return (
-        <ButtonGroup className="d-flex" style={{ maxWidth: "70%", width: "100%" }}>{algos.map(
+        <ButtonGroup>{algos.map(
           (algo, pos) =>
             <React.Fragment key={pos}>
               <input type="radio" className="btn-check" name="btnradio" id={"btnradio" + pos} autoComplete="off" defaultChecked={algo === this.state.cnt} />
@@ -73,10 +72,8 @@ export default class LearnerContainerC extends React.Component<Prop, State> {
         </ButtonGroup>)
     }
     return < >
-      <div className="d-flex justify-content-center my-2">
-        {createButtons()}
-      </div>
-      {this.giveAlgo(this.state.cnt)}
+      <div className={"my-2 " + FLEX_CENTER}>{createButtons()}</div>
+      {this.giveAlgo(this.state.cnt as LearnerAlgo)}
     </ >
   }
 }

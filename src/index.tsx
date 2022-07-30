@@ -3,56 +3,58 @@ import 'bootstrap/dist/js/bootstrap.js';
 import React from 'react';
 import { Container, Row } from "react-bootstrap";
 import ReactDOM from 'react-dom/client';
-import AutomatonContainerC from './reactjs/automaton/AutomatonContainerC';
-import TestVPAViewer from './reactjs/automaton/TestVpaViewer';
+import FSM_Viewer from './reactjs/automaton/FSM_Viewer';
 import { NavBar } from './reactjs/components/NavBar';
-import { removeFirstUrlPath } from './reactjs/globalFunctions';
+import { removeFirstUrlPath, setFromPosition } from './reactjs/globalFunctions';
 import { URL_SEPARATOR } from './reactjs/globalVars';
 import "./reactjs/index.css";
-import LearnerContainerC, { LearnerAlgo } from './reactjs/learning/LearnerContainerC';
+import LearnerContainerC from './reactjs/learning/LearnerContainerC';
 import Home from './reactjs/main';
 import reportWebVitals from './reactjs/reportWebVitals';
 
-interface Prop { cnt: React.ReactElement }
-export type AlgosNavBar = "Home" | "Automaton" | "Learning" | "TestVPAViewer"
+interface ReactState { sectionNumber: number, urlCnt: string }
+export type AlgosNavBarType = "Home" | "Automaton" | "Learning"
+export const ALGO_NAVBAR_LIST: AlgosNavBarType[] = ["Home", "Automaton", "Learning"]
 
 
-export class Main extends React.Component<{}, Prop> {
+export class Main extends React.Component<{}, ReactState> {
   constructor(prop: {}) {
     super(prop)
-    // if (window.location.pathname === "/")
-    //   setUrl("")
-    this.state = { cnt: this.giveContent("" as AlgosNavBar) }
+    this.state = this.giveContent()
   }
 
-  giveContent(section: AlgosNavBar) {
-    let first = section, second = "";
-    if (section === ("" as AlgosNavBar)) {
-      let [first1, ...second1] = removeFirstUrlPath().split(URL_SEPARATOR)
-      first = first1 as AlgosNavBar
-      second = second1.join(URL_SEPARATOR)
+  giveContent(section?: AlgosNavBarType) {
+    let urlCnt = "";
+    if (section === undefined) {
+      let [first, ...second] = removeFirstUrlPath().split(URL_SEPARATOR)
+      urlCnt = second.join(URL_SEPARATOR)
+      section = first as AlgosNavBarType
     }
-    let cnt: React.ReactElement;
-    switch (first) {
-      case "Automaton": cnt = <AutomatonContainerC />; break;
-      case "Learning": cnt = <LearnerContainerC cnt={second as LearnerAlgo} />; break;
-      case "TestVPAViewer": cnt = <TestVPAViewer />; break;
-      default: cnt = <Home />
-    }
-    return cnt
+    let sectionNumber = Math.max(0, ALGO_NAVBAR_LIST.indexOf(section));
+    return { sectionNumber, urlCnt };
   }
 
-  swicthContent(section: AlgosNavBar): void {
-    this.setState(() => { return { cnt: this.giveContent(section) } })
+  swicthContent(section: AlgosNavBarType): void {
+    let cnt = this.giveContent(section)
+    if (cnt.sectionNumber != this.state.sectionNumber) {
+      setFromPosition(cnt.urlCnt, 1)
+      this.setState(() => cnt)
+    }
   }
 
   render(): React.ReactNode {
+    let dfaViewer = <FSM_Viewer cnt={this.state.urlCnt} />
+    let learnerSection = <LearnerContainerC cnt={this.state.urlCnt} />
+    let home = <Home />
+
+    let sectionList = [home, dfaViewer, learnerSection]
+
     return <>
       <NavBar changeCnt={this.swicthContent.bind(this)} />
       <Container >
         <Row className="justify-content-center" >
           <div className="col-xl-8 col-md-10">
-            {this.state.cnt}
+            {sectionList[this.state.sectionNumber]}
           </div >
         </Row>
       </Container>

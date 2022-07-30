@@ -56,8 +56,9 @@
     "@types/d3-graphviz": "^2.6.7",
     "gh-pages": "^4.0.0"
   },
-
-  "jest":{
-    "coveragePathIgnorePatterns": ["/reactjs/"]
+  "jest": {
+    "coveragePathIgnorePatterns": [
+      "/reactjs/"
+    ]
   }
 }
