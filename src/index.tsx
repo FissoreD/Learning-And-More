@@ -37,8 +37,8 @@ export class Main extends React.Component<{}, ReactState> {
   swicthContent(section: AlgosNavBarType): void {
     let cnt = this.giveContent(section)
     if (cnt.sectionNumber != this.state.sectionNumber) {
-      setFromPosition(cnt.urlCnt, 1)
-      this.setState(() => cnt)
+      setFromPosition(ALGO_NAVBAR_LIST[cnt.sectionNumber], 0)
+      this.setState(cnt)
     }
   }
 

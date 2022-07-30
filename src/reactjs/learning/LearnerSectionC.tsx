@@ -55,11 +55,14 @@ export abstract class LearnerSection<StateType> extends React.Component<PropReac
 
   allSteps(state: StateReact<StateType>, pos?: number) {
     if (state.position === state.memory.length) return state;
-    debugger
-    let i: number;
-    for (i = 0; pos === undefined || (pos !== undefined && i < pos); i++) {
-      if (state.learner.finish) { if (pos) { i--; } else { i = state.memory.length - 1 }; break; };
+    let i = 0;
+    while (pos === undefined || (pos !== undefined && i < pos)) {
+      if (state.learner.finish) {
+        if (pos) { i--; } else { i = state.memory.length - 1 };
+        break;
+      };
       state = this.nextOp(state);
+      i++
     }
     state.position = i;
     return state;
