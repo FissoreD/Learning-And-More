@@ -113,14 +113,16 @@ export abstract class LearnerSection<StateType> extends React.Component<PropReac
   }
 
   createNextSetpButtonGroup() {
-    let buttons: ({ img: ReactElement, action: (() => void) })[] = [
-      { img: <ArrowCounterclockwise />, action: this.reload },
-      { img: <CaretLeftFill />, action: this.prevOp },
-      { img: <CaretRightFill />, action: () => this.setState(this.nextOp(this.state)) },
-      { img: <ArrowClockwise />, action: () => this.setState(this.allSteps({ ...this.state })) }
-    ]
+    let isFirst = this.state.position === 0,
+      isLast = this.state.memory.length - 1 === this.state.position && this.state.learner.finish,
+      buttons: ({ img: ReactElement, action: (() => void), disabled: boolean })[] = [
+        { img: <ArrowCounterclockwise />, action: this.reload.bind(this), disabled: isFirst },
+        { img: <CaretLeftFill />, action: this.prevOp.bind(this), disabled: isFirst },
+        { img: <CaretRightFill />, action: () => this.setState(this.nextOp(this.state)), disabled: isLast },
+        { img: <ArrowClockwise />, action: () => this.setState(this.allSteps({ ...this.state })), disabled: isLast }
+      ]
     return <ButtonGroup>
-      {buttons.map(({ img, action }, pos) => <Button key={pos} variant="secondary" onClick={action}>{img}</Button>)}
+      {buttons.map(({ img, action, disabled }, pos) => <Button key={pos} variant="secondary" disabled={disabled} onClick={action}>{img}</Button>)}
     </ButtonGroup>
   }
 
@@ -130,13 +132,16 @@ export abstract class LearnerSection<StateType> extends React.Component<PropReac
     setFromPosition(position + "", 2)
 
     return <div className="body-container">
+      {/* To change regex panel */}
       <Dialog show={this.state.showRegexDialog} fn={this.changeLearner.bind(this)} />
+      {/* Buttons sticky on top to change regex and change algo step */}
       <div className="text-end sticky-top d-flex justify-content-between">
         <Button className="btn-secondary" onClick={() => {
           this.setState({ showRegexDialog: true })
         }}> Enter Regex </Button>
         {this.createNextSetpButtonGroup()}
       </div>
+      {/* Algorithms sections */}
       {this.createCard("Language to Learn", this.createText(this.state.learner.teacher.regex))}
       {this.createCard("Message", this.createText(memoryCell.message.val))}
       {memoryCell.automaton ? this.createCard("Automaton", <GraphDotRender dot={memoryCell.automaton!} />) : <></>}
