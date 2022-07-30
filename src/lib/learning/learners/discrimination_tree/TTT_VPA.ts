@@ -24,8 +24,8 @@ export default class TTT_VPA extends LearnerFather<DiscTreeVPA, StateVPA> {
     let root = this.dataStructure.getRoot();
     let [addedRight, addedLeft] = [false, false]
     let alph = this.alphabet as AlphabetVPA
-    for (const symbol of ["", ...alph.INT]) {
-      if (addedRight && addedLeft) break
+    // Return if 
+    let addChild = (symbol: string) => {
       let isOk = this.teacher.member(symbol)
       if (isOk && addedRight === false) {
         this.dataStructure.addRightChild({ parent: root, name: symbol });
@@ -35,17 +35,15 @@ export default class TTT_VPA extends LearnerFather<DiscTreeVPA, StateVPA> {
         addedLeft = true;
       }
     }
+    for (const symbol of ["", ...alph.INT]) {
+      if (addedRight && addedLeft) break
+      addChild(symbol)
+    }
     for (const call of alph.CALL) {
       for (const ret of alph.RET) {
         if (addedRight && addedLeft) break
-        let isOk = this.teacher.member(call + ret)
-        if (isOk && addedRight === false) {
-          this.dataStructure.addRightChild({ parent: root, name: `${call},${ret}` });
-          addedRight = true;
-        } else if (!isOk && addedLeft === false) {
-          this.dataStructure.addLeftChild({ parent: root, name: `${call},${ret}` });
-          addedLeft = true;
-        }
+        let symbol = call + ret
+        addChild(symbol)
       }
     }
     this.makeAutomaton()
@@ -93,37 +91,29 @@ export default class TTT_VPA extends LearnerFather<DiscTreeVPA, StateVPA> {
 
     let L = [...states.keys()]
 
+    let updateAutomaton = (newWord: string) => {
+      let res = this.dataStructure.sift(newWord, this.teacher)
+
+      if (res === undefined) {
+        res = this.dataStructure.addRoot(newWord)
+        L.push(res.name)
+        states.set(newWord, new StateVPA({ name: newWord, isAccepting: res.isAccepting!, isInitial: false, alphabet: this.alphabet, stackAlphabet }))
+      }
+      return res
+    }
+
     while (L.length > 0) {
       const state = L.pop()!
-      /**
-       * TODO: 
-       * boucler sur les lettres INT avec append sur le label de l'état courant
-       * boucler sur les couple (l1, l2) such that l1 \in CALL and l2 \in RET
-       *         et tester si l1.(label de l'etat).l2 with member question
-       */
       for (const symbol of this.alphabet.INT) {
         let newWord = state + symbol
-        let res = this.dataStructure.sift(newWord, this.teacher)
-
-        if (res === undefined) {
-          res = this.dataStructure.addRoot(newWord)
-          L.push(res.name)
-          states.set(newWord, new StateVPA({ name: newWord, isAccepting: res.isAccepting!, isInitial: false, alphabet: this.alphabet, stackAlphabet }))
-        }
-        /** @todo TOP-STACK if it is a CALL / RET transition */
+        let res = updateAutomaton(newWord)
         states.get(state)!.addTransition({ symbol, successor: states.get(res.name)! })
       }
       for (const pred of states.keys()) {
         for (const call of this.alphabet.CALL) {
           for (const ret of this.alphabet.RET) {
             let newWord = pred + call + state + ret
-            let res = this.dataStructure.sift(newWord, this.teacher)
-
-            if (res === undefined) {
-              res = this.dataStructure.addRoot(newWord)
-              L.push(res.name)
-              states.set(newWord, new StateVPA({ name: newWord, isAccepting: res.isAccepting!, isInitial: false, alphabet: this.alphabet, stackAlphabet }))
-            }
+            let res = updateAutomaton(newWord)
             states.get(state)!.addTransition({ symbol: ret, successor: states.get(res.name)!, topStack: `(${toEps(pred)},${toEps(call)})` })
             stackAlphabet.push(`${pred},${call}`)
           }

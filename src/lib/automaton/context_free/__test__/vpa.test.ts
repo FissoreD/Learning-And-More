@@ -29,6 +29,21 @@ export let createVPA2 = (): VPA => {
   return vpa
 }
 
+/**
+ * @returns a VPA st G = A^n I B^n
+ */
+export let createVPA3 = (): VPA => {
+  let alphabet = new AlphabetVPA({ CALL: ["A"], RET: ["B", "C"], INT: ["I"] })
+  let stack_alphabet = ["0"]
+  let state1 = new StateVPA({ name: "1", isAccepting: true, alphabet, stackAlphabet: stack_alphabet })
+  let state2 = new StateVPA({ name: "2", isInitial: true, alphabet, stackAlphabet: stack_alphabet })
+  state2.addTransition({ symbol: "I", successor: state1 })
+  state1.addTransition({ symbol: "B", topStack: "0", successor: state1 })
+  state2.addTransition({ symbol: "A", topStack: "0", successor: state2 })
+  let vpa = new VPA([state1, state2])
+  return vpa
+}
+
 test("State VPA creation", () => {
   let alphabet = new AlphabetVPA({ CALL: ["A"], RET: ["B", "C"], INT: ["I"] })
   let stack_alphabet = ["0", "1"]
@@ -100,3 +115,31 @@ test("Minimize VPA", () => {
   })
 })
 
+describe("VPA counter-example", () => {
+  test("vpa1", () => {
+    let aut = createVPA3()
+    console.log(aut.alphabet);
+    console.log(aut.findWordAccepted(0));
+    console.log(aut.findWordAccepted(1));
+    console.log(aut.findWordAccepted(2));
+    console.log(aut.findWordAccepted(3));
+    console.log(aut.findWordAccepted(4));
+
+
+
+    // expect(aut.findWordAccepted(0)).toBe("b")
+    // expect(aut.findWordAccepted(1)).toBe("b")
+    // expect(aut.findWordAccepted(2)).toBe("ab")
+    // expect(aut.findWordAccepted(3)).toBe("aab")
+    // expect(aut.findWordAccepted(4)).toBe("aaab")
+  })
+
+  // test("vpa2", () => {
+  //   let aut = createVPA2()
+  //   expect(aut.findWordAccepted(0)).toBe("ab")
+  //   expect(aut.findWordAccepted(1)).toBe("ab")
+  //   expect(aut.findWordAccepted(2)).toBe("ab")
+  //   expect(aut.findWordAccepted(3)).toBe("ab")
+  //   expect(aut.findWordAccepted(4)).toBe("ab")
+  // })
+})

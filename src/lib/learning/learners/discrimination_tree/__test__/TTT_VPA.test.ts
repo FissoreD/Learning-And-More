@@ -1,4 +1,4 @@
-import { createVPA1 } from "../../../../automaton/context_free/__test__/vpa.test";
+import { createVPA1 } from "../../../../automaton/context_free/__test__/VPA.test";
 import TecherVPA from "../../../teachers/TeacherVPA";
 import TTT_VPA from "../TTT_VPA";
 

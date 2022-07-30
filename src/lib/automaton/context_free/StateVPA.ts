@@ -85,7 +85,6 @@ export default class StateVPA {
       case "RET": {
         if (p.topStack === undefined)
           throw new Error("Top stack should not be undefined")
-
         let succ1, pred1;
         succ1 = (this.outTransitions.RET[p.symbol] = (this.outTransitions.RET[p.symbol] || {}))
         pred1 = (p.successor.inTransitions.RET[p.symbol] = (p.successor.inTransitions.RET[p.symbol] || {}))
@@ -138,6 +137,8 @@ export default class StateVPA {
         }
         case "RET":
           if (p.topStack) return this.outTransitions[p.type][p.symbol][p.topStack]
+          if (p.stack && p.stack.length > 0)
+            return this.outTransitions[p.type][p.symbol][p.stack.pop()!]
       }
     } catch (e) {
       return []

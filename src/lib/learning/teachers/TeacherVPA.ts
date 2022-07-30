@@ -21,6 +21,7 @@ export default class TecherVPA implements Teacher<StateVPA>{
   }
 
   equiv(automaton: VPA): string | undefined {
-    throw new Error("Method not implemented.");
+    let symDiff = this.automaton?.symmetricDifference(automaton) as VPA
+    return symDiff.findWordAccepted()
   }
 }

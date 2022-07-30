@@ -440,9 +440,7 @@ export default class VPA implements FSM<StateVPA>, ToDot {
    * @returns the list of successors of state 
    */
   findTransition(state: StateVPA, symbol: string, type?: ALPHABET_TYPE, topStack?: string): StateVPA[] {
-    let isRet = this.alphabet.RET.includes(symbol) || type === "RET"
-
-    return state!.getSuccessor({ symbol, topStack: (topStack || (isRet ? this.stack.pop() : undefined)), stack: this.stack, type })!
+    return state!.getSuccessor({ symbol, topStack: topStack, stack: this.stack, type })!
   }
 
   acceptingStates(): StateVPA[] {
@@ -523,6 +521,79 @@ export default class VPA implements FSM<StateVPA>, ToDot {
   }
 
   findWordAccepted(minLength = 0) {
-    return todo();
-  };
+    let { INT, CALL, RET } = this.alphabet;
+
+    let aut = this.minimize()
+    if (aut.isEmpty()) return undefined;
+
+    let acceptedWords: string[] = []
+    let toExplore: {
+      state: StateVPA; word: string; callNumber: number; stack: string[];
+    }[] = [...aut.initialStates].map(state => ({ state, word: "", callNumber: 0, stack: [] }))
+
+    if (aut.initialStates.some(e => e.isAccepting))
+      acceptedWords.push("")
+
+    if (minLength === 0 && acceptedWords.length)
+      return ""
+
+    while (toExplore.length) {
+      let newToExplore = []
+      for (const { state, word, stack, callNumber } of toExplore) {
+        // INT
+        for (const symbol of INT) {
+          let successors = state.getSuccessor({ symbol, stack })
+          if (successors) {
+            for (const state of successors) {
+              if (!state.isAccepting &&
+                state.getAllSuccessors().size === 1 &&
+                state.getAllSuccessors().has(state)) { continue }
+              let newWord = word + symbol;
+              // Row to modify after refactor method
+              if (state.isAccepting && callNumber === 0) {
+                acceptedWords.push(newWord);
+                if (newWord.length >= minLength) return newWord;
+              }
+              newToExplore.push({ state, word: newWord, stack, callNumber });
+            }
+          }
+        }
+        // RET
+        for (const symbol of RET) {
+          // Attention to this line
+          if (callNumber === 0) break;
+          let successors = state.getSuccessor({ symbol, stack })
+          if (successors) {
+            for (const state of successors) {
+              if (!state.isAccepting &&
+                state.getAllSuccessors().size === 1 &&
+                state.getAllSuccessors().has(state)) { continue }
+              let newWord = word + symbol;
+              if (state.isAccepting && callNumber === 1) {
+                acceptedWords.push(newWord);
+                if (newWord.length >= minLength) return newWord;
+              }
+              newToExplore.push({ state, word: newWord, stack, callNumber: callNumber - 1 });
+            }
+          }
+        }
+        // CALL
+        for (const symbol of CALL) {
+          let successors = state.getSuccessor({ symbol, stack })
+          if (successors) {
+            for (const state of successors) {
+              if (!state.isAccepting &&
+                state.getAllSuccessors().size === 1 &&
+                state.getAllSuccessors().has(state)) { continue }
+              let newWord = word + symbol;
+              newToExplore.push({ state, word: newWord, stack, callNumber: callNumber + 1 });
+            }
+          }
+        }
+      }
+      if (newToExplore.length === 0) break;
+      toExplore = newToExplore;
+    }
+    return toExplore.reduce((old, n) => n.word.length > old.length ? n.word : old, acceptedWords[acceptedWords.length - 1]);
+  }
 }
