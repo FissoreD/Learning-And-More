@@ -2,10 +2,10 @@ import StateDFA from "../../../lib/automaton/regular/StateDFA";
 import NL_star from "../../../lib/learning/learners/observation_table/NL_Star";
 import { TeacherAutomaton } from "../../../lib/learning/teachers/TeacherDFA";
 import { toEps } from "../../../lib/tools";
-import { PropReact } from "../LearnerSectionC";
-import Learner_OT_AbstractC from "./Learner_OT_AbstractC";
+import { PropReact } from "../LearnerSectionFatherC";
+import Learner_OT_FatherC from "./Learner_OT_FatherC";
 
-export default class NL_StarC extends Learner_OT_AbstractC {
+export default class NL_StarC extends Learner_OT_FatherC {
   createNewLearner(regex: string): NL_star {
     return new NL_star(new TeacherAutomaton({ type: "Regex", automaton: regex }))
   }

@@ -4,7 +4,7 @@ import Clonable from "../../../lib/Clonable.interface";
 import DiscTreeDFA from "../../../lib/learning/learners/discrimination_tree/DiscTreeDFA";
 import TTT from "../../../lib/learning/learners/discrimination_tree/TTT_DFA";
 import { TeacherAutomaton } from "../../../lib/learning/teachers/TeacherDFA";
-import { LearnerSection, MessageType, StateReact } from "../LearnerSectionC";
+import { LearnerSection, MessageType, StateReact } from "../LearnerSectionFatherC";
 import DiscriminationTreeC from "./DiscriminationTreeC";
 
 export default class TTTC extends LearnerSection<StateDFA> {

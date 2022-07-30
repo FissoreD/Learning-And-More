@@ -1,5 +1,5 @@
-import React from "react";
-import { Button, Card } from "react-bootstrap";
+import React, { ReactElement } from "react";
+import { Button, ButtonGroup, Card } from "react-bootstrap";
 import { ArrowClockwise, ArrowCounterclockwise, CaretLeftFill, CaretRightFill } from "react-bootstrap-icons";
 import FSM from "../../lib/automaton/FSM_interface";
 import Clonable from "../../lib/Clonable.interface";
@@ -72,6 +72,16 @@ export abstract class LearnerSection<StateType> extends React.Component<PropReac
     if (this.state.position !== 0) this.setState({ position: 0, });
   }
 
+  changeLearner(regex: string | undefined) {
+    if (regex) {
+      let learner = this.createNewLearner(regex)
+      let newState = this.createNewState(regex)
+      this.setState({ ...newState, learner })
+      this.props.changeRegexContainer(regex)
+    }
+    this.setState({ showRegexDialog: false })
+  }
+
   createCard(title: string, content: React.ReactElement) {
     return <Card className="border-primary text-primary my-2">
       <Card.Header>
@@ -81,16 +91,6 @@ export abstract class LearnerSection<StateType> extends React.Component<PropReac
         {content}
       </Card.Body>
     </Card>
-  }
-
-  changeLearner(regex: string | undefined) {
-    if (regex) {
-      let learner = this.createNewLearner(regex)
-      let newState = this.createNewState(regex)
-      this.setState({ ...newState, learner })
-      this.props.changeRegexContainer(regex)
-    }
-    this.setState({ showRegexDialog: false })
   }
 
   createText(msg: string) {
@@ -112,6 +112,18 @@ export abstract class LearnerSection<StateType> extends React.Component<PropReac
     }
   }
 
+  createNextSetpButtonGroup() {
+    let buttons: ({ img: ReactElement, action: (() => void) })[] = [
+      { img: <ArrowCounterclockwise />, action: this.reload },
+      { img: <CaretLeftFill />, action: this.prevOp },
+      { img: <CaretRightFill />, action: () => this.setState(this.nextOp(this.state)) },
+      { img: <ArrowClockwise />, action: () => this.setState(this.allSteps({ ...this.state })) }
+    ]
+    return <ButtonGroup>
+      {buttons.map(({ img, action }, pos) => <Button key={pos} variant="secondary" onClick={action}>{img}</Button>)}
+    </ButtonGroup>
+  }
+
   render(): React.ReactElement {
     let position = this.state.position
     let memoryCell = this.state.memory[position]
@@ -120,21 +132,10 @@ export abstract class LearnerSection<StateType> extends React.Component<PropReac
     return <div className="body-container">
       <Dialog show={this.state.showRegexDialog} fn={this.changeLearner.bind(this)} />
       <div className="text-end sticky-top d-flex justify-content-between">
-        <div className="d-flex">
-          <Button className="btn-secondary" onClick={() => {
-            this.setState({ showRegexDialog: true })
-          }}> Enter Regex </Button>
-        </div>
-
-        <div className="btn-group" role="group" aria-label="Btn-group8">
-          <button type="button" className="btn btn-secondary" onClick={() => this.reload()} >           <ArrowCounterclockwise /></button >
-          <button type="button" className="btn btn-secondary" disabled={position === 0} onClick={() => this.prevOp()} ><CaretLeftFill /></button >
-          <button type="button" className="btn btn-secondary" disabled={position === this.state.memory.length - 1 && this.state.learner.finish} onClick={() =>
-            this.setState(this.nextOp(this.state))
-          }><CaretRightFill /></button>
-          <button type="button" className="btn btn-secondary" onClick={() =>
-            this.setState(this.allSteps({ ...this.state }))}><ArrowClockwise /></button>
-        </div>
+        <Button className="btn-secondary" onClick={() => {
+          this.setState({ showRegexDialog: true })
+        }}> Enter Regex </Button>
+        {this.createNextSetpButtonGroup()}
       </div>
       {this.createCard("Language to Learn", this.createText(this.state.learner.teacher.regex))}
       {this.createCard("Message", this.createText(memoryCell.message.val))}

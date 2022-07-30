@@ -3,15 +3,15 @@ import { ButtonGroup } from "react-bootstrap";
 import { URL_BASE } from "./globalVars";
 
 export const removeFirstUrlPath = (): string => {
-  return window.location.pathname.substring(URL_BASE.length + 2)
+  return window.location.search.substring(1)
 }
 
 export const setFromPosition = (tail: string, startPosition: number) => {
   let url = removeFirstUrlPath();
   if (url.endsWith(tail)) return;
   let urlPieces = url.split("&").filter(e => e !== "")
-  window.history.pushState("", "",
-    `/${URL_BASE}/` + (startPosition > 0 ? (urlPieces.splice(0, startPosition).join("&") + "&" + tail) : tail))
+  window.history.replaceState("", "",
+    `/${URL_BASE}?` + (startPosition > 0 ? (urlPieces.splice(0, startPosition).join("&") + "&" + tail) : tail))
 }
 
 export const createButtonGroupAlgoSwitcher = (p: { labelList: string[], currentLabel: string, onclickOp: ((algo: string) => void) }) => {

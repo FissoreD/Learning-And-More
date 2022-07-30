@@ -104,7 +104,7 @@ export default class FSM_Viewer extends React.Component<ReactProp, ReactState>{
           }
         });
         let old_op = this.state.lastOperation
-        this.addNewAut(old_op.operation, old_op.is_a1)
+        this.createResultAut(old_op.operation, old_op.is_a1)
       } else {
         alert("Not implemented")
       }
@@ -112,21 +112,7 @@ export default class FSM_Viewer extends React.Component<ReactProp, ReactState>{
     this.setState({ showRegexSetter: false })
   }
 
-  createCardAutomaton(r: FSM<StateDFA | StateVPA>, pos: number) {
-    return <Card className="border-primary text-primary">
-      <Card.Header>
-        {this.state.fsmType} A{pos}
-        <a className="float-end" onClick={() =>
-          this.setState({ showRegexSetter: true, changeRegexA1: pos === 1 })}><BootstrapReboot /></a>
-      </Card.Header>
-      <Card.Body className="py-1 px-0">
-        <div className={FLEX_CENTER} style={{ minHeight: "130px" }}><GraphDotRender dot={r} /></div>
-        <div className={FLEX_CENTER}><Button onClick={() => this.addNewAut("~", pos === 1)}>Complement(A{pos})</Button></div>
-      </Card.Body>
-    </Card>
-  }
-
-  addNewAut(operation: Operation, is_a1 = true) {
+  createResultAut(operation: Operation, is_a1 = true) {
     this.setState((state) => {
       let { a1: r1, a2: r2 } = state
       let [a1, a2] = [r1, r2].map(e => e)
@@ -161,7 +147,7 @@ export default class FSM_Viewer extends React.Component<ReactProp, ReactState>{
     let { a1: r1, a2: r2, lastOperation: opeartionList } = this.state
     this.setState(() => { return { a1: r2, a2: r1 } })
     if ((["/", "~"] as Operation[]).includes(opeartionList.operation))
-      this.addNewAut(opeartionList.operation, opeartionList.is_a1)
+      this.createResultAut(opeartionList.operation, opeartionList.is_a1)
   }
 
   createOpHeader() {
@@ -169,6 +155,20 @@ export default class FSM_Viewer extends React.Component<ReactProp, ReactState>{
     let isUnary = unaryOp.includes(op)
     let is_a1 = this.state.lastOperation.is_a1
     return this.operationToString(op) + (isUnary ? `(A${is_a1 ? 1 : 2})` : "(A1, A2)")
+  }
+
+  createCardAutomaton(r: FSM<StateDFA | StateVPA>, pos: number) {
+    return <Card className="border-primary text-primary">
+      <Card.Header>
+        {this.state.fsmType} - Name: A{pos}
+        <a className="float-end" onClick={() =>
+          this.setState({ showRegexSetter: true, changeRegexA1: pos === 1 })}><BootstrapReboot /></a>
+      </Card.Header>
+      <Card.Body className="py-1 px-0">
+        <div className={FLEX_CENTER} style={{ minHeight: "130px" }}><GraphDotRender dot={r} /></div>
+        <div className={FLEX_CENTER}><Button onClick={() => this.createResultAut("~", pos === 1)}>Complement(A{pos})</Button></div>
+      </Card.Body>
+    </Card>
   }
 
   createAccordionItem(p: { key: string, aut: FSM<StateDFA | StateVPA>, isMinimized: boolean }) {
@@ -182,26 +182,32 @@ export default class FSM_Viewer extends React.Component<ReactProp, ReactState>{
     </Accordion.Item>
   }
 
+  createBinaryOperatorSwitcher() {
+    return <>
+      {binaryOp.map(e => <Button key={e} onClick={() => this.createResultAut(e)}>{e}</Button>)}
+      <Button onClick={() => this.switchAutomata()}>⇌</Button>
+    </>
+  }
+
   render(): React.ReactNode {
-    let createOpApplier = () => {
-      return <>
-        {binaryOp.map(e => <Button key={e} onClick={() => this.addNewAut(e)}>{e}</Button>)}
-        <Button onClick={() => this.switchAutomata()}>⇌</Button>
-      </>
-    }
     let lastOp = this.state.lastOperation
     return <>
       <Dialog fn={this.setRegex.bind(this)} show={this.state.showRegexSetter} />
       <Row>
-        <Col sm={"auto"}>{createButtonGroupAlgoSwitcher({ labelList: FSM_LIST, currentLabel: this.state.fsmType, onclickOp: (str: string) => this.setState(this.changeCnt(str)) })}</Col>
+        <Col sm={"auto"}>{
+          createButtonGroupAlgoSwitcher({
+            labelList: FSM_LIST,
+            currentLabel: this.state.fsmType,
+            onclickOp: (str: string) => this.setState(this.changeCnt(str))
+          })}</Col>
         <Col>
           <Row>
             <Col className="mb-3 mb-sm-0" sm={5}>{this.createCardAutomaton(this.state.a1, 1)}</Col>
             <Col className="d-flex text-center align-self-center justify-content-center">
               <ButtonGroup vertical className="secondary d-none d-sm-inline-flex">
-                {createOpApplier()}</ButtonGroup>
+                {this.createBinaryOperatorSwitcher()}</ButtonGroup>
               <ButtonGroup className="secondary d-sm-none">
-                {createOpApplier()}</ButtonGroup>
+                {this.createBinaryOperatorSwitcher()}</ButtonGroup>
             </Col>
             <Col className="mt-3 mt-sm-0" sm={5}>{this.createCardAutomaton(this.state.a2, 2)}</Col>
           </Row>

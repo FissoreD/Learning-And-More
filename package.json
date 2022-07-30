@@ -23,9 +23,8 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "create404": "node src/miscellaneous/duplicateIndexHtml.js",
     "start": "react-scripts start",
-    "build": "react-scripts build && npm run create404",
+    "build": "react-scripts build",
     "coverage": "react-scripts test --watchAll=false --coverage",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
