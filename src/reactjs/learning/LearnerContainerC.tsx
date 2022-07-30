@@ -1,10 +1,10 @@
 import React from "react";
-import { ButtonGroup, Col, Row } from "react-bootstrap";
+import { Col, Row } from "react-bootstrap";
 import TTT from "../../lib/learning/learners/discrimination_tree/TTT_DFA";
 import L_star from "../../lib/learning/learners/observation_table/L_star";
 import NL_star from "../../lib/learning/learners/observation_table/NL_Star";
 import { TeacherAutomaton } from "../../lib/learning/teachers/TeacherDFA";
-import { setFromPosition } from "../globalFunctions";
+import { createButtonGroupAlgoSwitcher, setFromPosition } from "../globalFunctions";
 import { URL_SEPARATOR } from "../globalVars";
 import TTTC from "./discrimination_tree/TTT_C";
 import LStarC from "./observation_table/L_StarC";
@@ -27,7 +27,7 @@ export default class LearnerContainerC extends React.Component<Prop, State> {
     }
   }
 
-  giveAlgo(algo: LearnerAlgo, regex?: string) {
+  giveAlgo(algo: string, regex?: string) {
     let cnt;
     let teacher = new TeacherAutomaton({
       automaton: (this.state ? this.state.regex : regex)!,
@@ -50,8 +50,8 @@ export default class LearnerContainerC extends React.Component<Prop, State> {
     return cnt
   }
 
-  changeCnt(algo: LearnerAlgo) {
-    this.setState({ cnt: algo, pos: 0 })
+  changeCnt(algo: string) {
+    this.setState({ cnt: algos.includes(algo as LearnerAlgo) ? algo : "L", pos: 0 })
   }
 
   changeRegex(regex: string) {
@@ -59,21 +59,9 @@ export default class LearnerContainerC extends React.Component<Prop, State> {
   }
 
   render(): React.ReactElement {
-    let createButtons = () => {
-      return (
-        <ButtonGroup vertical className="position-sticky top-50 translate-middle-y">{algos.map(
-          (algo, pos) =>
-            <React.Fragment key={pos}>
-              <input type="radio" className="btn-check" name="btnradio" id={"btnradio" + pos} autoComplete="off" defaultChecked={algo === this.state.cnt} />
-              <label className="btn btn-outline-secondary" htmlFor={"btnradio" + pos} onClick={
-                () => this.changeCnt(algo)
-              }>{algo}</label>
-            </React.Fragment>)}
-        </ButtonGroup>)
-    }
     return < >
       <Row>
-        <Col sm={"auto"}>{createButtons()}</Col>
+        <Col sm={"auto"}>{createButtonGroupAlgoSwitcher({ labelList: algos, currentLabel: this.state.cnt, onclickOp: this.changeCnt.bind(this) })}</Col>
         <Col>{this.giveAlgo(this.state.cnt as LearnerAlgo)}</Col>
       </Row>
     </ >

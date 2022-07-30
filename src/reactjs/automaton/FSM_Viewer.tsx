@@ -9,7 +9,7 @@ import DFA_NFA from "../../lib/automaton/regular/DFA_NFA";
 import StateDFA from "../../lib/automaton/regular/StateDFA";
 import Dialog from "../components/Dialog";
 import GraphDotRender from "../components/DotRender";
-import { setFromPosition } from "../globalFunctions";
+import { createButtonGroupAlgoSwitcher, setFromPosition } from "../globalFunctions";
 import { FLEX_CENTER } from "../globalVars";
 
 let createVPA1 = (): VPA => {
@@ -46,7 +46,7 @@ type FSM_Type = 'VPA' | 'DFA'
 const FSM_LIST: FSM_Type[] = ['DFA', 'VPA']
 
 interface ReactState {
-  currentAlgo: FSM_Type,
+  fsmType: FSM_Type,
   a1: FSM<StateDFA | StateVPA>,
   a2: FSM<StateDFA | StateVPA>,
   lastOperation: {
@@ -85,7 +85,7 @@ export default class FSM_Viewer extends React.Component<ReactProp, ReactState>{
     }
     setFromPosition(fsmType, 1)
     return {
-      currentAlgo: fsmType as FSM_Type, a1, a2,
+      fsmType: fsmType as FSM_Type, a1, a2,
       lastOperation: { a1, a2, operation: "∪", res: (a1 as VPA).union(a2 as VPA), is_a1: true, },
       showRegexSetter: false,
       changeRegexA1: true
@@ -115,7 +115,7 @@ export default class FSM_Viewer extends React.Component<ReactProp, ReactState>{
   createCardAutomaton(r: FSM<StateDFA | StateVPA>, pos: number) {
     return <Card className="border-primary text-primary">
       <Card.Header>
-        Automaton A{pos}
+        {this.state.fsmType} A{pos}
         <a className="float-end" onClick={() =>
           this.setState({ showRegexSetter: true, changeRegexA1: pos === 1 })}><BootstrapReboot /></a>
       </Card.Header>
@@ -183,35 +183,25 @@ export default class FSM_Viewer extends React.Component<ReactProp, ReactState>{
   }
 
   render(): React.ReactNode {
-    let createButtons = () => {
-      return (
-        <ButtonGroup vertical className={"position-sticky top-50 translate-middle-y"}>{FSM_LIST.map(
-          (algo, pos) =>
-            <React.Fragment key={pos}>
-              <input type="radio" className="btn-check" name="btnradio" id={"btnradio" + pos} autoComplete="off" defaultChecked={algo === this.state.currentAlgo} />
-              <label className="btn btn-outline-secondary" htmlFor={"btnradio" + pos} onClick={
-                () => this.setState(this.changeCnt(algo))
-              }>{algo}</label>
-            </React.Fragment>)}
-        </ButtonGroup>)
+    let createOpApplier = () => {
+      return <>
+        {binaryOp.map(e => <Button key={e} onClick={() => this.addNewAut(e)}>{e}</Button>)}
+        <Button onClick={() => this.switchAutomata()}>⇌</Button>
+      </>
     }
     let lastOp = this.state.lastOperation
     return <>
       <Dialog fn={this.setRegex.bind(this)} show={this.state.showRegexSetter} />
       <Row>
-        <Col sm={"auto"}>{createButtons()}</Col>
+        <Col sm={"auto"}>{createButtonGroupAlgoSwitcher({ labelList: FSM_LIST, currentLabel: this.state.fsmType, onclickOp: (str: string) => this.setState(this.changeCnt(str)) })}</Col>
         <Col>
           <Row>
             <Col className="mb-3 mb-sm-0" sm={5}>{this.createCardAutomaton(this.state.a1, 1)}</Col>
             <Col className="d-flex text-center align-self-center justify-content-center">
               <ButtonGroup vertical className="secondary d-none d-sm-inline-flex">
-                {binaryOp.map(e => <Button key={e} onClick={() => this.addNewAut(e)}>{e}</Button>)}
-                <Button onClick={() => this.switchAutomata()}>⇌</Button>
-              </ButtonGroup>
+                {createOpApplier()}</ButtonGroup>
               <ButtonGroup className="secondary d-sm-none">
-                {binaryOp.map(e => <Button key={e} onClick={() => this.addNewAut(e)}>{e}</Button>)}
-                <Button onClick={() => this.switchAutomata()}>⇌</Button>
-              </ButtonGroup>
+                {createOpApplier()}</ButtonGroup>
             </Col>
             <Col className="mt-3 mt-sm-0" sm={5}>{this.createCardAutomaton(this.state.a2, 2)}</Col>
           </Row>
