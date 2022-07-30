@@ -116,30 +116,21 @@ test("Minimize VPA", () => {
 })
 
 describe("VPA counter-example", () => {
-  test("vpa1", () => {
+  test("vpa3", () => {
     let aut = createVPA3()
-    console.log(aut.alphabet);
-    console.log(aut.findWordAccepted(0));
-    console.log(aut.findWordAccepted(1));
-    console.log(aut.findWordAccepted(2));
-    console.log(aut.findWordAccepted(3));
-    console.log(aut.findWordAccepted(4));
-
-
-
-    // expect(aut.findWordAccepted(0)).toBe("b")
-    // expect(aut.findWordAccepted(1)).toBe("b")
-    // expect(aut.findWordAccepted(2)).toBe("ab")
-    // expect(aut.findWordAccepted(3)).toBe("aab")
-    // expect(aut.findWordAccepted(4)).toBe("aaab")
+    expect(aut.findWordAccepted(0)).toBe("I")
+    expect(aut.findWordAccepted(1)).toBe("I")
+    expect(aut.findWordAccepted(2)).toBe("AIB")
+    expect(aut.findWordAccepted(3)).toBe("AIB")
+    expect(aut.findWordAccepted(8)).toBe("AAAAIBBBB")
   })
 
-  // test("vpa2", () => {
-  //   let aut = createVPA2()
-  //   expect(aut.findWordAccepted(0)).toBe("ab")
-  //   expect(aut.findWordAccepted(1)).toBe("ab")
-  //   expect(aut.findWordAccepted(2)).toBe("ab")
-  //   expect(aut.findWordAccepted(3)).toBe("ab")
-  //   expect(aut.findWordAccepted(4)).toBe("ab")
-  // })
+  test("vpa1", () => {
+    let aut = createVPA1()
+    expect(aut.findWordAccepted(0)).toBe("I")
+    expect(aut.findWordAccepted(1)).toBe("I")
+    expect(aut.findWordAccepted(2)).toBe("II")
+    expect(aut.findWordAccepted(3)).toBe("AIB")
+    expect(aut.findWordAccepted(8)).toBe("AAAIBBBI")
+  })
 })

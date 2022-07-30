@@ -540,6 +540,41 @@ export default class VPA implements FSM<StateVPA>, ToDot {
     while (toExplore.length) {
       let newToExplore = []
       for (const { state, word, stack, callNumber } of toExplore) {
+        // RET
+        for (const symbol of RET) {
+          // Attention to this line
+          if (callNumber === 0) break;
+          let stackClone = [...stack]
+
+          let successors = state.getSuccessor({ symbol, stack: stackClone })
+          if (successors) {
+            for (const state of successors) {
+              if (!state.isAccepting &&
+                state.getAllSuccessors().size === 1 &&
+                state.getAllSuccessors().has(state)) { continue }
+              let newWord = word + symbol;
+              if (state.isAccepting && callNumber === 1) {
+                acceptedWords.push(newWord);
+                if (newWord.length >= minLength) return newWord;
+              }
+              newToExplore.push({ state, word: newWord, stack: stackClone, callNumber: callNumber - 1 });
+            }
+          }
+        }
+        // CALL
+        for (const symbol of CALL) {
+          let stackClone = [...stack]
+          let successors = state.getSuccessor({ symbol, stack: stackClone })
+          if (successors) {
+            for (const state of successors) {
+              if (!state.isAccepting &&
+                state.getAllSuccessors().size === 1 &&
+                state.getAllSuccessors().has(state)) { continue }
+              let newWord = word + symbol;
+              newToExplore.push({ state, word: newWord, stack: stackClone, callNumber: callNumber + 1 });
+            }
+          }
+        }
         // INT
         for (const symbol of INT) {
           let successors = state.getSuccessor({ symbol, stack })
@@ -555,38 +590,6 @@ export default class VPA implements FSM<StateVPA>, ToDot {
                 if (newWord.length >= minLength) return newWord;
               }
               newToExplore.push({ state, word: newWord, stack, callNumber });
-            }
-          }
-        }
-        // RET
-        for (const symbol of RET) {
-          // Attention to this line
-          if (callNumber === 0) break;
-          let successors = state.getSuccessor({ symbol, stack })
-          if (successors) {
-            for (const state of successors) {
-              if (!state.isAccepting &&
-                state.getAllSuccessors().size === 1 &&
-                state.getAllSuccessors().has(state)) { continue }
-              let newWord = word + symbol;
-              if (state.isAccepting && callNumber === 1) {
-                acceptedWords.push(newWord);
-                if (newWord.length >= minLength) return newWord;
-              }
-              newToExplore.push({ state, word: newWord, stack, callNumber: callNumber - 1 });
-            }
-          }
-        }
-        // CALL
-        for (const symbol of CALL) {
-          let successors = state.getSuccessor({ symbol, stack })
-          if (successors) {
-            for (const state of successors) {
-              if (!state.isAccepting &&
-                state.getAllSuccessors().size === 1 &&
-                state.getAllSuccessors().has(state)) { continue }
-              let newWord = word + symbol;
-              newToExplore.push({ state, word: newWord, stack, callNumber: callNumber + 1 });
             }
           }
         }
