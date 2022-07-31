@@ -196,20 +196,21 @@ export default abstract class DiscTreeFather<LblType> implements Clonable, ToDot
     const nodes = new Map([...this.innerNodes].map((e, pos) => [e, pos]))
     const leaves = new Map([...this.leaves].map(([_, e], pos) => [e, pos + nodes.size]))
     let toExplore: (InnerNode<LblType> | Leaf<LblType>)[] = [this.root]
-    let addToStr = (c: InnerNode<LblType>, e: Leaf<LblType> | InnerNode<LblType> | undefined) => a = a + `\n${nodes.get(c)} -> ${e ? (e instanceof InnerNode<LblType> ? nodes.get(e) : leaves.get(e)) : "point"}`
+    let addToStr = (c: InnerNode<LblType>, isRight: boolean, e: Leaf<LblType> | InnerNode<LblType> | undefined) => a = a + `\n${nodes.get(c)} -> ${e ? (e instanceof InnerNode<LblType> ? nodes.get(e) : leaves.get(e)) : "point"} [style="${isRight ? "filled" : "dashed"}"]`
     while (toExplore.length > 0) {
       let current = toExplore.shift()!
       if (current instanceof InnerNode<LblType>) {
-        addToStr(current, current.left)
-        addToStr(current, current.right)
+        addToStr(current, false, current.left)
+        addToStr(current, true, current.right)
         if (current.left) toExplore.push(current.left)
         if (current.right) toExplore.push(current.right)
       }
     }
-    nodes.forEach((_e, f) => a = a + `\n${nodes.get(f)}[label = "${this.nodeNameToString(f)}"]`)
-    leaves.forEach((_e, f) => a = a + `\n${leaves.get(f)}[label = "${this.nodeNameToString(f)}"]`)
-    if (this.root.left === undefined || this.root.right === undefined)
+    nodes.forEach((_e, f) => a = a + `\n${nodes.get(f)}[label="${this.nodeNameToString(f)}"]`)
+    leaves.forEach((_e, f) => a = a + `\n${leaves.get(f)}[label="${this.nodeNameToString(f)}", shape="rect"]`)
+    if (this.root.left === undefined || this.root.right === undefined) {
       a = a + "\npoint[shape=point]";
+    }
     a = a + "\n}";
     return a;
   }

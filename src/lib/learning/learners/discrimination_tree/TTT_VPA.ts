@@ -27,7 +27,6 @@ export default class TTT_VPA extends LearnerFather<DiscTreeVPA, StateVPA> {
     let root = this.dataStructure.getRoot();
     let [addedRight, addedLeft] = [false, false]
     let alph = this.alphabet as AlphabetVPA
-    // Return if 
     let addChild = (symbol: string) => {
       let isOk = this.teacher.member(symbol)
       if (isOk && addedRight === false) {
