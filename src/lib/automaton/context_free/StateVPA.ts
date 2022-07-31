@@ -1,4 +1,4 @@
-import { todo } from "../../tools";
+import { todo, toEps } from "../../tools";
 import AlphabetVPA, { ALPHABET_TYPE, ALPH_TYPE_LIST } from "./AlphabetVPA";
 
 type transition = {
@@ -24,7 +24,7 @@ export default class StateVPA {
    * are supposed to be _false_
    */
   constructor(p: { name: string, isAccepting?: boolean, isInitial?: boolean, alphabet: AlphabetVPA, stackAlphabet: string[] }) {
-    this.name = p.name;
+    this.name = p.name || toEps(p.name);
     this.stackAlphabet = p.stackAlphabet;
     this.isAccepting = p.isAccepting || false;
     this.isInitial = p.isInitial || false;
@@ -99,8 +99,8 @@ export default class StateVPA {
         let succ1: { successors: StateVPA[], symbolToPush: string },
           pred1: { successors: StateVPA[], symbolToPush: string };
         succ1 = (this.outTransitions.CALL[p.symbol] = (this.outTransitions.CALL[p.symbol] ||
-          { successors: [p.successor], symbolToPush: p.topStack }))
-        pred1 = (p.successor.inTransitions.CALL[p.symbol] = (p.successor.inTransitions.CALL[p.symbol] || {}))
+          { successors: [], symbolToPush: p.topStack }))
+        pred1 = (p.successor.inTransitions.CALL[p.symbol] = (p.successor.inTransitions.CALL[p.symbol] || { successors: [], symbolToPush: p.topStack }))
         pred1.symbolToPush = p.topStack;
         pred = pred1.successors
         succ1.symbolToPush = p.topStack;

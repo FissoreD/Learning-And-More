@@ -6,12 +6,12 @@ import NL_star from "../../lib/learning/learners/observation_table/NL_Star";
 import { TeacherAutomaton } from "../../lib/learning/teachers/TeacherDFA";
 import { createButtonGroupAlgoSwitcher, setFromPosition } from "../globalFunctions";
 import { URL_SEPARATOR } from "../globalVars";
-import TTTC from "./discrimination_tree/TTT_C";
+import TTT_C from "./discrimination_tree/TTT_DFA_C";
 import LStarC from "./observation_table/L_StarC";
 import NLStarC from "./observation_table/NL_StarC";
 
-export type LearnerAlgo = "L" | "NL" | "TTT" | "TTT-VPA"
-let algos: LearnerAlgo[] = ["L", "NL", "TTT"]
+export type LearnerAlgo = "L*" | "NL*" | "TTT-DFA" | "TTT-VPA"
+let algos: LearnerAlgo[] = ["L*", "NL*", "TTT-DFA", "TTT-VPA"]
 interface State { cnt: string, regex: string, pos: number }
 interface Prop { cnt: string }
 
@@ -21,7 +21,7 @@ export default class LearnerContainerC extends React.Component<Prop, State> {
     super(prop)
     let [fstElt, sndElt] = prop.cnt.split(URL_SEPARATOR) as [LearnerAlgo, string, string[]]
     this.state = {
-      cnt: algos.includes(fstElt) ? fstElt : "L",
+      cnt: algos.includes(fstElt) ? fstElt : "L*",
       regex,
       pos: parseInt(sndElt) || 0
     }
@@ -33,20 +33,24 @@ export default class LearnerContainerC extends React.Component<Prop, State> {
       automaton: (this.state ? this.state.regex : regex)!,
       type: "Regex"
     })
+    let algoDef: LearnerAlgo = algo as LearnerAlgo;
     switch (algo) {
-      case "NL":
+      case "NL*":
         cnt = <NLStarC pos={this.state.pos} changeRegexContainer={this.changeRegex.bind(this)} name={"NL-Star"} learner={new NL_star(teacher)} />;
         break;
-      case "TTT":
-        cnt = <TTTC pos={this.state.pos} changeRegexContainer={this.changeRegex.bind(this)} name={"TTT"} learner={new TTT(teacher)} />;
+      case "TTT-DFA":
+        cnt = <TTT_C pos={this.state.pos} changeRegexContainer={this.changeRegex.bind(this)} name={"TTT"} learner={new TTT(teacher)} />;
         break;
       case "TTT-VPA":
-      //cnt = <TTTC changeRegexContainer={this.changeRegex.bind(this)} name={"TTT"} learner={new TTT - VPA(teacher)} /> break;
+        alert("To be implemented")
+        // cnt = <TTT_VPA_C pos={this.state.pos} changeRegexContainer={this.changeRegex.bind(this)} name={"TTT"} learner={new TTT_VPA(todo())} />;
+        algoDef = "L*"
+        break
       default:
-        algo = "L"
+        algoDef = "L*"
         cnt = <LStarC pos={this.state.pos} changeRegexContainer={this.changeRegex.bind(this)} name={"L-Star"} learner={new L_star(teacher)} />;
     }
-    setFromPosition(algo, 1)
+    setFromPosition(algoDef, 1)
     return cnt
   }
 

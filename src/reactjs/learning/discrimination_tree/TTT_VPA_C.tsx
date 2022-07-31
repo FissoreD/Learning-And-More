@@ -1,25 +1,24 @@
 import { ReactElement } from "react";
-import StateDFA from "../../../lib/automaton/regular/StateDFA";
+import StateVPA from "../../../lib/automaton/context_free/StateVPA";
 import Clonable from "../../../lib/Clonable.interface";
 import DiscTreeDFA from "../../../lib/learning/learners/discrimination_tree/DiscTreeDFA";
-import TTT from "../../../lib/learning/learners/discrimination_tree/TTT_DFA";
-import { TeacherAutomaton } from "../../../lib/learning/teachers/TeacherDFA";
+import TTT_VPA from "../../../lib/learning/learners/discrimination_tree/TTT_VPA";
+import TeacherVPA from "../../../lib/learning/teachers/TeacherVPA";
+import { todo } from "../../../lib/tools";
 import { LearnerSection, MessageType, StateReact } from "../LearnerSectionFatherC";
 import DiscriminationTreeC from "./DiscriminationTreeC";
 
-export default class TTTC extends LearnerSection<StateDFA> {
-
-
-  createNewLearner(regex: string): TTT {
-    return new TTT(new TeacherAutomaton({ type: "Regex", automaton: regex }))
+export default class TTT_VPA_C extends LearnerSection<StateVPA> {
+  createNewLearner(regex: string): TTT_VPA {
+    return new TTT_VPA(new TeacherVPA({ automaton: todo() }))
   }
 
   dataStructureToNodeElement(ds: Clonable): ReactElement {
     return <DiscriminationTreeC dt={ds.clone() as DiscTreeDFA} />
   }
 
-  nextOpChild(state: StateReact<StateDFA>): StateReact<StateDFA> {
-    let learner = state.learner as TTT
+  nextOpChild(state: StateReact<StateVPA>): StateReact<StateVPA> {
+    let learner = state.learner as TTT_VPA
     if (learner.finish) return state;
     var message: { type: MessageType, val: string };
     if (state.doNext) {

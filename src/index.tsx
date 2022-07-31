@@ -3,7 +3,7 @@ import 'bootstrap/dist/js/bootstrap.js';
 import React from 'react';
 import { Container, Row } from "react-bootstrap";
 import ReactDOM from 'react-dom/client';
-import FSM_Viewer from './reactjs/automaton/FSM_Viewer';
+import FsmViewer from './reactjs/automaton/FSM_Viewer';
 import { NavBar } from './reactjs/components/NavBar';
 import { removeFirstUrlPath, setFromPosition } from './reactjs/globalFunctions';
 import { URL_SEPARATOR } from './reactjs/globalVars';
@@ -36,14 +36,14 @@ export class Main extends React.Component<{}, ReactState> {
 
   swicthContent(section: AlgosNavBarType): void {
     let cnt = this.giveContent(section)
-    if (cnt.sectionNumber != this.state.sectionNumber) {
+    if (cnt.sectionNumber !== this.state.sectionNumber) {
       setFromPosition(ALGO_NAVBAR_LIST[cnt.sectionNumber], 0)
       this.setState(cnt)
     }
   }
 
   render(): React.ReactNode {
-    let dfaViewer = <FSM_Viewer cnt={this.state.urlCnt} />
+    let dfaViewer = <FsmViewer cnt={this.state.urlCnt} />
     let learnerSection = <LearnerContainerC cnt={this.state.urlCnt} />
     let home = <Home />
 

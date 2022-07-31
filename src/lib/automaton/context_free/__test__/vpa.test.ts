@@ -118,6 +118,7 @@ test("Minimize VPA", () => {
 describe("VPA counter-example", () => {
   test("vpa3", () => {
     let aut = createVPA3()
+    // Here counter-example are fixed 
     expect(aut.findWordAccepted(0)).toBe("I")
     expect(aut.findWordAccepted(1)).toBe("I")
     expect(aut.findWordAccepted(2)).toBe("AIB")
@@ -127,10 +128,9 @@ describe("VPA counter-example", () => {
 
   test("vpa1", () => {
     let aut = createVPA1()
-    expect(aut.findWordAccepted(0)).toBe("I")
-    expect(aut.findWordAccepted(1)).toBe("I")
-    expect(aut.findWordAccepted(2)).toBe("II")
-    expect(aut.findWordAccepted(3)).toBe("AIB")
-    expect(aut.findWordAccepted(8)).toBe("AAAIBBBI")
+    // Here counter-examples are not predictable: e.g. for i = 4, we can have AIIB, ABII, AABB...
+    for (let i = 0; i < 5; i++) {
+      expect(aut.findWordAccepted(i)?.length).toBeGreaterThanOrEqual(i)
+    }
   })
 })

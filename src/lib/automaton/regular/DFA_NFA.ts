@@ -1,5 +1,5 @@
 import ToDot from "../../ToDot.interface";
-import { sameVector, toEps } from "../../tools";
+import { sameVector, shuffle, toEps } from "../../tools";
 import FSM from "../FSM_interface";
 import AlphabetDFA from "./AlphabetDFA";
 import regexToAutomaton from "./parser/RegexParser";
@@ -28,7 +28,7 @@ export default class DFA_NFA implements FSM<StateDFA>, ToDot {
     for (const symbol of alphabet.symbols) {
       bottom.addTransition(symbol, bottom);
       for (const state of res.states.values()) {
-        let transintion = res.findTransition(state, symbol)
+        let transintion = res.findTransition(state, { symbol })
         if (transintion === undefined || transintion.length === 0) {
           state.addTransition(symbol, bottom);
           toAdd = true;
@@ -132,7 +132,7 @@ export default class DFA_NFA implements FSM<StateDFA>, ToDot {
         return [undefined, false]
       }
       for (const state of nextStates) {
-        let nextTransition = this.findTransition(state, symbol)
+        let nextTransition = this.findTransition(state, { symbol })
         if (nextTransition)
           for (const nextState of nextTransition) {
             nextStates2.add(nextState)
@@ -154,8 +154,8 @@ export default class DFA_NFA implements FSM<StateDFA>, ToDot {
     return this.readWord(word)[1]
   }
 
-  findTransition(state: StateDFA, symbol: string) {
-    return state!.getSuccessor(symbol)!
+  findTransition(state: StateDFA, p: { symbol: string }) {
+    return state!.getSuccessor(p.symbol)!
   }
 
   /* istanbul ignore next */
@@ -164,13 +164,13 @@ export default class DFA_NFA implements FSM<StateDFA>, ToDot {
     let txt = "digraph {rankdir = LR\nfixedsize=true\n"
     let triples: { [id: string]: string[] } = {}
     for (const [name, state] of this.states) {
-      for (let j = 0; j < symbols.length; j++) {
-        for (const nextState of this.findTransition(state, symbols[j])) {
+      for (const symbol of symbols) {
+        for (const nextState of this.findTransition(state, { symbol })) {
           let stateA_concat_stateB = name + '&' + nextState.name;
           if (triples[stateA_concat_stateB]) {
-            triples[stateA_concat_stateB].push(symbols[j])
+            triples[stateA_concat_stateB].push(symbol)
           } else {
-            triples[stateA_concat_stateB] = [symbols[j]]
+            triples[stateA_concat_stateB] = [symbol]
           }
         }
       }
@@ -537,7 +537,7 @@ export default class DFA_NFA implements FSM<StateDFA>, ToDot {
         }
       }
       if (newToExplore.length === 0) break
-      toExplore = newToExplore;
+      toExplore = shuffle(newToExplore);
     }
     return toExplore.reduce((old, n) => n.word.length > old.length ? n.word : old, acceptedWords[acceptedWords.length - 1])
   }

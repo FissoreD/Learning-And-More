@@ -1,5 +1,5 @@
 import ToDot from "../../ToDot.interface";
-import { todo, toEps } from "../../tools";
+import { shuffle, todo, toEps } from "../../tools";
 import FSM from "../FSM_interface";
 import AlphabetVPA, { ALPHABET_TYPE, ALPH_TYPE_LIST } from "./AlphabetVPA";
 import StateVPA from "./StateVPA";
@@ -38,14 +38,13 @@ export default class VPA implements FSM<StateVPA>, ToDot {
     let bottom = p?.bottom || StateVPA.Bottom(alphabet, stackAlph)
     let toAdd = false;
     res.alphabet = alphabet;
-
     for (const type of ALPH_TYPE_LIST) {
       for (const symbol of alphabet[type]) {
         for (let pos = 0; pos < (type === "INT" ? 1 : stackAlph.length); pos++) {
           let topStack = type === "INT" ? "" : stackAlph[pos]
           bottom.addTransition({ type: type, symbol, topStack, successor: bottom });
           for (const state of res.states.values()) {
-            let transition = res.findTransition(state, symbol, type, topStack)
+            let transition = res.findTransition(state, { symbol, type, topStack })
             if (transition === undefined || transition.length === 0) {
               state.addTransition({ type, symbol, topStack, successor: bottom });
               toAdd = true;
@@ -70,11 +69,10 @@ export default class VPA implements FSM<StateVPA>, ToDot {
    * @note : the vpa determinization algorithm is not implemented. If the VPA is not deterministic an error will be raised
    */
   minimize(): VPA {
-    if (!this.isDeterministic())
+    if (!this.isDeterministic()) {
       throw new Error("The VPA should be deterministic")
-
+    }
     let complete = this.complete()
-
     let aut = complete.isDeterministic() ? complete : complete.determinize()
 
     /** List of states reachable from *the* initial state */
@@ -129,7 +127,8 @@ export default class VPA implements FSM<StateVPA>, ToDot {
               P.splice(P.indexOf(Y), 1)
               P.push(X_inter_Y)
               P.push(Y_minus_X)
-              if (pLength() !== stateList.size) throw new Error(`Wanted ${stateList.size} had ${pLength()}`);
+              if (pLength() !== stateList.size)
+                throw new Error(`Wanted ${stateList.size} had ${pLength()}`);
               if (W.includes(Y)) {
                 W.splice(W.indexOf(Y), 1)
                 W.push(X_inter_Y)
@@ -145,10 +144,10 @@ export default class VPA implements FSM<StateVPA>, ToDot {
 
     let oldStateToNewState: Map<string, StateVPA> = new Map();
 
-    let newStates = new Set([...P].filter(partition => partition.size > 0).map((partition, pos) => {
+    let newStates = new Set([...P].filter(partition => partition.size > 0).map((partition, _pos) => {
       let representant: StateVPA[] = [...partition].map(e => aut.states.get(e)!);
       let newState = new StateVPA({
-        name: pos + "",
+        name: representant.map(e => e.name).join(","), // change with pos ?
         isAccepting: representant.some(e => e.isAccepting),
         isInitial: representant.some(e => e.isInitial),
         alphabet: representant[0].alphabet, stackAlphabet: complete.stackAlphabet
@@ -156,35 +155,31 @@ export default class VPA implements FSM<StateVPA>, ToDot {
       partition.forEach(state => oldStateToNewState.set(state, newState))
       return newState;
     }));
+
     for (const partition of P) {
       for (const oldState of partition) {
         for (const alphabetType of ALPH_TYPE_LIST) {
-          for (let i = 0; i < (alphabetType === "INT" ? 1 : complete.stackAlphabet.length); i++)
+          for (let i = 0; i < (alphabetType === "INT" ? 1 : complete.stackAlphabet.length); i++) {
             for (const symbol of complete.alphabet[alphabetType]) {
               let topStack = (alphabetType === "INT" ? "" : complete.stackAlphabet[i])
-              for (const successor of aut.states.get(oldState)!.getSuccessor({
-                symbol,
-                topStack
-              })) {
-                if (!oldStateToNewState.get(oldState)!.getSuccessor({
-                  symbol,
-                  topStack
-                })![0] ||
-                  (oldStateToNewState.get(oldState)!.getSuccessor({
-                    symbol,
-                    topStack
-                  })![0].name !== oldStateToNewState.get(successor.name)!.name))
-                  oldStateToNewState.get(oldState)!.addTransition({
-                    symbol,
-                    successor: oldStateToNewState.get(successor.name)!,
-                    topStack
-                  }!)
+              let newState = oldStateToNewState.get(oldState)!
+              let successorNewState = this.findTransition(newState, { symbol, topStack })!;
+
+              for (const successor of this.findTransition(aut.states.get(oldState)!, { symbol, topStack })) {
+                let successorOldState = oldStateToNewState.get(successor.name)
+                // @todo
+                if (!successorNewState || !successorNewState[0] ||
+                  (successorNewState[0].name !== successorOldState!.name))
+                  newState!.addTransition({ symbol, successor: successorOldState!, topStack })
               }
             }
+          }
         }
       }
     }
-    return new VPA(newStates)
+    let res = new VPA(newStates)
+    console.assert(res.isDeterministic())
+    return res
   }
 
   /**
@@ -330,16 +325,29 @@ export default class VPA implements FSM<StateVPA>, ToDot {
     myMap.forEach((newS, oldS) => {
 
       this.alphabet.INT.forEach(symbol =>
-        oldS.getSuccessor({ symbol }).forEach(succ => {
+        this.findTransition(oldS, { symbol }).forEach(succ => {
           newS.addTransition({
             symbol,
             successor: myMap.get(succ)!
           })
         }));
 
-      [...this.alphabet.CALL, ...this.alphabet.RET].forEach(symbol =>
+      this.alphabet.CALL.forEach(symbol => {
+        try {
+          let { successors, symbolToPush } = oldS.getAllOutTransitions().CALL[symbol]
+          successors.forEach(succ => {
+            newS.addTransition({
+              symbol,
+              successor: myMap.get(succ)!,
+              topStack: symbolToPush
+            })
+          })
+        } catch (e) { }
+      });
+
+      this.alphabet.RET.forEach(symbol =>
         this.stackAlphabet.forEach(topStack =>
-          oldS.getSuccessor({ symbol, topStack }).forEach(succ => newS.addTransition({
+          (this.findTransition(oldS, { symbol, topStack }) || []).forEach(succ => newS.addTransition({
             symbol,
             successor: myMap.get(succ)!,
             topStack
@@ -369,11 +377,16 @@ export default class VPA implements FSM<StateVPA>, ToDot {
   }
 
   isDeterministic(): boolean {
+    let { INT, CALL, RET } = this.alphabet
     return this.allStates().every(
       state =>
-        [...this.alphabet.INT, ...this.alphabet.CALL].every(symbol => state.getSuccessor({ symbol }).length <= 1)
+        INT.concat(CALL).every(symbol =>
+          this.findTransition(state, { symbol }).length <= 1)
         &&
-        this.alphabet.RET.every(symbol => this.stackAlphabet.every(topStack => state.getSuccessor({ symbol, topStack }).length <= 1))) && this.initialStates.length <= 1
+        RET.every(symbol =>
+          this.stackAlphabet.every(topStack =>
+            this.findTransition(state, { symbol, topStack }).length <= 1)
+        )) && this.initialStates.length <= 1
   }
 
   sameLanguage(aut: VPA): boolean {
@@ -394,7 +407,7 @@ export default class VPA implements FSM<StateVPA>, ToDot {
       }
       for (const state of nextStates) {
         try {
-          let nextTransition = this.findTransition(state, symbol)
+          let nextTransition = this.findTransition(state, { symbol, stack: this.stack })
           if (nextTransition)
             for (const nextState of nextTransition) {
               nextStates2.add(nextState)
@@ -439,8 +452,8 @@ export default class VPA implements FSM<StateVPA>, ToDot {
    * what will be the next state)
    * @returns the list of successors of state 
    */
-  findTransition(state: StateVPA, symbol: string, type?: ALPHABET_TYPE, topStack?: string): StateVPA[] {
-    return state!.getSuccessor({ symbol, topStack: topStack, stack: this.stack, type })!
+  findTransition(state: StateVPA, p: { type?: ALPHABET_TYPE, symbol: string, topStack?: string, stack?: string[] }): StateVPA[] {
+    return state!.getSuccessor(p)!
   }
 
   acceptingStates(): StateVPA[] {
@@ -467,7 +480,7 @@ export default class VPA implements FSM<StateVPA>, ToDot {
         }
         for (let j = 0; j < alph.length; j++) {
           for (let i = 0; i < (type === "RET" ? this.stackAlphabet.length : 1); i++) {
-            let nextStates = this.findTransition(state, alph[j], type, type === "INT" ? "" : this.stackAlphabet[i])
+            let nextStates = this.findTransition(state, { symbol: alph[j], topStack: type === "INT" ? "" : this.stackAlphabet[i], type })
             if (nextStates)
               for (const nextState of nextStates) {
                 let stateA_concat_stateB = name + '&' + nextState.name;
@@ -527,9 +540,11 @@ export default class VPA implements FSM<StateVPA>, ToDot {
     if (aut.isEmpty()) return undefined;
 
     let acceptedWords: string[] = []
-    let toExplore: {
+    type exploreType = {
       state: StateVPA; word: string; callNumber: number; stack: string[];
-    }[] = [...aut.initialStates].map(state => ({ state, word: "", callNumber: 0, stack: [] }))
+      canPushOnStack: boolean // Note: this last property is because the stack once empty cannot be reused
+    }[]
+    let toExplore: exploreType = [...aut.initialStates].map(state => ({ state, word: "", callNumber: 0, stack: [], canPushOnStack: true }))
 
     if (aut.initialStates.some(e => e.isAccepting))
       acceptedWords.push("")
@@ -538,15 +553,15 @@ export default class VPA implements FSM<StateVPA>, ToDot {
       return ""
 
     while (toExplore.length) {
-      let newToExplore = []
-      for (const { state, word, stack, callNumber } of toExplore) {
+      let newToExplore: exploreType = []
+      for (const { state, word, stack, callNumber, canPushOnStack } of toExplore) {
         // RET
         for (const symbol of RET) {
           // Attention to this line
           if (callNumber === 0) break;
           let stackClone = [...stack]
 
-          let successors = state.getSuccessor({ symbol, stack: stackClone })
+          let successors = this.findTransition(state, { symbol, stack: stackClone })
           if (successors) {
             for (const state of successors) {
               if (!state.isAccepting &&
@@ -557,27 +572,28 @@ export default class VPA implements FSM<StateVPA>, ToDot {
                 acceptedWords.push(newWord);
                 if (newWord.length >= minLength) return newWord;
               }
-              newToExplore.push({ state, word: newWord, stack: stackClone, callNumber: callNumber - 1 });
+              newToExplore.push({ state, word: newWord, stack: stackClone, callNumber: callNumber - 1, canPushOnStack: callNumber !== 1 });
             }
           }
         }
         // CALL
         for (const symbol of CALL) {
+          if (!canPushOnStack) break
           let stackClone = [...stack]
-          let successors = state.getSuccessor({ symbol, stack: stackClone })
+          let successors = this.findTransition(state, { symbol, stack: stackClone })
           if (successors) {
             for (const state of successors) {
               if (!state.isAccepting &&
                 state.getAllSuccessors().size === 1 &&
                 state.getAllSuccessors().has(state)) { continue }
               let newWord = word + symbol;
-              newToExplore.push({ state, word: newWord, stack: stackClone, callNumber: callNumber + 1 });
+              newToExplore.push({ state, word: newWord, stack: stackClone, callNumber: callNumber + 1, canPushOnStack });
             }
           }
         }
         // INT
         for (const symbol of INT) {
-          let successors = state.getSuccessor({ symbol, stack })
+          let successors = this.findTransition(state, { symbol, stack })
           if (successors) {
             for (const state of successors) {
               if (!state.isAccepting &&
@@ -589,13 +605,13 @@ export default class VPA implements FSM<StateVPA>, ToDot {
                 acceptedWords.push(newWord);
                 if (newWord.length >= minLength) return newWord;
               }
-              newToExplore.push({ state, word: newWord, stack, callNumber });
+              newToExplore.push({ state, word: newWord, stack, callNumber, canPushOnStack });
             }
           }
         }
       }
       if (newToExplore.length === 0) break;
-      toExplore = newToExplore;
+      toExplore = shuffle(newToExplore);
     }
     return toExplore.reduce((old, n) => n.word.length > old.length ? n.word : old, acceptedWords[acceptedWords.length - 1]);
   }

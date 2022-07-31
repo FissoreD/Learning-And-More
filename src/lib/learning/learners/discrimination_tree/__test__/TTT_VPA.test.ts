@@ -3,11 +3,14 @@ import TecherVPA from "../../../teachers/TeacherVPA";
 import TTT_VPA from "../TTT_VPA";
 
 test("TTT_VPA for G = A^n II^n B^n", () => {
-  let t = new TecherVPA({ automaton: createVPA1() })
-  t.alphabet.RET.splice(t.alphabet.RET.indexOf("C"))
-  let learner = new TTT_VPA(t);
-  console.log(learner.automaton!.toDot());
+  let teacher = new TecherVPA({ automaton: createVPA1() })
+  teacher.alphabet.RET.splice(teacher.alphabet.RET.indexOf("C"))
+  let learner = new TTT_VPA(teacher);
 
+  let res = learner.automaton!.symmetricDifference(teacher.automaton!).findWordAccepted(5)
+  console.log("HERE", res)
+
+  // throw new Error("Testing")
 
   // expect(learner.dataStructure.sift("aaa", t)?.name).toBe("")
   // expect(learner.dataStructure.sift("aab", t)?.name).toBe("")

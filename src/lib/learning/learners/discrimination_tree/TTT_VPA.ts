@@ -1,4 +1,5 @@
 import AlphabetVPA from "../../../automaton/context_free/AlphabetVPA";
+import ONE_SEVPA from "../../../automaton/context_free/ONE_SEVPA";
 import StateVPA from "../../../automaton/context_free/StateVPA";
 import VPA from "../../../automaton/context_free/VPA";
 import { todo, toEps } from "../../../tools";
@@ -11,10 +12,12 @@ export default class TTT_VPA extends LearnerFather<DiscTreeVPA, StateVPA> {
   lastCe: { value: string, accepted: boolean, isTeacher: boolean } | undefined;
   lastSplit: { u: string, a: string, v: string, uaState: string, uState: string } | undefined;
   alphabet: AlphabetVPA;
+  automaton: VPA;
 
   constructor(teacher: Teacher<StateVPA>) {
     super(teacher, new DiscTreeVPA(["", ""]))
     this.alphabet = teacher.alphabet as AlphabetVPA;
+    this.automaton = super.automaton as VPA
     this.teacher = teacher;
     this.dataStructure = new DiscTreeVPA(["", ""])
     this.initiate()
@@ -115,13 +118,13 @@ export default class TTT_VPA extends LearnerFather<DiscTreeVPA, StateVPA> {
             let newWord = pred + call + state + ret
             let res = updateAutomaton(newWord)
             states.get(state)!.addTransition({ symbol: ret, successor: states.get(res.name)!, topStack: `(${toEps(pred)},${toEps(call)})` })
-            stackAlphabet.push(`${pred},${call}`)
+            if (!stackAlphabet.includes(`(${toEps(pred)},${toEps(call)})`))
+              stackAlphabet.push(`${toEps(pred)},${toEps(call)}`)
           }
         }
       }
     }
-    stackAlphabet = [...new Set(stackAlphabet)]
-    return (this.automaton = new VPA([...states.values()]))
+    return (this.automaton = new ONE_SEVPA([...states.values()]))
   }
 
   /** @todo loop only over RET and INT symbols */

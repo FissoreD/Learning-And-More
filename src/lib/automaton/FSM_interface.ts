@@ -64,7 +64,7 @@ export default interface FSM<StateType> extends Clonable, ToDot, ToString {
    */
   isFull(): boolean;
 
-  findTransition(state: StateType, symbol: string): StateType[];
+  findTransition(state: StateType, p: { symbol: string }): StateType[];
   acceptingStates(): StateType[];
   allStates(): StateType[];
 
