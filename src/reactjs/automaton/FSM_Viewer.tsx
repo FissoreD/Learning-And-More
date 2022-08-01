@@ -163,7 +163,7 @@ export default class FSM_Viewer extends React.Component<ReactProp, ReactState>{
       <Card.Header>
         {this.state.fsmType} - Name: A{pos}
         <a className="float-end" onClick={() =>
-          this.setState({ showRegexSetter: true, changeRegexA1: pos === 1 })}><BootstrapReboot /></a>
+          this.setState({ showRegexSetter: true, changeRegexA1: pos === 1 })} href='#'><BootstrapReboot /></a>
       </Card.Header>
       <Card.Body className="py-1 px-0">
         <div className={FLEX_CENTER} style={{ minHeight: "130px" }}><GraphDotRender dot={r} /></div>

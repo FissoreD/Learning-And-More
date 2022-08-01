@@ -7,9 +7,9 @@ import FsmViewer from './reactjs/automaton/FSM_Viewer';
 import { NavBar } from './reactjs/components/NavBar';
 import { removeFirstUrlPath, setFromPosition } from './reactjs/globalFunctions';
 import { URL_SEPARATOR } from './reactjs/globalVars';
+import Home from './reactjs/Home';
 import "./reactjs/index.css";
 import LearnerContainerC from './reactjs/learning/LearnerContainerC';
-import Home from './reactjs/main';
 import reportWebVitals from './reactjs/reportWebVitals';
 
 interface ReactState { sectionNumber: number, urlCnt: string }
@@ -34,8 +34,8 @@ export class Main extends React.Component<{}, ReactState> {
     return { sectionNumber, urlCnt };
   }
 
-  swicthContent(section: AlgosNavBarType): void {
-    let cnt = this.giveContent(section)
+  swicthContent(section: string): void {
+    let cnt = this.giveContent(section as AlgosNavBarType)
     if (cnt.sectionNumber !== this.state.sectionNumber) {
       setFromPosition(ALGO_NAVBAR_LIST[cnt.sectionNumber], 0)
       this.setState(cnt)
@@ -45,7 +45,7 @@ export class Main extends React.Component<{}, ReactState> {
   render(): React.ReactNode {
     let dfaViewer = <FsmViewer cnt={this.state.urlCnt} />
     let learnerSection = <LearnerContainerC cnt={this.state.urlCnt} />
-    let home = <Home />
+    let home = <Home switchSection={this.swicthContent.bind(this)} />
 
     let sectionList = [home, dfaViewer, learnerSection]
 
@@ -53,7 +53,7 @@ export class Main extends React.Component<{}, ReactState> {
       <NavBar changeCnt={this.swicthContent.bind(this)} />
       <Container >
         <Row className="justify-content-center" >
-          <div className="col-xl-8 col-md-10">
+          <div className="col-xl-8 col-md-10" >
             {sectionList[this.state.sectionNumber]}
           </div >
         </Row>

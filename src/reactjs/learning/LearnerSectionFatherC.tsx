@@ -139,7 +139,7 @@ export abstract class LearnerSection<StateType> extends React.Component<PropReac
       <div className="text-end sticky-top d-flex justify-content-between">
         <Button className="btn-secondary" onClick={() => {
           this.setState({ showRegexDialog: true })
-        }}> Enter Regex </Button>
+        }}> Change Teacher </Button>
         {this.createNextSetpButtonGroup()}
       </div>
       {/* Algorithms sections */}
