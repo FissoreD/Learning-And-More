@@ -45,6 +45,7 @@ export default class LearnerContainerC extends React.Component<Prop, State> {
         alert("To be implemented")
         // cnt = <TTT_VPA_C pos={this.state.pos} changeRegexContainer={this.changeRegex.bind(this)} name={"TTT"} learner={new TTT_VPA(todo())} />;
         algoDef = "L*"
+        cnt = <LStarC pos={this.state.pos} changeRegexContainer={this.changeRegex.bind(this)} name={"L-Star"} learner={new L_star(teacher)} />;
         break
       default:
         algoDef = "L*"

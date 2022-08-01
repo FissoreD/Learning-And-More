@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import React from "react";
 import { Accordion, Button, ButtonGroup, Card, Col, Row } from "react-bootstrap";
 import { BootstrapReboot } from "react-bootstrap-icons";
@@ -200,21 +201,27 @@ export default class FSM_Viewer extends React.Component<ReactProp, ReactState>{
             currentLabel: this.state.fsmType,
             onclickOp: (str: string) => this.setState(this.changeCnt(str))
           })}</Col>
-        <Col>
-          <Row>
-            <Col className="mb-3 mb-sm-0" sm={5}>{this.createCardAutomaton(this.state.a1, 1)}</Col>
-            <Col className="d-flex text-center align-self-center justify-content-center">
-              <ButtonGroup vertical className="secondary d-none d-sm-inline-flex">
-                {this.createBinaryOperatorSwitcher()}</ButtonGroup>
-              <ButtonGroup className="secondary d-sm-none">
-                {this.createBinaryOperatorSwitcher()}</ButtonGroup>
-            </Col>
-            <Col className="mt-3 mt-sm-0" sm={5}>{this.createCardAutomaton(this.state.a2, 2)}</Col>
-          </Row>
-          <Accordion defaultActiveKey={['0']} alwaysOpen className="mt-3">
-            {this.createAccordionItem({ key: "0", aut: lastOp.res, isMinimized: false })}
-            {this.createAccordionItem({ key: "1", aut: lastOp.res, isMinimized: true })}
-          </Accordion>
+        <Col style={{ overflow: "hidden" }}>
+          <motion.div initial={{ x: "-100%" }}
+            animate={{ x: "0" }}
+            transition={{ duration: 0.5 }}
+            key={this.state.fsmType}
+          >
+            <Row>
+              <Col className="mb-3 mb-sm-0" sm={5}>{this.createCardAutomaton(this.state.a1, 1)}</Col>
+              <Col className="d-flex text-center align-self-center justify-content-center">
+                <ButtonGroup vertical className="secondary d-none d-sm-inline-flex">
+                  {this.createBinaryOperatorSwitcher()}</ButtonGroup>
+                <ButtonGroup className="secondary d-sm-none">
+                  {this.createBinaryOperatorSwitcher()}</ButtonGroup>
+              </Col>
+              <Col className="mt-3 mt-sm-0" sm={5}>{this.createCardAutomaton(this.state.a2, 2)}</Col>
+            </Row>
+            <Accordion defaultActiveKey={['0']} alwaysOpen className="mt-3">
+              {this.createAccordionItem({ key: "0", aut: lastOp.res, isMinimized: false })}
+              {this.createAccordionItem({ key: "1", aut: lastOp.res, isMinimized: true })}
+            </Accordion>
+          </motion.div>
         </Col>
       </Row>
     </>

@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import React, { ReactElement } from "react";
 import { Button, ButtonGroup, Card } from "react-bootstrap";
 import { ArrowClockwise, ArrowCounterclockwise, CaretLeftFill, CaretRightFill } from "react-bootstrap-icons";
@@ -131,7 +132,7 @@ export abstract class LearnerSection<StateType> extends React.Component<PropReac
     let memoryCell = this.state.memory[position]
     setFromPosition(position + "", 2)
 
-    return <div className="body-container">
+    return <div className="body-container" style={{ overflow: "hidden" }}>
       {/* To change regex panel */}
       <Dialog show={this.state.showRegexDialog} fn={this.changeLearner.bind(this)} />
       {/* Buttons sticky on top to change regex and change algo step */}
@@ -142,10 +143,15 @@ export abstract class LearnerSection<StateType> extends React.Component<PropReac
         {this.createNextSetpButtonGroup()}
       </div>
       {/* Algorithms sections */}
-      {this.createCard("Language to Learn", this.createText(this.state.learner.teacher.regex))}
-      {this.createCard("Message", this.createText(memoryCell.message.val))}
-      {memoryCell.automaton ? this.createCard("Automaton", <GraphDotRender dot={memoryCell.automaton!} />) : <></>}
-      {this.createCard("Observation Table", this.dataStructureToNodeElement(memoryCell.dataStructure))}
+      <motion.div initial={{ x: "-100%" }}
+        animate={{ x: "0" }}
+        transition={{ duration: 0.5 }}
+      >
+        {this.createCard("Language to Learn", this.createText(this.state.learner.teacher.regex))}
+        {this.createCard("Message", this.createText(memoryCell.message.val))}
+        {memoryCell.automaton ? this.createCard("Automaton", <GraphDotRender dot={memoryCell.automaton!} />) : <></>}
+        {this.createCard("Observation Table", this.dataStructureToNodeElement(memoryCell.dataStructure))}
+      </motion.div>
     </div >
   }
 }

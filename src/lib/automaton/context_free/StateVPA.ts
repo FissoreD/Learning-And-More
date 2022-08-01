@@ -1,4 +1,4 @@
-import { todo, toEps } from "../../tools";
+import { todo } from "../../tools";
 import AlphabetVPA, { ALPHABET_TYPE, ALPH_TYPE_LIST } from "./AlphabetVPA";
 
 type transition = {
@@ -24,7 +24,7 @@ export default class StateVPA {
    * are supposed to be _false_
    */
   constructor(p: { name: string, isAccepting?: boolean, isInitial?: boolean, alphabet: AlphabetVPA, stackAlphabet: string[] }) {
-    this.name = p.name || toEps(p.name);
+    this.name = p.name;
     this.stackAlphabet = p.stackAlphabet;
     this.isAccepting = p.isAccepting || false;
     this.isInitial = p.isInitial || false;
