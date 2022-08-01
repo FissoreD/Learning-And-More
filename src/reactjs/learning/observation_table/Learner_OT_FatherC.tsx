@@ -12,19 +12,19 @@ export default abstract class Learner_OT_FatherC extends LearnerSection<StateDFA
   constructor(prop: PropReact<StateDFA>, tableToModif: string) {
     super(prop)
     this.tableToModifyAfterCe = tableToModif
-
-  }
-  dataStructureToNodeElement(ds: Clonable): ReactElement {
-    return <ObservationTableC dataStructure={ds.clone() as ObservationTable} />
   }
 
-  abstract closeMessage(closeRep: string): string;
-  abstract consistentMessage(s1: string, s2: string, newCol: string): string;
+  dataStructureToNodeElement(ds: Clonable, primeLines?: string[]): ReactElement {
+    return <ObservationTableC dataStructure={ds.clone() as ObservationTable} primeLines={primeLines} />
+  }
+
+  abstract closeMessage(closeRep: string): JSX.Element;
+  abstract consistentMessage(s1: string, s2: string, newCol: string): JSX.Element;
 
   nextOpChild(state: StateReact<StateDFA>): StateReact<StateDFA> {
     let learner = state.learner as Learner_OT_Father;
     if (learner.finish) return state
-    var message: { type: MessageType, val: string };
+    var message: { type: MessageType, val: JSX.Element };
     if (state.doNext) {
       let prop;
       if ((prop = learner.isClose())) {
@@ -35,15 +35,15 @@ export default abstract class Learner_OT_FatherC extends LearnerSection<StateDFA
         }
       } else if ((prop = learner.counterExample)) {
         message = {
-          type: "CE", val: "Received the counter-example " + prop
+          type: "CE", val: <span>Received the counter-example <i>{prop}</i></span>
         }
       } else if (learner.finish || learner.automaton !== undefined) {
         message = {
-          type: "END", val: "The teacher has accepted the last conjecture"
+          type: "END", val: <span>The teacher has accepted the last conjecture</span>
         }
       } else {
         message = {
-          type: "SEND-HYP", val: "The table is closed and consistent"
+          type: "SEND-HYP", val: <span>The table is <i>closed</i> and <i>consistent</i></span>
         }
       }
     } else {
@@ -54,11 +54,11 @@ export default abstract class Learner_OT_FatherC extends LearnerSection<StateDFA
       switch (oldMsg.type) {
         case "CONSISTENCY":
         case "CLOSEDNESS":
-          message.val = "The table has been modified"; break;
+          message.val = <span> The table has been modified</span>; break;
         case "CE":
-          message.val = "The counter-example has been added in " + this.tableToModifyAfterCe; break;
+          message.val = <span> The counter-example has been added in <i>{this.props.name === "L*" ? "S" : "E"}</i></span>; break;
         case "SEND-HYP":
-          message.val = "The conjecture has been sent to the Teacher"; break;
+          message.val = <span>The conjecture has been sent to the Teacher</span>; break;
         case "END":
           return state
         default: throw new Error("You should not be here")

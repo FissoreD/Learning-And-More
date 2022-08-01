@@ -1,10 +1,10 @@
 import aut from "../../../../../json/automata.json";
 import { TeacherAutomaton } from "../../../teachers/TeacherDFA";
-import TTT from "../TTT_DFA";
+import TTT_DFA from "../TTT_DFA";
 
 test("TTT learn a+bb", () => {
   let t = new TeacherAutomaton({ type: "Regex", automaton: "a+bb" })
-  let learner = new TTT(t);
+  let learner = new TTT_DFA(t);
 
   expect(learner.dataStructure.sift("aaa", t)?.name).toBe("")
   expect(learner.dataStructure.sift("aab", t)?.name).toBe("")
@@ -22,7 +22,7 @@ test("TTT learn a+bb", () => {
 test("TTT learn (a+b)*a(a+b)^2", () => {
   aut.regex.filter((_, pos) => pos === 1).forEach(regex => {
     let t = new TeacherAutomaton({ type: "Regex", automaton: regex })
-    let learner = new TTT(t)
+    let learner = new TTT_DFA(t)
     learner.makeAllQueries()
     expect(t.automaton.sameLanguage(learner.automaton!)).toBeTruthy()
     expect(learner.finish).toBeTruthy()

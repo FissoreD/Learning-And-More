@@ -162,7 +162,7 @@ export default class FSM_Viewer extends React.Component<ReactProp, ReactState>{
     return <Card className="border-primary text-primary">
       <Card.Header className={FLEX_CENTER + " justify-content-between"}>
         {this.state.fsmType} - Name: A{pos}
-        <BootstrapReboot onClick={() =>
+        <BootstrapReboot className="text-hover" onClick={() =>
           this.setState({ showRegexSetter: true, changeRegexA1: pos === 1 })} />
       </Card.Header>
       <Card.Body className="py-1 px-0">

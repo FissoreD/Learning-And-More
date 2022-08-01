@@ -6,7 +6,7 @@ import Teacher from "../../teachers/Teacher";
 import LearnerFather from "../LearnerFather";
 import DiscTreeDFA from "./DiscTreeDFA";
 
-export default class TTT extends LearnerFather<DiscTreeDFA, StateDFA> {
+export default class TTT_DFA extends LearnerFather<DiscTreeDFA, StateDFA> {
   finish = false;
   lastCe: { value: string, accepted: boolean, isTeacher: boolean } | undefined;
   lastSplit: { u: string, a: string, v: string, uaState: string, uState: string } | undefined;
@@ -33,6 +33,7 @@ export default class TTT extends LearnerFather<DiscTreeDFA, StateDFA> {
       }
     }
     this.makeAutomaton()
+    this.makeNextQuery()
   }
 
   toStabilizeHypothesis(): boolean {

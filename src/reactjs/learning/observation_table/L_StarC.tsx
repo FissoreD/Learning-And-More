@@ -15,15 +15,15 @@ export default class LStarC extends Learner_OT_FatherC {
   }
 
   closeMessage(closeRep: string) {
-    return `The table is not closed since row(${closeRep}) is not present in S.
-    "${closeRep}" will be moved from SA to S.`
+    return <span>The table is not <i>closed</i> since row(<i>{closeRep}</i>) is not present in S.
+      "{<i>closeRep</i>}" will be moved from <i>SA</i> to <i>S</i>.</span>
   }
 
   consistentMessage(s1: string, s2: string, newCol: string) {
     let fstChar = newCol[0],
       sndChar = newCol.length === 1 ? "ε" : newCol.substring(1);
-    return `The table is not consistent since:
-    row(${toEps(s1)}) = row(${toEps(s2)}) but row(${s1 + newCol[0]}) ≠ row(${s2 + newCol[0]});
-        The column "${fstChar} ∘ ${sndChar}" will be added in E since T(${toEps(s1)} ∘ ${newCol}) ≠ T(${toEps(s2)} ∘ ${newCol})`
+    return <span>The table is not <i>consistent</i> since:
+      row({toEps(s1)}) = row({toEps(s2)}) but row({s1 + newCol[0]}) ≠ row({s2 + newCol[0]});
+      The column "{fstChar} ∘ {sndChar}" will be added in <i>E</i> since T({toEps(s1)} ∘ {newCol}) ≠ T({toEps(s2)} ∘ {newCol})</span>
   }
 }

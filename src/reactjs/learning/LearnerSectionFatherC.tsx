@@ -8,18 +8,19 @@ import LearnerFather from "../../lib/learning/learners/LearnerFather";
 import Dialog from "../components/Dialog";
 import GraphDotRender from "../components/DotRender";
 import { setFromPosition } from "../globalFunctions";
+import { LearnerType } from "./LearnerContainerC";
 
 export type MessageType = "END" | "SEND-HYP" | "CE" | "CONSISTENCY" | "CLOSEDNESS" | "DISC-REF" | "HYP-STAB"
 
 export interface PropReact<StateType> {
   learner: LearnerFather<Clonable, StateType>,
-  name: String,
+  name: LearnerType,
   changeRegexContainer: (regex: string) => void, pos: number
 }
 
 export interface StateReact<StateType> {
   doNext: boolean,
-  memory: { dataStructure: Clonable, automaton: FSM<StateType> | undefined, message: { type: MessageType, val: string } }[],
+  memory: { dataStructure: Clonable, automaton: FSM<StateType> | undefined, message: { type: MessageType, val: JSX.Element } }[],
   position: number,
   learner: LearnerFather<Clonable, StateType>,
   showRegexDialog: boolean
@@ -88,8 +89,15 @@ export abstract class LearnerSection<StateType> extends React.Component<PropReac
       <Card.Header>
         {title}
       </Card.Header>
-      <Card.Body>
-        {content}
+      <Card.Body className="text-center">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          key={this.state.position + title}
+        >
+          {content}
+        </motion.div>
       </Card.Body>
     </Card>
   }
@@ -105,7 +113,7 @@ export abstract class LearnerSection<StateType> extends React.Component<PropReac
     return {
       doNext: true,
       memory: [{
-        message: { type: "CE", val: "Learning with " + this.props.name },
+        message: { type: "CE", val: <span>Learning with {this.props.name}</span> },
         dataStructure: learner.dataStructure.clone(),
         automaton: undefined
       }], position: 0, learner: learner,
@@ -148,7 +156,7 @@ export abstract class LearnerSection<StateType> extends React.Component<PropReac
         transition={{ duration: 0.5 }}
       >
         {this.createCard("Language to Learn", this.createText(this.state.learner.teacher.regex))}
-        {this.createCard("Message", this.createText(memoryCell.message.val))}
+        {this.createCard("Message", memoryCell.message.val)}
         {memoryCell.automaton ? this.createCard("Automaton", <GraphDotRender dot={memoryCell.automaton!} />) : <></>}
         {this.createCard("Observation Table", this.dataStructureToNodeElement(memoryCell.dataStructure))}
       </motion.div>

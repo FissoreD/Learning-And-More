@@ -3,23 +3,25 @@ import { Table } from "react-bootstrap";
 import ObservationTable from "../../../lib/learning/learners/observation_table/ObservationTable";
 import { toEps } from "../../../lib/tools";
 
-interface Prop { dataStructure: ObservationTable; }
+interface Prop { dataStructure: ObservationTable; primeLines?: string[] }
 
 export class ObservationTableC extends React.Component<Prop>{
   createTable(name: string, cnt: string[]) {
+    console.log(this.props.primeLines);
+
     return cnt.map((S, pos) => <tr key={S + "trs"}>
       {pos === 0 ?
         <React.Fragment key={pos}>
           <th rowSpan={cnt.length} style={{ width: "3pt" }}>{name}</th>
-          <th>{toEps(S)}</th>
+          <th>{this.props.primeLines?.includes(S) ? '*' + toEps(S) : toEps(S)}</th>
         </React.Fragment> :
-        <th key={pos}>{toEps(S)}</th>}
+        <th key={pos}>{this.props.primeLines?.includes(S) ? '*' + toEps(S) : toEps(S)}</th>}
       {[...this.props.dataStructure.assoc[S]].map((char, pos) => <td key={pos}>{char}</td>)}</tr>)
   }
 
 
   render(): React.ReactElement {
-    return <Table responsive striped className="align-middle text-center">
+    return <><Table responsive striped className="align-middle text-center">
       <thead>
         <tr>
           <th></th>
@@ -32,5 +34,9 @@ export class ObservationTableC extends React.Component<Prop>{
         {this.createTable("SA", this.props.dataStructure.SA)}
       </tbody>
     </Table>
+      <div className="text-start">
+        {this.props.primeLines ? "* := prime rows (rows that can be formed as the union of other rows)" : ""}
+      </div>
+    </>
   }
 }

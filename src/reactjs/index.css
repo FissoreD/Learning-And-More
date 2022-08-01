@@ -28,3 +28,8 @@ p {
 .graph>polygon {
   fill: none;
 }
+
+.text-hover:hover {
+  transform: scale(1.2);
+  cursor: pointer;
+}
