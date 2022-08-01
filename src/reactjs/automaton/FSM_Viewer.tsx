@@ -160,10 +160,10 @@ export default class FSM_Viewer extends React.Component<ReactProp, ReactState>{
 
   createCardAutomaton(r: FSM<StateDFA | StateVPA>, pos: number) {
     return <Card className="border-primary text-primary">
-      <Card.Header>
+      <Card.Header className={FLEX_CENTER + " justify-content-between"}>
         {this.state.fsmType} - Name: A{pos}
-        <a className="float-end" onClick={() =>
-          this.setState({ showRegexSetter: true, changeRegexA1: pos === 1 })} href='#'><BootstrapReboot /></a>
+        <BootstrapReboot onClick={() =>
+          this.setState({ showRegexSetter: true, changeRegexA1: pos === 1 })} />
       </Card.Header>
       <Card.Body className="py-1 px-0">
         <div className={FLEX_CENTER} style={{ minHeight: "130px" }}><GraphDotRender dot={r} /></div>

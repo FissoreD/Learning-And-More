@@ -21,6 +21,10 @@ label {
   box-shadow: none !important;
 }
 
-p{
+p {
   white-space: pre-line;
+}
+
+.graph>polygon {
+  fill: none;
 }
