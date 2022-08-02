@@ -58,7 +58,7 @@ export default class TTT_DFA extends LearnerFather<DiscTreeDFA, StateDFA> {
     let { a, v, uaState, uState, u } = this.split_ce_in_uav(ce)
     this.lastSplit = { u, a, v, uaState: uaState!, uState: uState! }
 
-    this.lastCe = { value: uState + a + v, accepted: !this.automaton!.acceptWord(uState + a + v), isTeacher: isTeacher }
+    this.lastCe = { value: uState + a + v, accepted: !this.automaton!.acceptWord(uState + a + v), isTeacher }
     if (isTeacher) return
     this.dataStructure.splitLeaf({
       leafName: uaState!,

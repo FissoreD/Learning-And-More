@@ -4,6 +4,9 @@ import FSM from "../FSM_interface";
 import AlphabetVPA, { ALPHABET_TYPE, ALPH_TYPE_LIST } from "./AlphabetVPA";
 import StateVPA from "./StateVPA";
 
+type Grammar = Map<string, Set<string>>
+/** A grammar is a map of a rule name linked to a list (set) of productions */
+
 export default class VPA implements FSM<StateVPA>, ToDot {
   states: Map<string, StateVPA>;
   initialStates: StateVPA[];
@@ -19,7 +22,7 @@ export default class VPA implements FSM<StateVPA>, ToDot {
     stateList.forEach(e => this.states.set(e.name, e));
     this.stack = []
     stateList = [...stateList]
-    this.stackAlphabet = stateList[0].stackAlphabet
+    this.stackAlphabet = [...new Set(stateList.flatMap(e => e.stackAlphabet))]
 
     this.initialStates = this.allStates().filter(s => s.isInitial);
     if (this.initialStates.length === 0)
@@ -42,7 +45,7 @@ export default class VPA implements FSM<StateVPA>, ToDot {
       for (const symbol of alphabet[type]) {
         for (let pos = 0; pos < (type === "INT" ? 1 : stackAlph.length); pos++) {
           let topStack = type === "INT" ? "" : stackAlph[pos]
-          bottom.addTransition({ type: type, symbol, topStack, successor: bottom });
+          bottom.addTransition({ successor: bottom, symbol, topStack })
           for (const state of res.states.values()) {
             let transition = res.findTransition(state, { symbol, type, topStack })
             if (transition === undefined || transition.length === 0) {
@@ -81,6 +84,7 @@ export default class VPA implements FSM<StateVPA>, ToDot {
 
     // BFS to remove not reachable node from initial state
     let toExplore = [aut.initialStates[0]]
+
     while (toExplore.length > 0) {
       let newState = toExplore.shift()!
 
@@ -92,6 +96,7 @@ export default class VPA implements FSM<StateVPA>, ToDot {
       }
     }
 
+
     let P: Set<string>[] = [new Set(), new Set()];  // P := {F, Q \ F} 
     stateList.forEach(s => {
       (aut.states.get(s)!.isAccepting ? P[0] : P[1]).add(s)
@@ -100,47 +105,40 @@ export default class VPA implements FSM<StateVPA>, ToDot {
 
     let pLength = () => P.reduce((a, p) => a + p.size, 0)
 
+    let symbolTopStackList = aut.alphabet.flatAlphabet().flatMap(symbol => (aut.alphabet.RET.includes(symbol) ? aut.stackAlphabet : [""]).map(topStack => ({ symbol, topStack })))
+
     let W: Set<string>[] = Array.from(P)
     while (W.length > 0) {
       let A = W.shift()!
-      for (const alphabetType of ALPH_TYPE_LIST) {
-        for (let i = 0; i < (alphabetType === "INT" ? 1 : complete.stackAlphabet.length); i++) {
-          for (const symbol of complete.alphabet[alphabetType]) {
-            // X = the set of states for which a transition on letter leads to a state in A
-            let X: Set<string> = new Set()
-            A.forEach(e => {
-              aut.states.get(e)!.getPredecessor({
-                symbol,
-                topStack: (alphabetType === "INT" ? "" : complete.stackAlphabet[i])
-              })?.forEach(s => X.add(s.name))
-            })
+      for (const symbolTopStack of symbolTopStackList) {
+        // X = the set of states for which a transition on letter leads to a state in A
+        let X: Set<string> = new Set()
+        A.forEach(e => { aut.states.get(e)!.getPredecessor(symbolTopStack)?.forEach(s => X.add(s.name)) })
 
-            // let {S1 = X ∩ Y; S2 = Y \ X} fotall Y in P
-            let P1 = P.map(Y => {
-              let [X_inter_Y, Y_minus_X] = [new Set<string>(), new Set<string>()];
-              Y.forEach(state => X.has(state) ? X_inter_Y.add(state) : Y_minus_X.add(state))
-              return { Y, X_inter_Y, Y_minus_X }
-            }).filter(({ X_inter_Y, Y_minus_X }) => X_inter_Y.size > 0 && Y_minus_X.size > 0);
+        // let {S1 = X ∩ Y; S2 = Y \ X} fotall Y in P
+        let P1 = P.map(Y => {
+          let [X_inter_Y, Y_minus_X] = [new Set<string>(), new Set<string>()];
+          Y.forEach(state => X.has(state) ? X_inter_Y.add(state) : Y_minus_X.add(state))
+          return { Y, X_inter_Y, Y_minus_X }
+        }).filter(({ X_inter_Y, Y_minus_X }) => X_inter_Y.size > 0 && Y_minus_X.size > 0);
 
-            for (const { Y, X_inter_Y, Y_minus_X } of P1) {
-              // replace Y in P by the two sets X ∩ Y and Y \ X
-              P.splice(P.indexOf(Y), 1)
-              P.push(X_inter_Y)
-              P.push(Y_minus_X)
-              if (pLength() !== stateList.size)
-                throw new Error(`Wanted ${stateList.size} had ${pLength()}`);
-              if (W.includes(Y)) {
-                W.splice(W.indexOf(Y), 1)
-                W.push(X_inter_Y)
-                W.push(Y_minus_X)
-              } else {
-                W.push(X_inter_Y.size <= Y_minus_X.size ? X_inter_Y : Y_minus_X)
-              }
-            }
+        for (const { Y, X_inter_Y, Y_minus_X } of P1) {
+          // replace Y in P by the two sets X ∩ Y and Y \ X
+          P.splice(P.indexOf(Y), 1)
+          P.push(X_inter_Y)
+          P.push(Y_minus_X)
+          if (pLength() !== stateList.size) throw new Error(`Wanted ${stateList.size} had ${pLength()}`);
+          if (W.includes(Y)) {
+            W.splice(W.indexOf(Y), 1)
+            W.push(X_inter_Y)
+            W.push(Y_minus_X)
+          } else {
+            W.push(X_inter_Y.size <= Y_minus_X.size ? X_inter_Y : Y_minus_X)
           }
         }
       }
     }
+
 
     let oldStateToNewState: Map<string, StateVPA> = new Map();
 
@@ -224,7 +222,7 @@ export default class VPA implements FSM<StateVPA>, ToDot {
     let mapNewStateOldState = new Map<string, [StateVPA, StateVPA]>();
     let mapNewStateNameState = new Map<string, StateVPA>()
     let startState = new StateVPA({
-      name: initState1.name + initState2.name,
+      name: toEps(initState1.name) + toEps(initState2.name),
       alphabet, stackAlphabet: stackAlphabet,
       isAccepting: isAccepting(initState1, initState2),
       isInitial: true
@@ -242,7 +240,7 @@ export default class VPA implements FSM<StateVPA>, ToDot {
      * not already been explored
      */
     let buildState = (successor1: StateVPA, successor2: StateVPA) => {
-      let name = successor1.name + successor2.name
+      let name = toEps(successor1.name) + toEps(successor2.name)
       let newState = mapNewStateNameState.get(name) || new StateVPA({
         name, alphabet, stackAlphabet,
         isAccepting: isAccepting(successor1, successor2)
@@ -347,7 +345,7 @@ export default class VPA implements FSM<StateVPA>, ToDot {
 
       this.alphabet.RET.forEach(symbol =>
         this.stackAlphabet.forEach(topStack =>
-          (this.findTransition(oldS, { symbol, topStack }) || []).forEach(succ => newS.addTransition({
+          (this.findTransition(oldS, { symbol, topStack, type: "RET" }) || []).forEach(succ => newS.addTransition({
             symbol,
             successor: myMap.get(succ)!,
             topStack
@@ -397,33 +395,32 @@ export default class VPA implements FSM<StateVPA>, ToDot {
     if (word.length === 0)
       return [undefined, this.initialStates.some(e => e.isAccepting)];
     let nextStates: Set<StateVPA> = new Set(this.initialStates);
+    let stack: string[] = []
+
     for (let index = 0; index < word.length && nextStates.size > 0; index++) {
+
       let nextStates2: Set<StateVPA> = new Set();
       const symbol = word[index];
-      if (!this.alphabet.CALL.includes(symbol) &&
-        !this.alphabet.INT.includes(symbol) &&
-        !this.alphabet.RET.includes(symbol)) {
+      if (!this.alphabet.flatAlphabet().includes(symbol)) {
         return [undefined, false]
       }
       for (const state of nextStates) {
         try {
-          let nextTransition = this.findTransition(state, { symbol, stack: this.stack })
+          let nextTransition = this.findTransition(state, { symbol, stack })
           if (nextTransition)
             for (const nextState of nextTransition) {
               nextStates2.add(nextState)
               if (index === word.length - 1 && nextState.isAccepting) {
-                let res = true && this.stack.length === 0
-                this.cleanStack()
+                let res = stack.length === 0
                 return [nextState, res]
               }
             }
         } catch (e) {
-          return [nextStates.values().next().value, false]
+          return [nextStates.values().next().value.name, false]
         }
       }
       nextStates = nextStates2;
     }
-    this.cleanStack()
     return [nextStates.values().next().value, false];
   }
 
@@ -436,13 +433,11 @@ export default class VPA implements FSM<StateVPA>, ToDot {
   }
 
   isEmpty(): boolean {
-    let aut = this.isDeterministic() ? this : this.determinize()
-    return aut.allStates().every(e => !e.isAccepting)
+    return this.allStates().every(e => !e.isAccepting) || !this.toGrammarar()
   }
 
   isFull(): boolean {
-    let aut = this.isDeterministic() ? this : this.determinize()
-    return aut.allStates().every(e => e.isAccepting)
+    return this.complement().isEmpty()
   }
 
   /**
@@ -487,7 +482,7 @@ export default class VPA implements FSM<StateVPA>, ToDot {
                 let transDescr;
                 switch (type) {
                   case "INT": transDescr = `${alph[j]}`; break;
-                  case "CALL": transDescr = `+(${alph[j]},${this.stackAlphabet[i]})`; break;
+                  case "CALL": transDescr = `+(${alph[j]},${state.getAllOutTransitions().CALL[alph[j]].symbolToPush})`; break;
                   case "RET": transDescr = `-(${alph[j]},${this.stackAlphabet[i]})`; break;
                 }
                 if (triples[stateA_concat_stateB]) {
@@ -537,6 +532,7 @@ export default class VPA implements FSM<StateVPA>, ToDot {
     let { INT, CALL, RET } = this.alphabet;
 
     let aut = this.minimize()
+
     if (aut.isEmpty()) return undefined;
 
     let acceptedWords: string[] = []
@@ -553,6 +549,7 @@ export default class VPA implements FSM<StateVPA>, ToDot {
       return ""
 
     while (toExplore.length) {
+
       let newToExplore: exploreType = []
       for (const { state, word, stack, callNumber, canPushOnStack } of toExplore) {
         // RET
@@ -614,5 +611,136 @@ export default class VPA implements FSM<StateVPA>, ToDot {
       toExplore = shuffle(newToExplore);
     }
     return toExplore.reduce((old, n) => n.word.length > old.length ? n.word : old, acceptedWords[acceptedWords.length - 1]);
+  }
+
+  toGrammarar() {
+
+    let freshSymbolStack = "Z"
+
+    let aut = this.complete()
+
+    aut.acceptingStates().forEach(state => {
+      state.addTransition({ successor: state, symbol: "$", topStack: freshSymbolStack, type: "RET" })
+    })
+
+    // let aut = clone.complete({ alphabet })
+
+    let stateNames: string[] = [], states: StateVPA[] = []
+    aut.states.forEach((value, key) => { stateNames.push(key); states.push(value) })
+    let grammar: Grammar = new Map()
+    let rulesToTerminal: Set<string> = new Set()
+    grammar.set("S", new Set())
+
+    let makeRuleName = (a: string, b: string, c: string) => `{${a}${b}${c}}`
+
+    stateNames.forEach(v => grammar.get("S")?.add(`${makeRuleName(this.initialStates[0].name, freshSymbolStack, v)}`))
+
+    states.forEach(state => {
+      let { INT, CALL, RET } = state.getAllOutTransitions()
+      aut.alphabet.INT.forEach(symbol => {
+        aut.stackAlphabet.forEach(topStack => {
+          let successors = INT[symbol]
+          if (successors && successors.length) {
+            let succ = successors[0]
+            for (const succ1 of stateNames) {
+              let key = makeRuleName(state.name, topStack, succ1)
+              let ruleSet = grammar.get(key) || new Set()
+              ruleSet.add(`${symbol}${makeRuleName(succ.name, topStack, succ1)}`)
+              grammar.set(key, ruleSet)
+            }
+          }
+        })
+      });
+      aut.alphabet.RET.forEach(symbol => {
+        aut.stackAlphabet.forEach(topStack => {
+          let successors = RET[symbol][topStack]
+
+          if (successors && successors.length) {
+            let succ = successors[0]
+            let key = makeRuleName(state.name, topStack, succ.name)
+            let ruleSet = grammar.get(key) || new Set()
+            ruleSet.add(`${symbol}`)
+            grammar.set(key, ruleSet)
+            rulesToTerminal.add(key)
+          }
+        })
+      });
+      aut.alphabet.CALL.forEach(symbol => {
+        let { successors, symbolToPush: topStack } = CALL[symbol]
+        if (successors && successors.length) {
+          let succ = successors[0].name;
+          for (const succ1 of stateNames) {
+            for (const succ2 of stateNames) {
+              let key = makeRuleName(state.name, topStack, succ2);
+              let ruleSet = grammar.get(key) || new Set();
+              ruleSet.add(`${symbol}${makeRuleName(succ, topStack, succ1)}${makeRuleName(succ1, topStack, succ2)}`)
+              grammar.set(key, ruleSet);
+            }
+          }
+        }
+      })
+    });
+
+    aut.acceptingStates().forEach(state => {
+      let key = makeRuleName(state.name, freshSymbolStack, state.name)
+      let ruleSet = grammar.get(key) || new Set()
+      ruleSet.add(`$`)
+      grammar.set(key, ruleSet)
+    })
+
+
+    {
+      let [succ, topStack] = [this.initialStates[0].name, freshSymbolStack]
+      for (const succ1 of stateNames) {
+        for (const succ2 of stateNames) {
+          let key = makeRuleName(this.initialStates[0].name, topStack, succ2);
+          let ruleSet = grammar.get(key) || new Set();
+          for (const stackSymb of aut.stackAlphabet) {
+            ruleSet.add(`^${makeRuleName(succ, topStack, succ1)}${makeRuleName(succ1, stackSymb, succ2)}`)
+            grammar.set(key, ruleSet);
+          }
+        }
+      }
+    }
+
+    function cleanGrammar() {
+      let redo = false;
+      if (!grammar.has("S")) return
+      {
+        for (const [key, values] of grammar) {
+          let next = [...values].filter(e => e.includes(key))
+          next.forEach(e => grammar.get(key)!.delete(e))
+        }
+        for (const key of [...grammar.keys()]) {
+          if (grammar.get(key)?.size === 0) grammar.delete(key)
+        }
+      }
+      let grammarCopy = new Map(grammar)
+      for (const [key, values] of grammarCopy) {
+        for (const value of values) {
+          let split = value.match(/{[^{}]*}/g)
+          // console.log({ value, split });
+
+          if (split === null) continue
+          for (const sub of split) {
+            if (!grammar.has(sub)) {
+              let set = grammar.get(key)!
+              set.delete(value)
+              if (set.size === 0) {
+                grammar.delete(key)
+                break
+              }
+              redo = true
+            }
+          }
+        }
+      }
+      if (redo) cleanGrammar()
+    }
+
+    // console.time()
+    cleanGrammar()
+    // console.timeEnd()
+    return grammar.has("S")
   }
 }

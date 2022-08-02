@@ -382,7 +382,7 @@ export default class DFA_NFA implements FSM<StateDFA>, ToDot {
   }
 
   isEmpty() {
-    let aut = this.isDeterministic() ? this : this.determinize()
+    let aut = this.minimize()
     return aut.allStates().every(e => !e.isAccepting)
   }
 

@@ -18,7 +18,7 @@ export default class ONE_SEVPA extends VPA {
             throw new Error("In 1-SEVPA, each CALL transition should point into the initial state")
           }
         }
-        state.addTransition({ successor, topStack: `(${toEps(symbol)},${toEps(state.name)})`, symbol })
+        state.addTransition({ successor, topStack: `(${toEps(state.name)},${toEps(symbol)})`, symbol })
       }))
   }
 }

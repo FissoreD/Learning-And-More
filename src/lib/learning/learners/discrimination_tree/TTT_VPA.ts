@@ -2,7 +2,7 @@ import AlphabetVPA from "../../../automaton/context_free/AlphabetVPA";
 import ONE_SEVPA from "../../../automaton/context_free/ONE_SEVPA";
 import StateVPA from "../../../automaton/context_free/StateVPA";
 import VPA from "../../../automaton/context_free/VPA";
-import { todo, toEps } from "../../../tools";
+import { toEps } from "../../../tools";
 import Teacher from "../../teachers/Teacher";
 import LearnerFather from "../LearnerFather";
 import DiscTreeVPA, { StringCouple } from "./DiscTreeVPA";
@@ -65,14 +65,14 @@ export default class TTT_VPA extends LearnerFather<DiscTreeVPA, StateVPA> {
       ce = this.lastCe!.value;
       isTeacher = false;
     } else {
-      ce = this.teacher.equiv(todo() && this.automaton!)
+      ce = this.teacher.equiv(this.automaton!)
       isTeacher = true
     }
     if (ce === undefined) { this.finish = true; return }
     let { a, v, uaState, uState, u, newLeaf, newNodeLabel } = this.split_ce_in_uav(ce)
     this.lastSplit = { u, a, v, uaState: uaState!, uState: uState! }
 
-    this.lastCe = { value: uState + a + v, accepted: !this.automaton!.acceptWord(uState + a + v), isTeacher: isTeacher }
+    this.lastCe = { value: uState + v, accepted: !this.automaton!.acceptWord(uState + a + v), isTeacher }
     if (isTeacher) return
     this.dataStructure.splitLeaf({
       leafName: uaState!,
@@ -128,6 +128,8 @@ export default class TTT_VPA extends LearnerFather<DiscTreeVPA, StateVPA> {
 
   /** @todo loop only over RET and INT symbols */
   split_ce_in_uav(ce: string) {
+    console.log(ce);
+
     let splitU_Hat = (uHat: string) => {
       let pos = uHat.length - 1, cnt = 0
       while (pos > -1) {

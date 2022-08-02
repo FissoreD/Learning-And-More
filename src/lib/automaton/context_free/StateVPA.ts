@@ -12,9 +12,9 @@ export default class StateVPA {
   isInitial: boolean;
   alphabet: AlphabetVPA;
   private outTransitions: transition;
-  private inTransitions: transition;
+  inTransitions: transition;
   private successors: Set<StateVPA>;
-  private predecessor: Set<StateVPA>;
+  private predecessors: Set<StateVPA>;
   private mapAlphSymbolToType: Map<String, ALPHABET_TYPE>
   name: string;
   stackAlphabet: string[];
@@ -24,6 +24,9 @@ export default class StateVPA {
    * are supposed to be _false_
    */
   constructor(p: { name: string, isAccepting?: boolean, isInitial?: boolean, alphabet: AlphabetVPA, stackAlphabet: string[] }) {
+    if (p.stackAlphabet.join().match(/{|}/)) {
+      throw new Error("Stack alphabet should not contain curly brackets")
+    }
     this.name = p.name;
     this.stackAlphabet = p.stackAlphabet;
     this.isAccepting = p.isAccepting || false;
@@ -32,7 +35,7 @@ export default class StateVPA {
     this.outTransitions = { INT: {}, CALL: {}, RET: {} };
     this.inTransitions = { INT: {}, CALL: {}, RET: {} };
     this.successors = new Set();
-    this.predecessor = new Set();
+    this.predecessors = new Set();
     this.mapAlphSymbolToType = new Map()
     ALPH_TYPE_LIST.forEach(type => p.alphabet[type].forEach(s => {
       if (this.mapAlphSymbolToType.has(s) && this.mapAlphSymbolToType.get(s) !== type)
@@ -109,11 +112,13 @@ export default class StateVPA {
       }
     }
 
-    if ((succ.length === 0 || pred?.length === 0) && !this.alphabet[p.type].includes(p.symbol)) {
+    if ((succ.length === 0 || pred.length === 0) && !this.alphabet[p.type].includes(p.symbol)) {
       this.alphabet[p.type].push(p.symbol)
     }
+
     this.successors.add(p.successor)
-    p.successor.predecessor.add(this)
+    p.successor.predecessors.add(this)
+
     succ.push(p.successor)
     pred.push(this)
 
@@ -131,14 +136,19 @@ export default class StateVPA {
           return this.outTransitions[p.type][p.symbol]
         case "CALL": {
           let tr = this.outTransitions[p.type][p.symbol]
-          if (p.stack) p.stack.push(tr.symbolToPush);
+          if (p.stack) {
+            p.stack.push(tr.symbolToPush);
+          }
           // else console.warn("Attention, you are looking for a call transition, but you do not provide a stack to make the push operation")
           return tr.successors
         }
-        case "RET":
+        case "RET": {
           if (p.topStack) return this.outTransitions[p.type][p.symbol][p.topStack]
-          if (p.stack && p.stack.length > 0)
-            return this.outTransitions[p.type][p.symbol][p.stack.pop()!]
+          if (p.stack && p.stack.length > 0) {
+            let top = p.stack.pop()!
+            return this.outTransitions[p.type][p.symbol][top]
+          }
+        }
       }
     } catch (e) {
       return []

@@ -7,8 +7,6 @@ interface Prop { dataStructure: ObservationTable; primeLines?: string[] }
 
 export class ObservationTableC extends React.Component<Prop>{
   createTable(name: string, cnt: string[]) {
-    console.log(this.props.primeLines);
-
     return cnt.map((S, pos) => <tr key={S + "trs"}>
       {pos === 0 ?
         <React.Fragment key={pos}>
