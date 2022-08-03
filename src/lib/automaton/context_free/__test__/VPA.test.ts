@@ -5,9 +5,9 @@ import VPA from "../VPA";
 
 test("State VPA creation", () => {
   let alphabet = new AlphabetVPA({ CALL: ["A"], RET: ["B", "C"], INT: ["I"] })
-  let stack_alphabet = ["0", "1"]
-  let state1 = new StateVPA({ name: "1", alphabet, stackAlphabet: stack_alphabet })
-  let state2 = new StateVPA({ name: "2", alphabet, stackAlphabet: stack_alphabet })
+  let stackAlphabet = ["0", "1"]
+  let state1 = new StateVPA({ name: "1", alphabet, stackAlphabet })
+  let state2 = new StateVPA({ name: "2", alphabet, stackAlphabet })
   state1.addTransition({ symbol: "I", successor: state1 })
   state2.addTransition({ symbol: "I", successor: state1 })
   state2.addTransition({ symbol: "B", topStack: "0", successor: state1 })

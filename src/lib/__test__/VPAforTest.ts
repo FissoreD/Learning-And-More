@@ -7,9 +7,9 @@ import VPA from "../automaton/context_free/VPA"
  */
 export let createVPA1 = (): VPA => {
   let alphabet = new AlphabetVPA({ CALL: ["A"], RET: ["B", "C"], INT: ["I"] })
-  let stack_alphabet = ["0"]
-  let state1 = new StateVPA({ name: "1", isAccepting: true, alphabet, stackAlphabet: stack_alphabet })
-  let state2 = new StateVPA({ name: "2", isInitial: true, alphabet, stackAlphabet: stack_alphabet })
+  let stackAlphabet = ["0"]
+  let state1 = new StateVPA({ name: "1", isAccepting: true, alphabet, stackAlphabet })
+  let state2 = new StateVPA({ name: "2", isInitial: true, alphabet, stackAlphabet })
   state1.addTransition({ symbol: "I", successor: state1 })
   state2.addTransition({ symbol: "I", successor: state1 })
   state1.addTransition({ symbol: "B", topStack: "0", successor: state1 })
@@ -20,8 +20,8 @@ export let createVPA1 = (): VPA => {
 
 export let createVPA2 = (): VPA => {
   let alphabet = new AlphabetVPA({ CALL: ["A"], RET: ["B"], INT: ["I"] })
-  let stack_alphabet = ["2"]
-  let s1 = new StateVPA({ name: "3", isAccepting: true, isInitial: true, alphabet, stackAlphabet: stack_alphabet })
+  let stackAlphabet = ["2"]
+  let s1 = new StateVPA({ name: "3", isAccepting: true, isInitial: true, alphabet, stackAlphabet })
   s1.addTransition({ symbol: "I", successor: s1 })
   s1.addTransition({ symbol: "A", topStack: "2", successor: s1 })
   s1.addTransition({ symbol: "B", topStack: "2", successor: s1 })
@@ -34,11 +34,26 @@ export let createVPA2 = (): VPA => {
  */
 export let createVPA3 = (): VPA => {
   let alphabet = new AlphabetVPA({ CALL: ["A"], RET: ["B"], INT: ["I"] })
-  let stack_alphabet = ["0"]
-  let state1 = new StateVPA({ name: "1", isAccepting: true, alphabet, stackAlphabet: stack_alphabet })
-  let state2 = new StateVPA({ name: "2", isInitial: true, alphabet, stackAlphabet: stack_alphabet })
+  let stackAlphabet = ["0"]
+  let state1 = new StateVPA({ name: "1", isAccepting: true, alphabet, stackAlphabet })
+  let state2 = new StateVPA({ name: "2", isInitial: true, alphabet, stackAlphabet })
   state2.addTransition({ symbol: "I", successor: state1 })
   state1.addTransition({ symbol: "B", topStack: "0", successor: state1 })
+  state2.addTransition({ symbol: "A", topStack: "0", successor: state2 })
+  let vpa = new VPA([state1, state2])
+  return vpa
+}
+
+export let createVPA4 = (): VPA => {
+  let alphabet = new AlphabetVPA({ CALL: ["A"], RET: ["B", "C"], INT: ["I"] })
+  let stackAlphabet = ["0"]
+  let state1 = new StateVPA({ name: "1", isAccepting: true, alphabet, stackAlphabet })
+  let state2 = new StateVPA({ name: "2", isInitial: true, alphabet, stackAlphabet })
+  state1.addTransition({ symbol: "I", successor: state1 })
+  state2.addTransition({ symbol: "I", successor: state1 })
+  state2.addTransition({ symbol: "B", topStack: "0", successor: state1 })
+  state1.addTransition({ symbol: "B", topStack: "0", successor: state1 })
+  state1.addTransition({ symbol: "C", topStack: "0", successor: state1 })
   state2.addTransition({ symbol: "A", topStack: "0", successor: state2 })
   let vpa = new VPA([state1, state2])
   return vpa

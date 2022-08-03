@@ -316,8 +316,8 @@ export default class VPA implements FSM<StateVPA>, ToDot {
   }
 
   clone(): VPA {
-    let all_states = this.allStates()
-    let myMap = new Map(all_states.map(e => [e, e.clone()]))
+    let allStates = this.allStates()
+    let myMap = new Map(allStates.map(e => [e, e.clone()]))
     let res = new VPA([...myMap.values()]);
 
     myMap.forEach((newS, oldS) => {
@@ -531,7 +531,7 @@ export default class VPA implements FSM<StateVPA>, ToDot {
   findWordAccepted(minLength = 0) {
     let { INT, CALL, RET } = this.alphabet;
 
-    let aut = this.minimize()
+    let aut = this.clone()
 
     if (aut.isEmpty()) return undefined;
 
@@ -548,8 +548,13 @@ export default class VPA implements FSM<StateVPA>, ToDot {
     if (minLength === 0 && acceptedWords.length)
       return ""
 
-    while (toExplore.length) {
 
+    let start = performance.now()
+    while (toExplore.length) {
+      if (performance.now() > start + 10) {
+        console.log(aut.toDot());
+        throw new Error("Should be empty !!")
+      }
       let newToExplore: exploreType = []
       for (const { state, word, stack, callNumber, canPushOnStack } of toExplore) {
         // RET
@@ -615,9 +620,11 @@ export default class VPA implements FSM<StateVPA>, ToDot {
 
   toGrammarar() {
 
+    let exitingState = "qn"
     let freshSymbolStack = "Z"
 
-    let aut = this.complete()
+    // TODO: replace .clone with .complete ? or test for assenza di bug 
+    let aut = this.clone()
 
     aut.acceptingStates().forEach(state => {
       state.addTransition({ successor: state, symbol: "$", topStack: freshSymbolStack, type: "RET" })
@@ -633,7 +640,9 @@ export default class VPA implements FSM<StateVPA>, ToDot {
 
     let makeRuleName = (a: string, b: string, c: string) => `{${a}${b}${c}}`
 
-    stateNames.forEach(v => grammar.get("S")?.add(`${makeRuleName(this.initialStates[0].name, freshSymbolStack, v)}`))
+    stateNames.concat(exitingState).forEach(v => grammar.get("S")?.add(
+      `${makeRuleName(this.initialStates[0].name, freshSymbolStack, v)}`
+    ))
 
     states.forEach(state => {
       let { INT, CALL, RET } = state.getAllOutTransitions()
@@ -653,28 +662,36 @@ export default class VPA implements FSM<StateVPA>, ToDot {
       });
       aut.alphabet.RET.forEach(symbol => {
         aut.stackAlphabet.forEach(topStack => {
-          let successors = RET[symbol][topStack]
+          try {
+            let successors = RET[symbol][topStack]
 
-          if (successors && successors.length) {
-            let succ = successors[0]
-            let key = makeRuleName(state.name, topStack, succ.name)
-            let ruleSet = grammar.get(key) || new Set()
-            ruleSet.add(`${symbol}`)
-            grammar.set(key, ruleSet)
-            rulesToTerminal.add(key)
-          }
+            if (successors && successors.length) {
+              let succ = successors[0]
+              let key = makeRuleName(state.name, topStack, succ.name)
+              let ruleSet = grammar.get(key) || new Set()
+              ruleSet.add(`${symbol}`)
+              grammar.set(key, ruleSet)
+              rulesToTerminal.add(key)
+            }
+          } catch (_) { }
         })
       });
       aut.alphabet.CALL.forEach(symbol => {
         let { successors, symbolToPush: topStack } = CALL[symbol]
         if (successors && successors.length) {
           let succ = successors[0].name;
-          for (const succ1 of stateNames) {
-            for (const succ2 of stateNames) {
+          for (const succ1 of stateNames.concat(exitingState)) {
+            for (const succ2 of stateNames.concat(exitingState)) {
               let key = makeRuleName(state.name, topStack, succ2);
               let ruleSet = grammar.get(key) || new Set();
               ruleSet.add(`${symbol}${makeRuleName(succ, topStack, succ1)}${makeRuleName(succ1, topStack, succ2)}`)
               grammar.set(key, ruleSet);
+              if (state.isInitial) {
+                let key = makeRuleName(state.name, freshSymbolStack, succ2);
+                let ruleSet = grammar.get(key) || new Set();
+                ruleSet.add(`${symbol}${makeRuleName(succ, topStack, succ1)}${makeRuleName(succ1, freshSymbolStack, succ2)}`)
+                grammar.set(key, ruleSet);
+              }
             }
           }
         }
@@ -682,45 +699,48 @@ export default class VPA implements FSM<StateVPA>, ToDot {
     });
 
     aut.acceptingStates().forEach(state => {
-      let key = makeRuleName(state.name, freshSymbolStack, state.name)
+      let key = makeRuleName(state.name, freshSymbolStack, exitingState)
       let ruleSet = grammar.get(key) || new Set()
-      ruleSet.add(`$`)
+      ruleSet.add(``)
       grammar.set(key, ruleSet)
     })
 
+    /* Simplify rules : (A -> terminal | R) =: (A -> terminal) */
+    let simplifyTerminal = () => {
+      for (const [key, values] of grammar) {
+        let valuesList = [...values]
+        let terminal = valuesList.find(e => !e.match(/{[^{}]*}/g))
+        // console.log({ key, values, terminal });
 
-    {
-      let [succ, topStack] = [this.initialStates[0].name, freshSymbolStack]
-      for (const succ1 of stateNames) {
-        for (const succ2 of stateNames) {
-          let key = makeRuleName(this.initialStates[0].name, topStack, succ2);
-          let ruleSet = grammar.get(key) || new Set();
-          for (const stackSymb of aut.stackAlphabet) {
-            ruleSet.add(`^${makeRuleName(succ, topStack, succ1)}${makeRuleName(succ1, stackSymb, succ2)}`)
-            grammar.set(key, ruleSet);
-          }
+        if (terminal) {
+          grammar.set(key, new Set([terminal]))
+          continue
         }
       }
     }
 
-    function cleanGrammar() {
-      let redo = false;
-      if (!grammar.has("S")) return
-      {
-        for (const [key, values] of grammar) {
-          let next = [...values].filter(e => e.includes(key))
-          next.forEach(e => grammar.get(key)!.delete(e))
-        }
-        for (const key of [...grammar.keys()]) {
-          if (grammar.get(key)?.size === 0) grammar.delete(key)
-        }
+    // simplify recursive Rules of type A → A | x := A → x
+    let simplifyRecursiveRule = () => {
+      for (const [key, values] of grammar) {
+        let valuesList = [...values]
+        let next = valuesList.filter(e => e.includes(key))
+        next.forEach(e => grammar.get(key)!.delete(e))
       }
-      let grammarCopy = new Map(grammar)
-      for (const [key, values] of grammarCopy) {
+    }
+
+    let removeEmptyRule = () => {
+      // Remove empty rules
+      for (const key of [...grammar.keys()]) {
+        if (grammar.get(key)?.size === 0) grammar.delete(key)
+      }
+    }
+
+    /** Remove useless symbols */
+    function cleanGrammar() {
+      if (!grammar.has("S")) return
+      for (const [key, values] of [...grammar]) {
         for (const value of values) {
           let split = value.match(/{[^{}]*}/g)
-          // console.log({ value, split });
-
           if (split === null) continue
           for (const sub of split) {
             if (!grammar.has(sub)) {
@@ -730,17 +750,53 @@ export default class VPA implements FSM<StateVPA>, ToDot {
                 grammar.delete(key)
                 break
               }
-              redo = true
             }
           }
         }
       }
-      if (redo) cleanGrammar()
     }
 
-    // console.time()
-    cleanGrammar()
-    // console.timeEnd()
-    return grammar.has("S")
+    let replaceTerminalInG = () => {
+      let grammarCopy = [...grammar]
+      let terminals = grammarCopy.filter(([_, values]) => ![...values][0].match(/{[^{}]*}/g)).map(([key, value]) => [key, [...value][0]])
+      grammarCopy.forEach(([_, values]) => {
+        terminals.map(([key, terminal]) => [...values].forEach(v => {
+          if (v.includes(key)) {
+            values.delete(v);
+            values.add(v.replace(key, terminal))
+          }
+        }))
+      })
+      terminals.forEach(([key, _]) => {
+        if (key !== "S")
+          grammar.delete(key)
+      })
+    }
+
+    // let counter = 0
+    let simplifyGrammar = () => {
+      let oldSize = grammar.size
+
+      simplifyRecursiveRule()
+      cleanGrammar()
+      removeEmptyRule()
+      replaceTerminalInG()
+      removeEmptyRule()
+      simplifyTerminal()
+      // console.log(grammar);
+      // if (counter === 0 && false)
+      //   throw new Error("STOP")
+      // counter++;
+
+      if (grammar.size != oldSize) {
+        simplifyGrammar()
+      }
+    }
+
+    // console.log(grammar);
+    simplifyGrammar()
+    // console.log(grammar.get("S"));
+
+    return grammar.has("S") && [...grammar.get("S")!].some(e => !e.match(/{[^{}]*}/g))
   }
 }

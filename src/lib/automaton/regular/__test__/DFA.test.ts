@@ -30,50 +30,50 @@ test("Automaton Word membership", () => {
 })
 
 test("Automaton Parse and to String methodes", () => {
-  let aut_str = `
+  let autStr = `
     [Q1]
     a,[Q1]->[Q2]
     a,[Q2]->[Q2]
     [Q2]`
-  let a = DFA_NFA.strToAutomaton(aut_str);
+  let a = DFA_NFA.strToAutomaton(autStr);
   let b = DFA_NFA.strToAutomaton(a.toString())
   expect(b.sameLanguage(a)).toBe(true);
 })
 
 test("Automaton Determinize", () => {
-  let aut_str = `[Q0]
+  let autStr = `[Q0]
     [Q1]
     [Q2]
     a,[Q0]->[Q1]
     a,[Q0]->[Q2]
     [Q1]
     [Q2]`
-  let a = DFA_NFA.strToAutomaton(aut_str)
+  let a = DFA_NFA.strToAutomaton(autStr)
   expect(a.getStateNumber()).toBe(3);
   expect(a.isDeterministic()).toBe(false)
 
-  let a_det = a.determinize()
-  expect(a_det.isDeterministic()).toBe(true)
-  expect(a_det.getStateNumber()).toBe(3);
+  let determinized = a.determinize()
+  expect(determinized.isDeterministic()).toBe(true)
+  expect(determinized.getStateNumber()).toBe(3);
 
-  let aut_already_determinist = `[0]
+  let autAlreadyDeterminist = `[0]
     a,[0]->[1]
     b,[0]->[0]
     a,[1]->[0]
     b,[1]->[0]
     [1]`
-  a = DFA_NFA.strToAutomaton(aut_already_determinist);
+  a = DFA_NFA.strToAutomaton(autAlreadyDeterminist);
   expect(a.determinize().sameLanguage(a));
 })
 
 test("Automaton Complement & Union & Intersection & Sym. Diff", () => {
-  let aut_str = `[0]
+  let autStr = `[0]
     a,[0]->[1]
     a,[0]->[2]
     a,[1]->[0]
     [1]
     [2]`
-  let a1 = DFA_NFA.strToAutomaton(aut_str)
+  let a1 = DFA_NFA.strToAutomaton(autStr)
 
   let a1_compl = a1.complement();
 

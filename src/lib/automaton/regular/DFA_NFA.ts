@@ -356,11 +356,11 @@ export default class DFA_NFA implements FSM<StateDFA>, ToDot {
   }
 
   clone(alphabet?: AlphabetDFA) {
-    let all_states = this.allStates()
-    let res = new DFA_NFA(all_states.map(e => e.clone({ alphabet })));
+    let allStates = this.allStates()
+    let res = new DFA_NFA(allStates.map(e => e.clone({ alphabet })));
     this.alphabet.symbols.forEach(l =>
-      all_states.forEach((e, pos) =>
-        e.getSuccessor(l).forEach(succ => res.allStates()[pos].addTransition(l, res.allStates()[all_states.indexOf(succ)]))
+      allStates.forEach((e, pos) =>
+        e.getSuccessor(l).forEach(succ => res.allStates()[pos].addTransition(l, res.allStates()[allStates.indexOf(succ)]))
       ))
     return res;
   }

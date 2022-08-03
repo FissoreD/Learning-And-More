@@ -2,42 +2,16 @@ import { motion } from "framer-motion";
 import React from "react";
 import { Accordion, Button, ButtonGroup, Card, Col, Row } from "react-bootstrap";
 import { BootstrapReboot } from "react-bootstrap-icons";
-import AlphabetVPA from "../../lib/automaton/context_free/AlphabetVPA";
 import StateVPA from "../../lib/automaton/context_free/StateVPA";
 import VPA from "../../lib/automaton/context_free/VPA";
 import FSM from "../../lib/automaton/FSM_interface";
 import DFA_NFA from "../../lib/automaton/regular/DFA_NFA";
 import StateDFA from "../../lib/automaton/regular/StateDFA";
+import { createVPA2, createVPA4 } from "../../lib/__test__/VPAforTest";
 import Dialog from "../components/Dialog";
 import GraphDotRender from "../components/DotRender";
 import { createButtonGroupAlgoSwitcher, setFromPosition } from "../globalFunctions";
 import { FLEX_CENTER } from "../globalVars";
-
-let createVPA1 = (): VPA => {
-  let alphabet = new AlphabetVPA({ CALL: ["A"], RET: ["B", "C"], INT: ["I"] })
-  let stack_alphabet = ["0"]
-  let state1 = new StateVPA({ name: "1", isAccepting: true, alphabet, stackAlphabet: stack_alphabet })
-  let state2 = new StateVPA({ name: "2", isInitial: true, alphabet, stackAlphabet: stack_alphabet })
-  state1.addTransition({ symbol: "I", successor: state1 })
-  state2.addTransition({ symbol: "I", successor: state1 })
-  state2.addTransition({ symbol: "B", topStack: "0", successor: state1 })
-  state1.addTransition({ symbol: "B", topStack: "0", successor: state1 })
-  state1.addTransition({ symbol: "C", topStack: "0", successor: state1 })
-  state2.addTransition({ symbol: "A", topStack: "0", successor: state2 })
-  let vpa = new VPA([state1, state2])
-  return vpa
-}
-
-let createVPA2 = (): VPA => {
-  let alphabet = new AlphabetVPA({ CALL: ["A"], RET: ["B", "C"], INT: ["I"] })
-  let stack_alphabet = ["2"]
-  let state1 = new StateVPA({ name: "1", isAccepting: true, isInitial: true, alphabet, stackAlphabet: stack_alphabet })
-  state1.addTransition({ symbol: "I", successor: state1 })
-  state1.addTransition({ symbol: "A", topStack: "2", successor: state1 })
-  state1.addTransition({ symbol: "B", topStack: "2", successor: state1 })
-  let vpa = new VPA([state1])
-  return vpa
-}
 
 type Operation = "∪" | "∩" | "△" | "/" | "Det" | "~"
 const binaryOp: Operation[] = ["∪", "∩", "△", "/"]
@@ -76,7 +50,7 @@ export default class FSM_Viewer extends React.Component<ReactProp, ReactState>{
   changeCnt(fsmType: string): ReactState {
     let a1, a2;
     switch (fsmType) {
-      case "VPA": { a1 = createVPA1(); a2 = createVPA2(); break; }
+      case "VPA": { a1 = createVPA4(); a2 = createVPA2(); break; }
       default: {
         a1 = DFA_NFA.regexToAutomaton("(ac+b)*(b+c)")
         a2 = DFA_NFA.regexToAutomaton("(a+b)*c")
@@ -104,8 +78,8 @@ export default class FSM_Viewer extends React.Component<ReactProp, ReactState>{
             return { a1: state.a1, a2: aut! }
           }
         });
-        let old_op = this.state.lastOperation
-        this.createResultAut(old_op.operation, old_op.is_a1)
+        let oldOp = this.state.lastOperation
+        this.createResultAut(oldOp.operation, oldOp.is_a1)
       } else {
         alert("Not implemented")
       }

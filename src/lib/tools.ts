@@ -5,7 +5,7 @@ export function sameVector(v1: any[], v2: any[]): boolean {
 }
 
 /**
- * creates all generate_prefix_list from the str passed in input :
+ * creates all prefixes from the str passed in input :
  * example for hello : ['', 'h', 'he', 'hel', 'hell', 'hello']
  */
 export const generatePrefixList = (str: string) =>

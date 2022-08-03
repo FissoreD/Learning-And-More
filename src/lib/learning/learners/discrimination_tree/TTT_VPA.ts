@@ -10,7 +10,7 @@ import DiscTreeVPA, { StringCouple } from "./DiscTreeVPA";
 export default class TTT_VPA extends LearnerFather<DiscTreeVPA, StateVPA> {
   finish = false;
   lastCe: { value: string, accepted: boolean, isTeacher: boolean } | undefined;
-  lastSplit: { u: string, a: string, v: string, uaState: string, uState: string } | undefined;
+  lastSplit: { u: string; a: string; v: string; uaState: string | undefined; uState: string | undefined; newNodeLabel: StringCouple; newLeaf: string; } | undefined;
   alphabet: AlphabetVPA;
   automaton: VPA;
 
@@ -70,13 +70,13 @@ export default class TTT_VPA extends LearnerFather<DiscTreeVPA, StateVPA> {
     }
     if (ce === undefined) { this.finish = true; return }
     let { a, v, uaState, uState, u, newLeaf, newNodeLabel } = this.split_ce_in_uav(ce)
-    this.lastSplit = { u, a, v, uaState: uaState!, uState: uState! }
+    this.lastSplit = { a, v, uaState, uState, u, newLeaf, newNodeLabel }
 
-    this.lastCe = { value: uState + v, accepted: !this.automaton!.acceptWord(uState + a + v), isTeacher }
+    this.lastCe = { value: newLeaf + v, accepted: !this.automaton!.acceptWord(newLeaf + v), isTeacher }
     if (isTeacher) return
     this.dataStructure.splitLeaf({
       leafName: uaState!,
-      nameLeafToAdd: uState + a,
+      nameLeafToAdd: newLeaf,
       newDiscriminator: newNodeLabel,
       isTop: !this.automaton!.acceptWord(uaState + v)
     })
@@ -128,17 +128,24 @@ export default class TTT_VPA extends LearnerFather<DiscTreeVPA, StateVPA> {
 
   /** @todo loop only over RET and INT symbols */
   split_ce_in_uav(ce: string) {
-    console.log(ce);
+
+    // console.log(this.dataStructure.toDot());
+    // console.log(this.automaton.toDot());
+    // console.log({ ce });
 
     let splitU_Hat = (uHat: string) => {
       let pos = uHat.length - 1, cnt = 0
+      // console.log({ ce, uHat });
+
       while (pos > -1) {
         let char = uHat[pos]
         if (this.alphabet.CALL.includes(char)) cnt--
         else if (this.alphabet.RET.includes(char)) cnt++
         if (cnt < 0) return { uPrime: uHat.substring(0, pos), u: uHat.substring(pos) }
+        pos--;
       }
-      throw new Error("You should not be here");
+      return { uPrime: "", u: uHat }
+      // throw new Error("You should not be here");
     }
 
     let uHat: string, aHat: string, vHat: string;
@@ -149,10 +156,12 @@ export default class TTT_VPA extends LearnerFather<DiscTreeVPA, StateVPA> {
       let uState = this.automaton!.giveState(uHat)?.name
       let uaState = this.automaton!.giveState(uHat + aHat)?.name
       if (this.teacher.member(uState + aHat + vHat) !== this.teacher.member(uaState + vHat)) {
-        let { u, uPrime } = splitU_Hat(uHat);
+        let { uPrime, u } = splitU_Hat(uHat);
+        // console.log({ uPrime, u });
+
         uaState = this.automaton?.giveState(u + aHat)?.name
         let newNodeLabel: StringCouple = [uPrime, vHat]
-        let newLeaf = uPrime + aHat
+        let newLeaf = u + aHat
         return { u: uHat, a: aHat, v: vHat, uaState, uState, newNodeLabel, newLeaf }
       }
     }
@@ -160,7 +169,7 @@ export default class TTT_VPA extends LearnerFather<DiscTreeVPA, StateVPA> {
   }
 
   splitToString() {
-    let [u, a, v, uState, uaState] = [toEps(this.lastSplit!.u), this.lastSplit!.a, toEps(this.lastSplit!.v), toEps(this.lastSplit!.uState), toEps(this.lastSplit!.uaState)]
+    let [u, a, v, uState, uaState] = [toEps(this.lastSplit!.u), this.lastSplit!.a, toEps(this.lastSplit!.v), toEps(this.lastSplit!.uState!), toEps(this.lastSplit!.uaState!)]
     return `The conunter-example could be split into ${u + "." + a + "." + v} because (${"⌊" + u + "⌋." + a + "." + v} = ${uState + "." + a + "." + v}) ≠ (${"⌊" + u + "." + a + "⌋." + v} = ${uaState + "." + v})`;
   }
 }

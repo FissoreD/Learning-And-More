@@ -39,7 +39,7 @@ export default class TTT_VPA_C extends LearnerSection<StateVPA> {
         switch (oldMsg.type) {
           case "HYP-STAB": {
             let { u, v, a, uState } = learner.lastSplit!;
-            [u, v, uState] = [toEps(u), toEps(v), toEps(uState)];
+            [u, v, uState] = [toEps(u), toEps(v), toEps(uState!)];
             message.val = <span>The counter-example can be split in (u:<b>{u}</b>, a:<b>{a}</b>, v:<b>{v}</b>) since λ(⌊{u}.{a}⌋.{v}) ≠ λ(⌊{toEps(u)}⌋.{a}.{v}). The leaf {u} is replaced with the innernode {v} and the leaf ⌊{toEps(u)}⌋.{a} = {uState}.{a} has been added</span>;
             break;
           }
