@@ -6,7 +6,7 @@ export const removeFirstUrlPath = (): string => {
   return window.location.search.substring(1)
 }
 
-export const setFromPosition = (tail: string, startPosition: number) => {
+export const setUrlFromPosition = (tail: string, startPosition: number) => {
   let url = removeFirstUrlPath();
   if (url.endsWith(tail)) return;
   let urlPieces = url.split("&").filter(e => e !== "")

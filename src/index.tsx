@@ -3,9 +3,9 @@ import 'bootstrap/dist/js/bootstrap.js';
 import React from 'react';
 import { Container, Row } from "react-bootstrap";
 import ReactDOM from 'react-dom/client';
-import FsmViewer from './reactjs/automaton/FSM_Viewer';
+import FSMContainer from './reactjs/automaton/FSM_Container';
 import { NavBar } from './reactjs/components/NavBar';
-import { removeFirstUrlPath, setFromPosition } from './reactjs/globalFunctions';
+import { removeFirstUrlPath, setUrlFromPosition } from './reactjs/globalFunctions';
 import { URL_SEPARATOR } from './reactjs/globalVars';
 import Home from './reactjs/Home';
 import "./reactjs/index.css";
@@ -37,13 +37,13 @@ export class Main extends React.Component<{}, ReactState> {
   swicthContent(section: string): void {
     let cnt = this.giveContent(section as AlgosNavBarType)
     if (cnt.sectionNumber !== this.state.sectionNumber) {
-      setFromPosition(ALGO_NAVBAR_LIST[cnt.sectionNumber], 0)
+      setUrlFromPosition(ALGO_NAVBAR_LIST[cnt.sectionNumber], 0)
       this.setState(cnt)
     }
   }
 
   render(): React.ReactNode {
-    let dfaViewer = <FsmViewer cnt={this.state.urlCnt} />
+    let dfaViewer = <FSMContainer url={this.state.urlCnt} />
     let learnerSection = <LearnerContainerC cnt={this.state.urlCnt} />
     let home = <Home switchSection={this.swicthContent.bind(this)} />
 

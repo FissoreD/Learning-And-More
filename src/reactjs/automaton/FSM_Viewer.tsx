@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import React from "react";
 import { Accordion, Button, ButtonGroup, Card, Col, Row } from "react-bootstrap";
 import { BootstrapReboot } from "react-bootstrap-icons";
@@ -10,7 +9,6 @@ import StateDFA from "../../lib/automaton/regular/StateDFA";
 import { createVPA2, createVPA4 } from "../../lib/__test__/VPAforTest";
 import Dialog from "../components/Dialog";
 import GraphDotRender from "../components/DotRender";
-import { createButtonGroupAlgoSwitcher, setFromPosition } from "../globalFunctions";
 import { FLEX_CENTER } from "../globalVars";
 
 type Operation = "∪" | "∩" | "△" | "/" | "Det" | "~"
@@ -18,7 +16,6 @@ const binaryOp: Operation[] = ["∪", "∩", "△", "/"]
 const unaryOp: Operation[] = ["Det", "~"]
 
 type FSM_Type = 'VPA' | 'DFA'
-const FSM_LIST: FSM_Type[] = ['DFA', 'VPA']
 
 interface ReactState {
   fsmType: FSM_Type,
@@ -58,7 +55,6 @@ export default class FSM_Viewer extends React.Component<ReactProp, ReactState>{
         break;
       }
     }
-    setFromPosition(fsmType, 1)
     return {
       fsmType: fsmType as FSM_Type, a1, a2,
       lastOperation: { a1, a2, operation: "∪", res: (a1 as VPA).union(a2 as VPA), is_a1: true, },
@@ -169,35 +165,22 @@ export default class FSM_Viewer extends React.Component<ReactProp, ReactState>{
     return <>
       <Dialog fn={this.setRegex.bind(this)} show={this.state.showRegexSetter} />
       <Row>
-        <Col sm={"auto"}>{
-          createButtonGroupAlgoSwitcher({
-            labelList: FSM_LIST,
-            currentLabel: this.state.fsmType,
-            onclickOp: (str: string) => this.setState(this.changeCnt(str))
-          })}</Col>
-        <Col style={{ overflow: "hidden" }}>
-          <motion.div initial={{ x: "-100%" }}
-            animate={{ x: "0" }}
-            transition={{ duration: 0.5 }}
-            key={this.state.fsmType}
-          >
-            <Row>
-              <Col className="mb-3 mb-sm-0" sm={5}>{this.createCardAutomaton(this.state.a1, 1)}</Col>
-              <Col className="d-flex text-center align-self-center justify-content-center">
-                <ButtonGroup vertical className="secondary d-none d-sm-inline-flex">
-                  {this.createBinaryOperatorSwitcher()}</ButtonGroup>
-                <ButtonGroup className="secondary d-sm-none">
-                  {this.createBinaryOperatorSwitcher()}</ButtonGroup>
-              </Col>
-              <Col className="mt-3 mt-sm-0" sm={5}>{this.createCardAutomaton(this.state.a2, 2)}</Col>
-            </Row>
-            <Accordion defaultActiveKey={['0']} alwaysOpen className="mt-3">
-              {this.createAccordionItem({ key: "0", aut: lastOp.res, isMinimized: false })}
-              {this.createAccordionItem({ key: "1", aut: lastOp.res, isMinimized: true })}
-            </Accordion>
-          </motion.div>
+        <Col className="mb-3 mb-sm-0" sm={5}>{this.createCardAutomaton(this.state.a1, 1)}</Col>
+        <Col className="d-flex text-center align-self-center justify-content-center">
+          <ButtonGroup vertical className="secondary d-none d-sm-inline-flex">
+            {this.createBinaryOperatorSwitcher()}</ButtonGroup>
+          <ButtonGroup className="secondary d-sm-none">
+            {this.createBinaryOperatorSwitcher()}</ButtonGroup>
         </Col>
+        <Col className="mt-3 mt-sm-0" sm={5}>{this.createCardAutomaton(this.state.a2, 2)}</Col>
       </Row>
+      <Accordion defaultActiveKey={['0']} alwaysOpen className="mt-3">
+        {this.createAccordionItem({ key: "0", aut: lastOp.res, isMinimized: false })}
+        {this.createAccordionItem({ key: "1", aut: lastOp.res, isMinimized: true })}
+      </Accordion>
     </>
   }
 }
+
+export class DFAViewer extends FSM_Viewer { }
+export class VPAViewer extends FSM_Viewer { }

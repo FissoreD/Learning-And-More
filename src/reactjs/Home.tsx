@@ -1,13 +1,13 @@
 import { motion } from "framer-motion";
 import React from "react";
-import { setFromPosition } from "./globalFunctions";
+import { setUrlFromPosition } from "./globalFunctions";
 
 interface PropReact { switchSection: ((sectionName: string) => void) }
 
 export default class Home extends React.Component<PropReact, {}> {
   constructor(prop: PropReact) {
     super(prop)
-    setFromPosition("", 0)
+    setUrlFromPosition("", 0)
   }
 
   render(): React.ReactNode {

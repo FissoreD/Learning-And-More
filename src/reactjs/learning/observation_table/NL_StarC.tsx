@@ -3,7 +3,7 @@ import ClonableInterface from "../../../lib/Clonable.interface";
 import { default as NL_Star, default as NL_star } from "../../../lib/learning/learners/observation_table/NL_Star";
 import { TeacherAutomaton } from "../../../lib/learning/teachers/TeacherDFA";
 import { toEps } from "../../../lib/tools";
-import { PropReact } from "../LearnerSectionFatherC";
+import { PropReact } from "../LearnerFatherC";
 import Learner_OT_FatherC from "./Learner_OT_FatherC";
 
 export default class NL_StarC extends Learner_OT_FatherC {

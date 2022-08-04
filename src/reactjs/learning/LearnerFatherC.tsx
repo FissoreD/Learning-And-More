@@ -7,7 +7,6 @@ import Clonable from "../../lib/Clonable.interface";
 import LearnerFather from "../../lib/learning/learners/LearnerFather";
 import Dialog from "../components/Dialog";
 import GraphDotRender from "../components/DotRender";
-import { setFromPosition } from "../globalFunctions";
 import { LearnerType } from "./LearnerContainerC";
 
 export type MessageType = "END" | "SEND-HYP" | "CE" | "CONSISTENCY" | "CLOSEDNESS" | "DISC-REF" | "HYP-STAB"
@@ -15,7 +14,8 @@ export type MessageType = "END" | "SEND-HYP" | "CE" | "CONSISTENCY" | "CLOSEDNES
 export interface PropReact<StateType> {
   learner: LearnerFather<Clonable, StateType>,
   name: LearnerType,
-  changeRegexContainer: (regex: string) => void, pos: number
+  changeRegexContainer: (regex: string) => void, pos: number,
+  updatePosition: (l: LearnerType, pos: number) => void
 }
 
 export interface StateReact<StateType> {
@@ -23,7 +23,8 @@ export interface StateReact<StateType> {
   memory: { dataStructure: Clonable, automaton: FSM<StateType> | undefined, message: { type: MessageType, val: JSX.Element } }[],
   position: number,
   learner: LearnerFather<Clonable, StateType>,
-  showRegexDialog: boolean
+  showRegexDialog: boolean,
+  firstTime: boolean
 }
 
 type Learner<StateType> = LearnerFather<Clonable, StateType>
@@ -31,10 +32,11 @@ type Learner<StateType> = LearnerFather<Clonable, StateType>
 export abstract class LearnerSection<StateType> extends React.Component<PropReact<StateType>, StateReact<StateType>>{
   constructor(prop: PropReact<StateType>) {
     super(prop)
-    this.state = this.allSteps(
-      this.createNewState(prop.learner.teacher.regex), prop.pos
-    );
-    setFromPosition(prop.pos + "", 2)
+    this.state = {
+      ...this.allSteps(
+        this.createNewState(prop.learner.teacher.regex), prop.pos
+      ), firstTime: true
+    };
   }
 
   abstract dataStructureToNodeElement(ds: Clonable): React.ReactElement;
@@ -51,6 +53,7 @@ export abstract class LearnerSection<StateType> extends React.Component<PropReac
 
   prevOp(): void {
     if (this.state.position > 0) {
+      this.props.updatePosition(this.props.name, this.state.position - 1)
       this.setState({ position: this.state.position - 1 })
     }
   }
@@ -72,6 +75,7 @@ export abstract class LearnerSection<StateType> extends React.Component<PropReac
 
   reload() {
     if (this.state.position !== 0) this.setState({ position: 0, });
+    this.props.updatePosition(this.props.name, 0)
   }
 
   changeLearner(regex: string | undefined) {
@@ -118,6 +122,7 @@ export abstract class LearnerSection<StateType> extends React.Component<PropReac
         automaton: undefined
       }], position: 0, learner: learner,
       showRegexDialog: false,
+      firstTime: false
     }
   }
 
@@ -127,8 +132,22 @@ export abstract class LearnerSection<StateType> extends React.Component<PropReac
       buttons: ({ img: ReactElement, action: (() => void), disabled: boolean })[] = [
         { img: <ArrowCounterclockwise />, action: this.reload.bind(this), disabled: isFirst },
         { img: <CaretLeftFill />, action: this.prevOp.bind(this), disabled: isFirst },
-        { img: <CaretRightFill />, action: () => this.setState(this.nextOp(this.state)), disabled: isLast },
-        { img: <ArrowClockwise />, action: () => this.setState(this.allSteps({ ...this.state })), disabled: isLast }
+        {
+          img: <CaretRightFill />, action: (() => {
+            this.props.updatePosition(this.props.name, this.state.position + 1);
+            this.setState(this.nextOp(this.state))
+          }), disabled: isLast
+        },
+        {
+          img: <ArrowClockwise />, action: () => {
+            this.setState(() => {
+              let state = this.allSteps({ ...this.state })
+              this.props.updatePosition(this.props.name, state.position);
+              return state
+            })
+          },
+          disabled: isLast
+        }
       ]
     return <ButtonGroup>
       {buttons.map(({ img, action, disabled }, pos) => <Button key={pos} variant="secondary" disabled={disabled} onClick={action}>{img}</Button>)}
@@ -138,8 +157,6 @@ export abstract class LearnerSection<StateType> extends React.Component<PropReac
   render(): React.ReactElement {
     let position = this.state.position
     let memoryCell = this.state.memory[position]
-    setFromPosition(position + "", 2)
-
     return <div className="body-container">
       {/* To change regex panel */}
       <Dialog show={this.state.showRegexDialog} fn={this.changeLearner.bind(this)} />
@@ -151,15 +168,10 @@ export abstract class LearnerSection<StateType> extends React.Component<PropReac
         {this.createNextSetpButtonGroup()}
       </div>
       {/* Algorithms sections */}
-      <motion.div initial={{ x: "-100%" }}
-        animate={{ x: "0" }}
-        transition={{ duration: 0.5 }}
-      >
-        {this.createCard("Language to Learn", this.createText(this.state.learner.teacher.regex))}
-        {this.createCard("Message", memoryCell.message.val)}
-        {memoryCell.automaton ? this.createCard("Automaton", <GraphDotRender dot={memoryCell.automaton!} />) : <></>}
-        {this.createCard("Observation Table", this.dataStructureToNodeElement(memoryCell.dataStructure))}
-      </motion.div>
+      {this.createCard("Language to Learn", this.createText(this.state.learner.teacher.regex))}
+      {this.createCard("Message", memoryCell.message.val)}
+      {memoryCell.automaton ? this.createCard("Automaton", <GraphDotRender dot={memoryCell.automaton!} />) : <></>}
+      {this.createCard("Observation Table", this.dataStructureToNodeElement(memoryCell.dataStructure))}
     </div >
   }
 }

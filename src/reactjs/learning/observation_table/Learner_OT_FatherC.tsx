@@ -3,7 +3,7 @@ import StateDFA from "../../../lib/automaton/regular/StateDFA";
 import Clonable from "../../../lib/Clonable.interface";
 import Learner_OT_Father from "../../../lib/learning/learners/observation_table/Learner_OT_Father";
 import ObservationTable from "../../../lib/learning/learners/observation_table/ObservationTable";
-import { LearnerSection, MessageType, PropReact, StateReact } from "../LearnerSectionFatherC";
+import { LearnerSection, MessageType, PropReact, StateReact } from "../LearnerFatherC";
 import { ObservationTableC } from "./ObservationTableC";
 
 export default abstract class Learner_OT_FatherC extends LearnerSection<StateDFA> {
@@ -70,7 +70,7 @@ export default abstract class Learner_OT_FatherC extends LearnerSection<StateDFA
       automaton: learner.automaton ? learner.automaton.clone() : undefined
     })
     let position = state.position + 1
-    state = { position, doNext: !state.doNext, memory, learner: state.learner, showRegexDialog: false }
+    state = { position, doNext: !state.doNext, memory, learner: state.learner, showRegexDialog: false, firstTime: false }
     return state
   }
 }
