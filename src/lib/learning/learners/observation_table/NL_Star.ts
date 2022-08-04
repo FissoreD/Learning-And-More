@@ -1,3 +1,4 @@
+import AlphabetDFA from "../../../automaton/regular/AlphabetDFA";
 import DFA_NFA from "../../../automaton/regular/DFA_NFA";
 import StateDFA from "../../../automaton/regular/StateDFA";
 import { TeacherAutomaton } from "../../teachers/TeacherDFA";
@@ -8,7 +9,7 @@ export default class NL_star extends Learner_OT_Father {
 
   constructor(teacher: TeacherAutomaton) {
     super(teacher);
-    this.primeLines = teacher.alphabet.symbols.concat("");
+    this.primeLines = (teacher.alphabet as AlphabetDFA).symbols.concat("");
   }
 
   isPrime(rowKey: string): boolean {
