@@ -8,7 +8,6 @@ import DiscTreeVPA, { StringCouple } from "./DiscTreeVPA";
 import TTT_Father from "./TTT_Father";
 
 export default class TTT_VPA extends TTT_Father<StringCouple, StateVPA> {
-  lastSplit: { u: string; a: string; v: string; uaState: string | undefined; uState: string | undefined; newNodeLabel: StringCouple; newLeaf: string; } | undefined;
   alphabet: AlphabetVPA;
 
   constructor(teacher: Teacher<StateVPA>) {
@@ -41,32 +40,6 @@ export default class TTT_VPA extends TTT_Father<StringCouple, StateVPA> {
         addChild(symbol)
       }
     }
-  }
-
-  makeNextQuery() {
-    if (this.finish) return
-    let ce: string | undefined;
-    let isTeacher: boolean;
-    this.makeAutomaton()
-    if (this.toStabilizeHypothesis()) {
-      ce = this.lastCe!.value;
-      isTeacher = false;
-    } else {
-      ce = this.teacher.equiv(this.automaton!)
-      isTeacher = true
-    }
-    if (ce === undefined) { this.finish = true; return }
-    let { a, v, uaState, uState, u, newLeaf, newNodeLabel } = this.split_ce_in_uav(ce)
-    this.lastSplit = { a, v, uaState, uState, u, newLeaf, newNodeLabel }
-
-    this.lastCe = { value: newLeaf + v, accepted: !this.automaton!.acceptWord(newLeaf + v), isTeacher }
-    if (isTeacher) return
-    this.dataStructure.splitLeaf({
-      leafName: uaState!,
-      nameLeafToAdd: newLeaf,
-      newDiscriminator: newNodeLabel,
-      isTop: !this.automaton!.acceptWord(uaState + v)
-    })
   }
 
   makeAutomaton(): VPA {
@@ -115,15 +88,8 @@ export default class TTT_VPA extends TTT_Father<StringCouple, StateVPA> {
 
   /** @todo loop only over RET and INT symbols */
   split_ce_in_uav(ce: string) {
-
-    // console.log(this.dataStructure.toDot());
-    // console.log(this.automaton.toDot());
-    // console.log({ ce });
-
     let splitU_Hat = (uHat: string) => {
       let pos = uHat.length - 1, cnt = 0
-      // console.log({ ce, uHat });
-
       while (pos > -1) {
         let char = uHat[pos]
         if (this.alphabet.CALL.includes(char)) cnt--
@@ -132,7 +98,6 @@ export default class TTT_VPA extends TTT_Father<StringCouple, StateVPA> {
         pos--;
       }
       return { uPrime: "", u: uHat }
-      // throw new Error("You should not be here");
     }
 
     let uHat: string, aHat: string, vHat: string;
@@ -144,8 +109,6 @@ export default class TTT_VPA extends TTT_Father<StringCouple, StateVPA> {
       let uaState = this.automaton!.giveState(uHat + aHat)?.name
       if (this.teacher.member(uState + aHat + vHat) !== this.teacher.member(uaState + vHat)) {
         let { uPrime, u } = splitU_Hat(uHat);
-        // console.log({ uPrime, u });
-
         uaState = this.automaton?.giveState(u + aHat)?.name
         let newNodeLabel: StringCouple = [uPrime, vHat]
         let newLeaf = u + aHat
