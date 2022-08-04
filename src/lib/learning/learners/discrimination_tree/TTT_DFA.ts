@@ -3,19 +3,16 @@ import DFA_NFA from "../../../automaton/regular/DFA_NFA";
 import StateDFA from "../../../automaton/regular/StateDFA";
 import { toEps } from "../../../tools";
 import Teacher from "../../teachers/Teacher";
-import LearnerFather from "../LearnerFather";
 import DiscTreeDFA from "./DiscTreeDFA";
+import TTT_Father from "./TTT_Father";
 
-export default class TTT_DFA extends LearnerFather<DiscTreeDFA, StateDFA> {
-  finish = false;
-  lastCe: { value: string, accepted: boolean, isTeacher: boolean } | undefined;
+export default class TTT_DFA extends TTT_Father<string, StateDFA> {
   lastSplit: { u: string, a: string, v: string, uaState: string, uState: string } | undefined;
   alphabet: AlphabetDFA;
 
   constructor(teacher: Teacher<StateDFA>) {
     super(teacher, new DiscTreeDFA(""))
     this.alphabet = teacher.alphabet as AlphabetDFA
-    this.initiate()
   }
 
   initiate() {
@@ -32,13 +29,6 @@ export default class TTT_DFA extends LearnerFather<DiscTreeDFA, StateDFA> {
         addedLeft = true;
       }
     }
-    this.makeAutomaton()
-    this.makeNextQuery()
-  }
-
-  toStabilizeHypothesis(): boolean {
-    return this.lastCe !== undefined &&
-      this.automaton!.acceptWord(this.lastCe.value) !== this.lastCe.accepted
   }
 
   makeNextQuery() {

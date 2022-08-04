@@ -29,7 +29,7 @@ export default class TTT_VPA_C extends LearnerSection<StateVPA> {
       } else if (learner.toStabilizeHypothesis()) {
         message = { type: "HYP-STAB", val: <span>The counter-example should be stabilized, since the automaton does {learner.lastCe?.accepted ? "not" : ""} accept the counter-example <i>{learner.lastCe?.value}</i></span> }
       } else {
-        message = { type: "SEND-HYP", val: <span><i>{learner.lastCe?.value}</i> is finally correctly placed in the automaton.<br />This automaton will be sent as a conjecture</span> }
+        message = { type: "SEND-HYP", val: <span><i>{learner.lastCe?.value}</i> is correctly placed in the automaton.<br />This automaton will be sent as a conjecture</span> }
       }
     } else {
       state.learner.makeNextQuery()

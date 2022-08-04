@@ -29,7 +29,7 @@ export default class TTT_C extends LearnerSection<StateDFA> {
       } else if (learner.toStabilizeHypothesis()) {
         message = { type: "HYP-STAB", val: <span>The counter-example should be stabilized, since the automaton does {learner.lastCe?.accepted ? "not" : ""} accept the counter-example <i>{learner.lastCe?.value}</i></span> }
       } else {
-        message = { type: "SEND-HYP", val: <span><i>{learner.lastCe?.value}</i> is finally correctly placed in the automaton.<br />This automaton will be sent as a conjecture</span> }
+        message = { type: "SEND-HYP", val: <span><i>{learner.lastCe?.value}</i> is correctly placed in the automaton.<br />This automaton will be sent as a conjecture</span> }
       }
     } else {
       state.learner.makeNextQuery()
@@ -40,7 +40,7 @@ export default class TTT_C extends LearnerSection<StateDFA> {
         switch (oldMsg.type) {
           case "HYP-STAB": {
             let { u, v, a, uState } = learner.lastSplit!;
-            [u, v, uState] = [toEps(u), toEps(v), toEps(uState)];
+            [u, v, uState] = [toEps(u), toEps(v), toEps(uState!)];
             message.val = <span>The counter-example can be split in (u:<b>{u}</b>, a:<b>{a}</b>, v:<b>{v}</b>) since λ(⌊{u}.{a}⌋.{v}) ≠ λ(⌊{toEps(u)}⌋.{a}.{v}). The leaf {u} is replaced with the innernode {v} and the leaf ⌊{toEps(u)}⌋.{a} = {uState}.{a} has been added</span>;
             break;
           }
