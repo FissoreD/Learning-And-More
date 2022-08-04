@@ -140,7 +140,7 @@ export abstract class LearnerSection<StateType> extends React.Component<PropReac
     let memoryCell = this.state.memory[position]
     setFromPosition(position + "", 2)
 
-    return <div className="body-container" style={{ overflow: "hidden" }}>
+    return <div className="body-container">
       {/* To change regex panel */}
       <Dialog show={this.state.showRegexDialog} fn={this.changeLearner.bind(this)} />
       {/* Buttons sticky on top to change regex and change algo step */}
