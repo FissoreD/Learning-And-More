@@ -19,11 +19,11 @@ export class TeacherAutomaton extends Teacher<StateDFA> {
   private static giveAutomaton(p: constructorType) {
     switch (p.type) {
       case "Automaton":
-        return (p.automaton as DFA_NFA).minimize()
+        return (p.automaton as DFA_NFA)
       case "Regex":
-        return DFA_NFA.regexToAutomaton(p.automaton as string).minimize()
+        return DFA_NFA.regexToAutomaton(p.automaton as string)
       case "Dot":
-        return DFA_NFA.strToAutomaton(p.automaton as string).minimize()
+        return DFA_NFA.strToAutomaton(p.automaton as string)
     }
   }
 }

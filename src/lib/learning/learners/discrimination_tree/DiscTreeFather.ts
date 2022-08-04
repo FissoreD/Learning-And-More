@@ -1,6 +1,7 @@
 import Clonable from "../../../Clonable.interface";
 import ToDot from "../../../ToDot.interface";
 import ToString from "../../../ToString.interface";
+import Teacher from "../../teachers/Teacher";
 
 export class InnerNode<LblType>  {
   name: LblType;
@@ -63,7 +64,7 @@ export class Leaf<LblType> {
 
 export type TreeElt<LblType> = InnerNode<LblType> | Leaf<LblType>
 
-export default abstract class DiscTreeFather<LblType> implements Clonable, ToDot, ToString {
+export default abstract class DiscTreeFather<LblType, StateType> implements Clonable, ToDot, ToString {
   protected root: InnerNode<LblType>;
   protected leaves: Map<string, Leaf<LblType>>;
   protected innerNodes: Set<InnerNode<LblType>>;
@@ -139,6 +140,7 @@ export default abstract class DiscTreeFather<LblType> implements Clonable, ToDot
       return this.addLeftChild({ parent: this.root, name: s })
   }
 
+  abstract sift(word: string, teacher: Teacher<StateType>): Leaf<LblType> | undefined;
   abstract nodeNameToString(node: TreeElt<LblType>): string;
 
   toString() {
@@ -157,9 +159,9 @@ export default abstract class DiscTreeFather<LblType> implements Clonable, ToDot
     return a;
   }
 
-  abstract newChild(name: LblType): DiscTreeFather<LblType>;
+  abstract newChild(name: LblType): DiscTreeFather<LblType, StateType>;
 
-  clone(): DiscTreeFather<LblType> {
+  clone(): DiscTreeFather<LblType, StateType> {
     let res = this.newChild(this.root.name);
     let map = new Map<TreeElt<LblType>, TreeElt<LblType>>();
     map.set(this.root, res.root)

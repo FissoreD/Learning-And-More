@@ -8,7 +8,7 @@ test("TTT_VPA for G = A^n II^n B^n", () => {
 
   for (let i = 0; i < 5; i++) {
     console.log(learner.dataStructure.toDot());
-    console.log(learner.automaton.toDot());
+    console.log(learner.automaton!.toDot());
     learner.makeNextQuery();
   }
 

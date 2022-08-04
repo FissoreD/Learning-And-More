@@ -4,22 +4,18 @@ import StateVPA from "../../../automaton/context_free/StateVPA";
 import VPA from "../../../automaton/context_free/VPA";
 import { toEps } from "../../../tools";
 import Teacher from "../../teachers/Teacher";
-import LearnerFather from "../LearnerFather";
 import DiscTreeVPA, { StringCouple } from "./DiscTreeVPA";
+import TTT_Father from "./TTT_Father";
 
-export default class TTT_VPA extends LearnerFather<DiscTreeVPA, StateVPA> {
+export default class TTT_VPA extends TTT_Father<StringCouple, StateVPA> {
   finish = false;
   lastCe: { value: string, accepted: boolean, isTeacher: boolean } | undefined;
   lastSplit: { u: string; a: string; v: string; uaState: string | undefined; uState: string | undefined; newNodeLabel: StringCouple; newLeaf: string; } | undefined;
   alphabet: AlphabetVPA;
-  automaton: VPA;
 
   constructor(teacher: Teacher<StateVPA>) {
     super(teacher, new DiscTreeVPA(["", ""]))
     this.alphabet = teacher.alphabet as AlphabetVPA;
-    this.automaton = super.automaton as VPA
-    this.teacher = teacher;
-    this.dataStructure = new DiscTreeVPA(["", ""])
     this.initiate()
   }
 

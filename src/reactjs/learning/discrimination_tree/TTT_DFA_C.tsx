@@ -35,7 +35,7 @@ export default class TTT_C extends LearnerSection<StateDFA> {
       state.learner.makeNextQuery()
       message = { ...oldMsg };
       if (learner.finish) {
-        message = { type: "END", val: <span>"The teacher has accepted the last conjecture" </span> }
+        message = { type: "END", val: <span>The teacher has accepted the last conjecture</span> }
       } else
         switch (oldMsg.type) {
           case "HYP-STAB": {

@@ -5,7 +5,7 @@ import DiscTreeFather, { InnerNode, Leaf, TreeElt } from "./DiscTreeFather";
 
 export type StringCouple = [string, string]
 
-export default class DiscTreeVPA extends DiscTreeFather<StringCouple> {
+export default class DiscTreeVPA extends DiscTreeFather<StringCouple, StateVPA> {
   nodeNameToString(node: TreeElt<StringCouple>): string {
     if (node instanceof InnerNode)
       return `${toEps(node.name[0])},${toEps(node.name[1])}`
@@ -13,7 +13,7 @@ export default class DiscTreeVPA extends DiscTreeFather<StringCouple> {
   }
 
 
-  newChild(name: StringCouple): DiscTreeFather<StringCouple> {
+  newChild(name: StringCouple): DiscTreeFather<StringCouple, StateVPA> {
     return new DiscTreeVPA(name)
   }
 

@@ -35,7 +35,7 @@ export default class TTT_VPA_C extends LearnerSection<StateVPA> {
       state.learner.makeNextQuery()
       message = { ...oldMsg };
       if (learner.finish) {
-        message = { type: "END", val: <span>"The teacher has accepted the last conjecture" </span> }
+        message = { type: "END", val: <span>The teacher has accepted the last conjecture</span> }
       } else
         switch (oldMsg.type) {
           case "HYP-STAB": {

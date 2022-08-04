@@ -30,7 +30,6 @@ export default abstract class LearnerFather<DataStType, StateType> {
     this.equivNumber++;
     return answer;
   }
-
   abstract makeAutomaton(): FSM<StateType>;
   abstract makeNextQuery(): void;
 

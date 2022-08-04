@@ -3,12 +3,12 @@ import { toEps } from "../../../tools";
 import Teacher from "../../teachers/Teacher";
 import DiscTreeFather, { InnerNode, Leaf, TreeElt } from "./DiscTreeFather";
 
-export default class DiscTreeDFA extends DiscTreeFather<string> {
+export default class DiscTreeDFA extends DiscTreeFather<string, StateDFA> {
   nodeNameToString(node: TreeElt<string>): string {
     return toEps(node.name)
   }
 
-  newChild(name: string): DiscTreeFather<string> {
+  newChild(name: string): DiscTreeFather<string, StateDFA> {
     return new DiscTreeDFA(name)
   }
 
