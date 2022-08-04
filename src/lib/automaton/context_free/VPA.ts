@@ -788,7 +788,7 @@ export default class VPA implements FSM<StateVPA>, ToDot {
       //   throw new Error("STOP")
       // counter++;
 
-      if (grammar.size != oldSize) {
+      if (grammar.size !== oldSize) {
         simplifyGrammar()
       }
     }

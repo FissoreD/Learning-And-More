@@ -4,13 +4,14 @@ import Clonable from "../../../lib/Clonable.interface";
 import DiscTreeDFA from "../../../lib/learning/learners/discrimination_tree/DiscTreeDFA";
 import TTT_VPA from "../../../lib/learning/learners/discrimination_tree/TTT_VPA";
 import TeacherVPA from "../../../lib/learning/teachers/TeacherVPA";
-import { todo, toEps } from "../../../lib/tools";
+import { toEps } from "../../../lib/tools";
+import { createVPA4 } from "../../../lib/__test__/VPAforTest";
 import { LearnerSection, MessageType, StateReact } from "../LearnerSectionFatherC";
 import DiscriminationTreeC from "./DiscriminationTreeC";
 
 export default class TTT_VPA_C extends LearnerSection<StateVPA> {
   createNewLearner(regex: string): TTT_VPA {
-    return new TTT_VPA(new TeacherVPA({ automaton: todo() }))
+    return new TTT_VPA(new TeacherVPA({ automaton: createVPA4() }))
   }
 
   dataStructureToNodeElement(ds: Clonable): ReactElement {
@@ -38,9 +39,9 @@ export default class TTT_VPA_C extends LearnerSection<StateVPA> {
       } else
         switch (oldMsg.type) {
           case "HYP-STAB": {
-            let { u, v, a, uState } = learner.lastSplit!;
+            let { u, v, a, uState, newLeaf, newNodeLabel } = learner.lastSplit!;
             [u, v, uState] = [toEps(u), toEps(v), toEps(uState!)];
-            message.val = <span>The counter-example can be split in (u:<b>{u}</b>, a:<b>{a}</b>, v:<b>{v}</b>) since λ(⌊{u}.{a}⌋.{v}) ≠ λ(⌊{toEps(u)}⌋.{a}.{v}). The leaf {u} is replaced with the innernode {v} and the leaf ⌊{toEps(u)}⌋.{a} = {uState}.{a} has been added</span>;
+            message.val = <span>The counter-example can be split in (u:<b>{u}</b>, a:<b>{a}</b>, v:<b>{v}</b>) since λ(⌊{u}.{a}⌋.{v}) ≠ λ(⌊{toEps(u)}⌋.{a}.{v}). The leaf {u} is replaced with the innernode {`(${toEps(newNodeLabel[0])},${toEps(newNodeLabel[1])})`} and the leaf {newLeaf} is added</span>;
             break;
           }
           case "SEND-HYP":

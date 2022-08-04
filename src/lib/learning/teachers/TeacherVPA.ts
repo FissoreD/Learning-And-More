@@ -3,7 +3,7 @@ import StateVPA from "../../automaton/context_free/StateVPA";
 import VPA from "../../automaton/context_free/VPA";
 import Teacher from "./Teacher";
 
-export default class TecherVPA implements Teacher<StateVPA>{
+export default class TeacherVPA implements Teacher<StateVPA>{
   description: string;
   alphabet: AlphabetVPA;
   regex: string;

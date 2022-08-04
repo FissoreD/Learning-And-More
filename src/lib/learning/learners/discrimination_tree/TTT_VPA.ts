@@ -167,9 +167,4 @@ export default class TTT_VPA extends LearnerFather<DiscTreeVPA, StateVPA> {
     }
     throw new Error("Invalid counter-example")
   }
-
-  splitToString() {
-    let [u, a, v, uState, uaState] = [toEps(this.lastSplit!.u), this.lastSplit!.a, toEps(this.lastSplit!.v), toEps(this.lastSplit!.uState!), toEps(this.lastSplit!.uaState!)]
-    return `The conunter-example could be split into ${u + "." + a + "." + v} because (${"⌊" + u + "⌋." + a + "." + v} = ${uState + "." + a + "." + v}) ≠ (${"⌊" + u + "." + a + "⌋." + v} = ${uaState + "." + v})`;
-  }
 }
