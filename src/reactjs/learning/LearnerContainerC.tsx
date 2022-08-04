@@ -9,7 +9,7 @@ import TeacherVPA from "../../lib/learning/teachers/TeacherVPA";
 import { createVPA4 } from "../../lib/__test__/VPAforTest";
 import { createButtonGroupAlgoSwitcher, setFromPosition } from "../globalFunctions";
 import { URL_SEPARATOR } from "../globalVars";
-import TTT_C from "./discrimination_tree/TTT_DFA_C";
+import TTT_DFA_C from "./discrimination_tree/TTT_DFA_C";
 import TTT_VPA_C from "./discrimination_tree/TTT_VPA_C";
 import LStarC from "./observation_table/L_StarC";
 import NLStarC from "./observation_table/NL_StarC";
@@ -43,7 +43,7 @@ export default class LearnerContainerC extends React.Component<Prop, State> {
         cnt = <NLStarC pos={this.state.pos} changeRegexContainer={this.changeRegex.bind(this)} name={"NL*"} learner={new NL_star(teacher)} />;
         break;
       case "TTT-DFA":
-        cnt = <TTT_C pos={this.state.pos} changeRegexContainer={this.changeRegex.bind(this)} name={"TTT-DFA"} learner={new TTT_DFA(teacher)} />;
+        cnt = <TTT_DFA_C pos={this.state.pos} changeRegexContainer={this.changeRegex.bind(this)} name={"TTT-DFA"} learner={new TTT_DFA(teacher)} />;
         break;
       case "TTT-VPA":
         cnt = <TTT_VPA_C pos={this.state.pos} changeRegexContainer={this.changeRegex.bind(this)} name={"TTT-VPA"} learner={new TTT_VPA(new TeacherVPA({ automaton: createVPA4() }))} />;
