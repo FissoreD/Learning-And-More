@@ -11,11 +11,11 @@ export default class StateVPA {
   isAccepting: boolean;
   isInitial: boolean;
   alphabet: AlphabetVPA;
-  private outTransitions: transition;
+  outTransitions: transition;
   inTransitions: transition;
-  private successors: Set<StateVPA>;
-  private predecessors: Set<StateVPA>;
-  private mapAlphSymbolToType: Map<String, ALPHABET_TYPE>
+  successors: Set<StateVPA>;
+  predecessors: Set<StateVPA>;
+  mapAlphSymbolToType: Map<String, ALPHABET_TYPE>
   name: string;
   stackAlphabet: string[];
 

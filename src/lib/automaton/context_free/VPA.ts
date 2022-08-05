@@ -73,7 +73,7 @@ export default class VPA implements FSM<StateVPA>, ToDot {
    */
   minimize(): VPA {
     if (!this.isDeterministic()) {
-      throw new Error("The VPA should be deterministic")
+      throw new Error("The VPA should be deterministic" + `\nThe automaton is : \n${this.toDot()}`)
     }
     let complete = this.complete()
     let aut = complete.isDeterministic() ? complete : complete.determinize()
@@ -431,32 +431,6 @@ export default class VPA implements FSM<StateVPA>, ToDot {
       }
       nextStates = nextStates2;
     }
-    // for (let index = 0; index < word.length && nextStates.size > 0; index++) {
-
-    //   let nextStates2: Set<StateVPA> = new Set();
-    //   const symbol = word[index];
-    //   if (!this.alphabet.flatAlphabet().includes(symbol)) {
-    //     return [undefined, false]
-    //   }
-    //   for (const state of nextStates) {
-    //     try {
-    //       let nextTransition = this.findTransition(state, { symbol, stack })
-    //       if (nextTransition)
-    //         for (const nextState of nextTransition) {
-    //           nextStates2.add(nextState)
-    //           if (index === word.length - 1 && nextState.isAccepting) {
-    //             let res = stack.length === 0
-    //             return [nextState, res]
-    //           }
-    //         }
-    //     } catch (e) {
-    //       return [nextStates.values().next().value.name, false]
-    //     }
-    //   }
-    //   nextStates = nextStates2;
-    // }
-    // console.log(stackToString(stack));
-
     return [{ stateName: stackToString(stack), state: [...nextStates][0] }, false];
   }
 
@@ -675,9 +649,9 @@ export default class VPA implements FSM<StateVPA>, ToDot {
 
     let makeRuleName = (a: string, b: string, c: string) => `{${a}${b}${c}}`
 
-    stateNames.concat(exitingState).forEach(v => grammar.get("S")?.add(
-      `${makeRuleName(this.initialStates[0].name, freshSymbolStack, v)}`
-    ))
+    grammar.get("S")?.add(
+      `${makeRuleName(this.initialStates[0].name, freshSymbolStack, exitingState)}`
+    )
 
     states.forEach(state => {
       let { INT, CALL, RET } = state.getAllOutTransitions()
@@ -711,25 +685,47 @@ export default class VPA implements FSM<StateVPA>, ToDot {
           } catch (_) { }
         })
       });
+
+      let predSymbol = [...new Set([...state.predecessors].flatMap(pred => {
+        let validTransition = aut.alphabet.CALL.filter(e => pred.outTransitions.CALL[e] && pred.outTransitions.CALL[e].successors.includes(state))
+        return validTransition.map(e => pred.outTransitions.CALL[e].symbolToPush)
+      }))]
+
       aut.alphabet.CALL.forEach(symbol => {
-        let { successors, symbolToPush: topStack } = CALL[symbol]
-        if (successors && successors.length) {
-          let succ = successors[0].name;
-          for (const succ1 of stateNames.concat(exitingState)) {
-            for (const succ2 of stateNames.concat(exitingState)) {
-              let key = makeRuleName(state.name, topStack, succ2);
-              let ruleSet = grammar.get(key) || new Set();
-              ruleSet.add(`${symbol}${makeRuleName(succ, topStack, succ1)}${makeRuleName(succ1, topStack, succ2)}`)
-              grammar.set(key, ruleSet);
-              if (state.isInitial) {
-                let key = makeRuleName(state.name, freshSymbolStack, succ2);
-                let ruleSet = grammar.get(key) || new Set();
-                ruleSet.add(`${symbol}${makeRuleName(succ, topStack, succ1)}${makeRuleName(succ1, freshSymbolStack, succ2)}`)
-                grammar.set(key, ruleSet);
+        aut.stackAlphabet.concat(freshSymbolStack).forEach(symbol2 => {
+          let { successors, symbolToPush: topStack } = CALL[symbol]
+
+          if (successors && successors.length) {
+            let succ = successors[0].name;
+            for (const xxx of [...predSymbol, topStack, freshSymbolStack]) {
+              for (const succ1 of stateNames.concat(exitingState)) {
+                for (const succ2 of stateNames.concat(exitingState)) {
+                  let key = makeRuleName(state.name, xxx, succ2);
+                  let ruleSet = grammar.get(key) || new Set();
+                  ruleSet.add(`${symbol}${makeRuleName(succ, topStack, succ1)}${makeRuleName(succ1, symbol2, succ2)}`)
+                  grammar.set(key, ruleSet);
+                }
               }
             }
           }
-        }
+          // if (successors && successors.length) {
+          //   let succ = successors[0].name;
+          //   for (const succ1 of stateNames.concat(exitingState)) {
+          //     for (const succ2 of stateNames.concat(exitingState, ...predSymbol)) {
+          //       let key = makeRuleName(state.name, topStack, succ2);
+          //       let ruleSet = grammar.get(key) || new Set();
+          //       ruleSet.add(`${symbol}${makeRuleName(succ, topStack, succ1)}${makeRuleName(succ1, symbol2, succ2)}`)
+          //       grammar.set(key, ruleSet);
+
+          //       key = makeRuleName(state.name, freshSymbolStack, succ2);
+          //       ruleSet = grammar.get(key) || new Set();
+          //       ruleSet.add(`${symbol}${makeRuleName(succ, topStack, succ1)}${makeRuleName(succ1, symbol2, succ2)}`)
+          //       grammar.set(key, ruleSet);
+
+          //     }
+          //   }
+          // }
+        })
       })
     });
 
@@ -755,7 +751,7 @@ export default class VPA implements FSM<StateVPA>, ToDot {
     }
 
     // simplify recursive Rules of type A → A | x := A → x
-    let simplifyRecursiveRule = () => {
+    let removeRecursiveRule = () => {
       for (const [key, values] of grammar) {
         let valuesList = [...values]
         let next = valuesList.filter(e => e.includes(key))
@@ -791,9 +787,14 @@ export default class VPA implements FSM<StateVPA>, ToDot {
       }
     }
 
+    /** Replace rules on the form A → x | G := A → x */
     let replaceTerminalInG = () => {
       let grammarCopy = [...grammar]
-      let terminals = grammarCopy.filter(([_, values]) => ![...values][0].match(/{[^{}]*}/g)).map(([key, value]) => [key, [...value][0]])
+
+      let terminals = grammarCopy.filter(
+        ([_, values]) => [...values].some(e => !e.match(/{[^{}]*}/g))
+      ).map(([key, value]) => [key, [...value].find(e => !e.match(/{[^{}]*}/g))!])
+
       grammarCopy.forEach(([_, values]) => {
         terminals.map(([key, terminal]) => [...values].forEach(v => {
           if (v.includes(key)) {
@@ -808,20 +809,21 @@ export default class VPA implements FSM<StateVPA>, ToDot {
       })
     }
 
-    // let counter = 0
+    let counter = 0
+
+
     let simplifyGrammar = () => {
       let oldSize = grammar.size
-
-      simplifyRecursiveRule()
+      removeRecursiveRule()
       cleanGrammar()
       removeEmptyRule()
       replaceTerminalInG()
       removeEmptyRule()
       simplifyTerminal()
       if (print) console.log(grammar);
-      // if (counter === 0 && false)
-      //   throw new Error("STOP")
-      // counter++;
+      if (counter === 3 && print)
+        throw new Error("STOP")
+      counter++;
 
       if (grammar.size !== oldSize) {
         simplifyGrammar()

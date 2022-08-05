@@ -86,7 +86,6 @@ export default class TTT_VPA extends TTT_Father<StringCouple, StateVPA> {
     return (this.automaton = new ONE_SEVPA([...states.values()]))
   }
 
-  /** @todo loop only over RET and INT symbols */
   split_ce_in_uav(ce: string) {
     let splitU_Hat = (uHat: string, isInt: boolean) => {
       let pos = uHat.length - 1, cnt = 0, addAfter = isInt ? 1 : 0
