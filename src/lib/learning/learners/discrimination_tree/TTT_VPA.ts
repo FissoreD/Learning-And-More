@@ -88,13 +88,13 @@ export default class TTT_VPA extends TTT_Father<StringCouple, StateVPA> {
 
   /** @todo loop only over RET and INT symbols */
   split_ce_in_uav(ce: string) {
-    let splitU_Hat = (uHat: string) => {
-      let pos = uHat.length - 1, cnt = 0
+    let splitU_Hat = (uHat: string, isInt: boolean) => {
+      let pos = uHat.length - 1, cnt = 0, addAfter = isInt ? 1 : 0
       while (pos > -1) {
         let char = uHat[pos]
         if (this.alphabet.CALL.includes(char)) cnt--
         else if (this.alphabet.RET.includes(char)) cnt++
-        if (cnt < 0) return { uPrime: uHat.substring(0, pos), u: uHat.substring(pos) }
+        if (cnt < 0) return { uPrime: uHat.substring(0, pos + addAfter), u: uHat.substring(pos + addAfter) }
         pos--;
       }
       return { uPrime: "", u: uHat }
@@ -104,17 +104,23 @@ export default class TTT_VPA extends TTT_Father<StringCouple, StateVPA> {
     for (let i = 0; i < ce.length; i++) {
       uHat = ce.substring(0, i);
       aHat = ce[i];
+      // Skip all symbols := they should not be considered while splitting
+      if (this.alphabet.CALL.includes(aHat)) {
+        continue;
+      }
       vHat = ce.substring(i + 1);
-      let uState = this.automaton!.giveState(uHat)?.name
-      let uaState = this.automaton!.giveState(uHat + aHat)?.name
-      if (this.teacher.member(uState + aHat + vHat) !== this.teacher.member(uaState + vHat)) {
-        let { uPrime, u } = splitU_Hat(uHat);
-        uaState = this.automaton?.giveState(u + aHat)?.name
+
+      let { state: uState, stateName: uStateName } = this.automaton!.giveState(uHat)!
+      let { stateName: uaStateName } = this.automaton!.giveState(uHat + aHat)!
+
+      if (this.teacher.member(uStateName + aHat + vHat) !== this.teacher.member(uaStateName + vHat)) {
+        let { uPrime, u } = splitU_Hat(uHat, this.alphabet.INT.includes(aHat));
+        let uaState = this.automaton?.giveState(u + aHat)?.state.name
         let newNodeLabel: StringCouple = [uPrime, vHat]
         let newLeaf = u + aHat
-        return { u: uHat, a: aHat, v: vHat, uaState, uState, newNodeLabel, newLeaf }
+        return { u: uHat, a: aHat, v: vHat, uaState, uState: uState.name, newNodeLabel, newLeaf }
       }
     }
-    throw new Error("Invalid counter-example")
+    throw new Error(`Invalid counter-example: the ce is ${ce} and aut is\n${this.automaton?.toDot()}`)
   }
 }

@@ -30,7 +30,7 @@ export default class VPA implements FSM<StateVPA>, ToDot {
     this.alphabet = new AlphabetVPA().union(...stateList.map(e => e.alphabet));
   }
 
-  giveState(word: string): StateVPA | undefined {
+  giveState(word: string): { stateName: string; state: StateVPA; } | undefined {
     return this.readWord(word)[0]
   }
 
@@ -391,37 +391,73 @@ export default class VPA implements FSM<StateVPA>, ToDot {
     return this.symmetricDifference(aut).isEmpty()
   }
 
-  readWord(word: string): [StateVPA | undefined, boolean] {
-    if (word.length === 0)
-      return [undefined, this.initialStates.some(e => e.isAccepting)];
+  readWord(word: string): [{ stateName: string; state: StateVPA; } | undefined, boolean] {
+    let stackToString = (stack: string[]) => {
+      return stack.join().replace(/([^\x00-\x7F]|\(|\)|,)/g, "")
+    }
+    if (word.length === 0) {
+      let state = this.initialStates.find(e => e.isAccepting) || this.initialStates[0]
+      return [{ state, stateName: "" }, this.initialStates.some(e => e.isAccepting)];
+    }
     let nextStates: Set<StateVPA> = new Set(this.initialStates);
     let stack: string[] = []
 
-    for (let index = 0; index < word.length && nextStates.size > 0; index++) {
+    while (word.length && nextStates.size) {
+      let symbol = this.alphabet.flatAlphabet().find(e => word.startsWith(e))
 
-      let nextStates2: Set<StateVPA> = new Set();
-      const symbol = word[index];
-      if (!this.alphabet.flatAlphabet().includes(symbol)) {
+      if (symbol === undefined) {
         return [undefined, false]
       }
+
+      word = word.substring(symbol.length)
+      // console.log({ symbol, word, alph: this.alphabet.flatAlphabet() });
+
+      let nextStates2: Set<StateVPA> = new Set();
       for (const state of nextStates) {
         try {
           let nextTransition = this.findTransition(state, { symbol, stack })
           if (nextTransition)
             for (const nextState of nextTransition) {
               nextStates2.add(nextState)
-              if (index === word.length - 1 && nextState.isAccepting) {
+              if (word.length === 0 && nextState.isAccepting) {
                 let res = stack.length === 0
-                return [nextState, res]
+                // console.log(stack);
+                return [{ stateName: stackToString(stack), state: nextState }, res]
               }
             }
         } catch (e) {
-          return [nextStates.values().next().value.name, false]
+          return [{ stateName: stackToString(stack), state: [...nextStates][0] }, false]
         }
       }
       nextStates = nextStates2;
     }
-    return [nextStates.values().next().value, false];
+    // for (let index = 0; index < word.length && nextStates.size > 0; index++) {
+
+    //   let nextStates2: Set<StateVPA> = new Set();
+    //   const symbol = word[index];
+    //   if (!this.alphabet.flatAlphabet().includes(symbol)) {
+    //     return [undefined, false]
+    //   }
+    //   for (const state of nextStates) {
+    //     try {
+    //       let nextTransition = this.findTransition(state, { symbol, stack })
+    //       if (nextTransition)
+    //         for (const nextState of nextTransition) {
+    //           nextStates2.add(nextState)
+    //           if (index === word.length - 1 && nextState.isAccepting) {
+    //             let res = stack.length === 0
+    //             return [nextState, res]
+    //           }
+    //         }
+    //     } catch (e) {
+    //       return [nextStates.values().next().value.name, false]
+    //     }
+    //   }
+    //   nextStates = nextStates2;
+    // }
+    // console.log(stackToString(stack));
+
+    return [{ stateName: stackToString(stack), state: [...nextStates][0] }, false];
   }
 
   acceptWord(word: string): boolean {
@@ -551,9 +587,8 @@ export default class VPA implements FSM<StateVPA>, ToDot {
 
     let start = performance.now()
     while (toExplore.length) {
-      if (performance.now() > start + 10) {
-        console.log(aut.toDot());
-        throw new Error("Should be empty !!")
+      if (performance.now() > start + 20) {
+        throw new Error("Should be empty !!\n" + aut.toDot())
       }
       let newToExplore: exploreType = []
       for (const { state, word, stack, callNumber, canPushOnStack } of toExplore) {
@@ -783,7 +818,7 @@ export default class VPA implements FSM<StateVPA>, ToDot {
       replaceTerminalInG()
       removeEmptyRule()
       simplifyTerminal()
-      // console.log(grammar);
+      if (print) console.log(grammar);
       // if (counter === 0 && false)
       //   throw new Error("STOP")
       // counter++;
@@ -793,7 +828,9 @@ export default class VPA implements FSM<StateVPA>, ToDot {
       }
     }
 
-    // console.log(grammar);
+    let print = false;
+
+    if (print) console.log(grammar);
     simplifyGrammar()
     // console.log(grammar.get("S"));
 

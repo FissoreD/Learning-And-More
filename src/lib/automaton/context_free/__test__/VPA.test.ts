@@ -1,4 +1,4 @@
-import { createVPA1, createVPA2, createVPA3 } from "../../../__test__/VPAforTest";
+import { createVPA1, createVPA2, createVPA3, createVPAxml1 } from "../../../__test__/VPAforTest";
 import AlphabetVPA from "../AlphabetVPA";
 import StateVPA from "../StateVPA";
 import VPA from "../VPA";
@@ -89,5 +89,10 @@ describe("VPA counter-example", () => {
     for (let i = 0; i < 5; i++) {
       expect(aut.findWordAccepted(i)?.length).toBeGreaterThanOrEqual(i)
     }
+  })
+
+  test("vpaXML1", () => {
+    let aut = createVPAxml1()
+    expect(aut.isEmpty()).toBeFalsy();
   })
 })

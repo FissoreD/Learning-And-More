@@ -52,7 +52,7 @@ export default interface FSM<StateType> extends Clonable, ToDot, ToString {
   /** 
    * @return the state on which we are after reading word 
    */
-  giveState(word: string): StateType | undefined;
+  giveState(word: string): { stateName: string, state: StateType } | undefined;
 
   /**
    * @returns if the automaton is empty

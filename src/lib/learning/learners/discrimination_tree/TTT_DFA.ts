@@ -58,8 +58,8 @@ export default class TTT_DFA extends TTT_Father<string, StateDFA> {
       u = ce.substring(0, i);
       a = ce[i];
       v = ce.substring(i + 1);
-      let uState = this.automaton!.giveState(u)?.name
-      let uaState = this.automaton!.giveState(u + a)?.name
+      let uState = this.automaton!.giveState(u)?.stateName
+      let uaState = this.automaton!.giveState(u + a)?.stateName
       if (this.teacher.member(uState + a + v) !== this.teacher.member(uaState + v)) {
         return { u, a, v, uaState, uState, newLeaf: uState + a, newNodeLabel: v }
       }

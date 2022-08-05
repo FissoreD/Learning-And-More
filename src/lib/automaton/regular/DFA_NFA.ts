@@ -121,13 +121,22 @@ export default class DFA_NFA implements FSM<StateDFA>, ToDot {
     return new DFA_NFA([...mapNewStateNameState.values()])
   }
 
-  readWord(word: string): [StateDFA | undefined, boolean] {
-    if (word.length === 0)
-      return [this.initialStates.find(e => e.isAccepting) || this.initialStates[0], this.initialStates.some(e => e.isAccepting)];
+  readWord(word: string): [{ stateName: string; state: StateDFA; } | undefined, boolean] {
+    if (word.length === 0) {
+      let state = (this.initialStates.find(e => e.isAccepting) || this.initialStates[0])
+      return [{ state, stateName: state.name }, this.initialStates.some(e => e.isAccepting)];
+    }
     let nextStates: Set<StateDFA> = new Set(this.initialStates);
-    for (let index = 0; index < word.length && nextStates.size > 0; index++) {
+
+    while (word.length && nextStates.size) {
+      let symbol = this.alphabet.symbols.find(e => word.startsWith(e))
+
+      if (symbol === undefined) {
+        return [undefined, false]
+      }
+
+      word = word.substring(symbol.length)
       let nextStates2: Set<StateDFA> = new Set();
-      const symbol = word[index];
       if (!this.alphabet.symbols.includes(symbol)) {
         return [undefined, false]
       }
@@ -136,17 +145,18 @@ export default class DFA_NFA implements FSM<StateDFA>, ToDot {
         if (nextTransition)
           for (const nextState of nextTransition) {
             nextStates2.add(nextState)
-            if (index === word.length - 1 && nextState.isAccepting)
-              return [nextState, true]
+            if (word.length === 0 && nextState.isAccepting)
+              return [{ state: nextState, stateName: nextState.name }, true]
           }
         // Array.from(this.findTransition(state, symbol)).forEach(e => nextStates2.add(e))
       }
       nextStates = nextStates2;
     }
-    return [nextStates.values().next().value, false];
+    let state = [...nextStates][0]
+    return [{ state, stateName: state?.name }, false];
   }
 
-  giveState(word: string): StateDFA | undefined {
+  giveState(word: string): { stateName: string; state: StateDFA; } | undefined {
     return this.readWord(word)[0]
   }
 

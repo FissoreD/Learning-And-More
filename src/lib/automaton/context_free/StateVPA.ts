@@ -62,7 +62,7 @@ export default class StateVPA {
 
   addTransition(p: { type?: ALPHABET_TYPE, symbol: string, topStack?: string, successor: StateVPA }) {
     if (p.successor === undefined)
-      throw new Error("p.successor is undefined !")
+      throw new Error("p.successor is undefined !" + `\nLooking for ${JSON.stringify({ symbol: p.symbol, topStack: p.topStack, fromState: this.name, toState: p.successor })}`)
     p.topStack = p.topStack || undefined
     let succ: StateVPA[] = [], pred: StateVPA[] = [];
     p.type = p.type || this.mapAlphSymbolToType.get(p.symbol)!

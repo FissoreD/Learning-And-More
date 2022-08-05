@@ -13,7 +13,6 @@ export default abstract class TTT_Father<LblType, StateType> extends LearnerFath
   constructor(teacher: Teacher<StateType>, discTree: DiscTreeFather<LblType, StateType>) {
     super(teacher, discTree)
     this.initiate()
-    this.makeAutomaton()
     this.makeNextQuery()
   }
 
@@ -39,7 +38,8 @@ export default abstract class TTT_Father<LblType, StateType> extends LearnerFath
 
     let { newLeaf, v, uaState, newNodeLabel } = this.lastSplit!;
 
-    this.lastCe = { value: newLeaf + v, accepted: !this.automaton!.acceptWord(newLeaf + v), isTeacher }
+    // todo : value should not be equal to ce ?
+    this.lastCe = { value: ce, accepted: !this.automaton!.acceptWord(newLeaf + v), isTeacher }
     if (isTeacher) return
     this.dataStructure.splitLeaf({
       leafName: uaState!,

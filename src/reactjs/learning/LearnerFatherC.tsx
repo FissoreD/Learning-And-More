@@ -127,6 +127,11 @@ export abstract class LearnerSection<StateType> extends React.Component<PropReac
   }
 
   createNextSetpButtonGroup() {
+    // console.log(this.state.learner.finish);
+    // console.log(this.state.learner.automaton?.sameLanguage(this.state.learner.teacher.automaton));
+    // console.log(this.state.learner.automaton?.toDot());
+    // console.log(this.state.learner.teacher.automaton?.toDot());
+
     let isFirst = this.state.position === 0,
       isLast = this.state.memory.length - 1 === this.state.position && this.state.learner.finish,
       buttons: ({ img: ReactElement, action: (() => void), disabled: boolean })[] = [
