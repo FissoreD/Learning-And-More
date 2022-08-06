@@ -392,9 +392,10 @@ export default class VPA implements FSM<StateVPA>, ToDot {
   }
 
   readWord(word: string): [{ stateName: string; state: StateVPA; } | undefined, boolean] {
-    let stackToString = (stack: string[]) => {
+    let stackToString = (...stack: string[]) => {
       return stack.join().replace(/([^\x00-\x7F]|\(|\)|,)/g, "")
     }
+    let wordBackUp = word;
     if (word.length === 0) {
       let state = this.initialStates.find(e => e.isAccepting) || this.initialStates[0]
       return [{ state, stateName: "" }, this.initialStates.some(e => e.isAccepting)];
@@ -402,7 +403,7 @@ export default class VPA implements FSM<StateVPA>, ToDot {
     let nextStates: Set<StateVPA> = new Set(this.initialStates);
     let stack: string[] = []
 
-    while (word.length && nextStates.size) {
+    while (nextStates.size) {
       let symbol = this.alphabet.flatAlphabet().find(e => word.startsWith(e))
 
       if (symbol === undefined) {
@@ -419,19 +420,26 @@ export default class VPA implements FSM<StateVPA>, ToDot {
           if (nextTransition)
             for (const nextState of nextTransition) {
               nextStates2.add(nextState)
-              if (word.length === 0 && nextState.isAccepting) {
-                let res = stack.length === 0
-                // console.log(stack);
-                return [{ stateName: stackToString(stack), state: nextState }, res]
+              if (word.length === 0) {
+                if (nextState.isAccepting) {
+                  let res = stack.length === 0
+                  return [{ stateName: stackToString(...stack) + (this.alphabet.INT.includes(symbol) ? stackToString(nextState.name) : ""), state: nextState }, res]
+                } else {
+                  return [{ stateName: stackToString(...stack) + (this.alphabet.INT.includes(symbol) ? stackToString(nextState.name) : ""), state: nextState }, false]
+                }
               }
             }
         } catch (e) {
-          return [{ stateName: stackToString(stack), state: [...nextStates][0] }, false]
+          return [{ stateName: stackToString(...stack), state: [...nextStates][0] }, false]
+        }
+
+        if (word.length === 0) {
+          return [{ stateName: stackToString(...stack), state: [...nextStates][0] }, false]
         }
       }
       nextStates = nextStates2;
     }
-    return [{ stateName: stackToString(stack), state: [...nextStates][0] }, false];
+    return [{ stateName: stackToString(...stack), state: [...nextStates][0] }, false];
   }
 
   acceptWord(word: string): boolean {
@@ -561,9 +569,15 @@ export default class VPA implements FSM<StateVPA>, ToDot {
 
     let start = performance.now()
     while (toExplore.length) {
-      if (performance.now() > start + 20) {
+      if (performance.now() > start + 100) {
         throw new Error("Should be empty !!\n" + aut.toDot())
       }
+      // if (toExplore[0].word.length === 1) console.log(toExplore.filter(e => e.word.startsWith("A")).map(e => e.word));
+      // if (toExplore[0].word.length === 2) console.log(toExplore.filter(e => e.word.startsWith("AA")).map(e => e.word));
+      // if (toExplore[0].word.length === 3) console.log(toExplore.filter(e => e.word.startsWith("AAD")).map(e => e.word));
+      // if (toExplore[0].word.length === 4) console.log(toExplore.filter(e => e.word.startsWith("AADB")).map(e => e.word));
+      // if (toExplore[0].word.length === 5) console.log(toExplore.filter(e => e.word.startsWith("AADBT")).map(e => e.word));
+      // if (toExplore[0].word.length === 6) console.log(toExplore.filter(e => e.word.startsWith("AADBTC")).map(e => e.word));
       let newToExplore: exploreType = []
       for (const { state, word, stack, callNumber, canPushOnStack } of toExplore) {
         // RET
@@ -834,7 +848,7 @@ export default class VPA implements FSM<StateVPA>, ToDot {
 
     if (print) console.log(grammar);
     simplifyGrammar()
-    // console.log(grammar.get("S"));
+    console.log(grammar.get("S"));
 
     return grammar.has("S") && [...grammar.get("S")!].some(e => !e.match(/{[^{}]*}/g))
   }

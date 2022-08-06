@@ -19,6 +19,7 @@ export default abstract class TTT_Father<LblType, StateType> extends LearnerFath
   abstract initiate(): void;
   abstract makeAutomaton(): FSM_interface<StateType>;
   abstract split_ce_in_uav(ce: string): LastSplitType<LblType>;
+  abstract updateCe(ce: string, isTeacher: boolean): void;
 
   makeNextQuery() {
     if (this.finish) return
@@ -36,16 +37,19 @@ export default abstract class TTT_Father<LblType, StateType> extends LearnerFath
 
     this.lastSplit = this.split_ce_in_uav(ce)
 
-    let { newLeaf, v, uaState, newNodeLabel } = this.lastSplit!;
+    this.updateCe(ce, isTeacher)
 
-    // todo : value should not be equal to ce ?
-    this.lastCe = { value: ce, accepted: !this.automaton!.acceptWord(newLeaf + v), isTeacher }
     if (isTeacher) return
+
+    this.updateTree(this.lastSplit)
+  }
+
+  updateTree(p: { newLeaf: string, v: string, uaState?: string, newNodeLabel: LblType }) {
     this.dataStructure.splitLeaf({
-      leafName: uaState!,
-      nameLeafToAdd: newLeaf,
-      newDiscriminator: newNodeLabel,
-      isTop: !this.automaton!.acceptWord(uaState + v)
+      leafName: p.uaState!,
+      nameLeafToAdd: p.newLeaf,
+      newDiscriminator: p.newNodeLabel,
+      isTop: this.lastCe!.accepted
     })
   }
 

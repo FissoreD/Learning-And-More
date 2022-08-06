@@ -3,7 +3,7 @@ import DFA_NFA from "../../../automaton/regular/DFA_NFA";
 import StateDFA from "../../../automaton/regular/StateDFA";
 import Teacher from "../../teachers/Teacher";
 import DiscTreeDFA from "./DiscTreeDFA";
-import TTT_Father from "./TTT_Father";
+import TTT_Father, { LastSplitType } from "./TTT_Father";
 
 export default class TTT_DFA extends TTT_Father<string, StateDFA> {
   alphabet: AlphabetDFA;
@@ -52,7 +52,7 @@ export default class TTT_DFA extends TTT_Father<string, StateDFA> {
     return (this.automaton = new DFA_NFA([...states.values()]))
   }
 
-  split_ce_in_uav(ce: string) {
+  split_ce_in_uav(ce: string): LastSplitType<string> {
     let u: string, a: string, v: string;
     for (let i = 0; i < ce.length; i++) {
       u = ce.substring(0, i);
@@ -65,5 +65,12 @@ export default class TTT_DFA extends TTT_Father<string, StateDFA> {
       }
     }
     throw new Error("Invalid counter-example")
+  }
+
+  updateCe(ce: string, isTeacher: boolean): void {
+    let { newLeaf, v } = this.lastSplit!
+    // todo: verify following lines
+    // this.lastCe = { value: ce, accepted: !this.automaton!.acceptWord(newLeaf + v), isTeacher }
+    this.lastCe = { value: newLeaf + v, accepted: !this.automaton!.acceptWord(newLeaf + v), isTeacher }
   }
 }

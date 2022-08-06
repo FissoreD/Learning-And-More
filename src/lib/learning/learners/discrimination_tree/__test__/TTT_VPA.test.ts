@@ -45,37 +45,20 @@ describe("TTT_VPA", () => {
   })
 
   test("vpaXML2", () => {
-    // let aut = autMaker().complete()
-
-    // console.log(aut.toDot());
-    // expect(aut.acceptWord("ABCD")).toBeTruthy()
-
-    // expect(aut.isEmpty()).toBe(false);
-    // console.log(aut.toDot());
-
     let automaton = createVPAxml2()
     let teacher = new TeacherVPA({ automaton })
     let learner = new TTT_VPA(teacher)
 
-    console.log("-".repeat(30));
-    // console.log("\n".repeat(5));
-
-
-    let sym = learner.automaton!.symmetricDifference(automaton);
-
-    // console.log(sym.toDot());
-
-    // expect(sym.acceptWord("ABTCD"));
-    expect(automaton.isEmpty()).toBeFalsy();
-    expect(sym.isEmpty()).toBeFalsy();
-
-    // console.log(learner.finish);
-
-
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 4; i++) {
       learner.makeNextQuery()
-      console.log(`${learner.automaton?.toDot()}\n${learner.dataStructure.toDot()}`);
+      // console.log(`${false && learner.automaton?.toDot()}\n${learner.dataStructure.toDot()}`);
     }
+    // console.log(learner.dataStructure.toDot());
+
+
+    // console.log({ learner: learner.automaton?.acceptWord("ABTCD"), teacher: automaton.acceptWord("ABTCD"), sym: learner.automaton?.symmetricDifference(automaton).acceptWord("ABTCD") });
+
+    expect(learner.automaton?.symmetricDifference(automaton).isEmpty()).toBeTruthy();
   })
 })
 

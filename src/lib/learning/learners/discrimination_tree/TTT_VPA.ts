@@ -3,14 +3,14 @@ import ONE_SEVPA from "../../../automaton/context_free/ONE_SEVPA";
 import StateVPA from "../../../automaton/context_free/StateVPA";
 import VPA from "../../../automaton/context_free/VPA";
 import { toEps } from "../../../tools";
-import Teacher from "../../teachers/Teacher";
+import TeacherVPA from "../../teachers/TeacherVPA";
 import DiscTreeVPA, { StringCouple } from "./DiscTreeVPA";
-import TTT_Father from "./TTT_Father";
+import TTT_Father, { LastSplitType } from "./TTT_Father";
 
 export default class TTT_VPA extends TTT_Father<StringCouple, StateVPA> {
   alphabet: AlphabetVPA;
 
-  constructor(teacher: Teacher<StateVPA>) {
+  constructor(teacher: TeacherVPA) {
     super(teacher, new DiscTreeVPA(["", ""]))
     this.alphabet = teacher.alphabet as AlphabetVPA;
   }
@@ -86,7 +86,7 @@ export default class TTT_VPA extends TTT_Father<StringCouple, StateVPA> {
     return (this.automaton = new ONE_SEVPA([...states.values()]))
   }
 
-  split_ce_in_uav(ce: string) {
+  split_ce_in_uav(ce: string): LastSplitType<StringCouple> {
     let splitU_Hat = (uHat: string, isInt: boolean) => {
       let pos = uHat.length - 1, cnt = 0, addAfter = isInt ? 1 : 0
       while (pos > -1) {
@@ -117,9 +117,16 @@ export default class TTT_VPA extends TTT_Father<StringCouple, StateVPA> {
         let uaState = this.automaton?.giveState(u + aHat)?.state.name
         let newNodeLabel: StringCouple = [uPrime, vHat]
         let newLeaf = u + aHat
+
+        console.log({ ce, u: uHat, a: aHat, v: vHat, uaState, uState: uState.name, newNodeLabel, newLeaf });
         return { u: uHat, a: aHat, v: vHat, uaState, uState: uState.name, newNodeLabel, newLeaf }
       }
     }
     throw new Error(`Invalid counter-example: the ce is ${ce} and aut is\n${this.automaton?.toDot()}`)
+  }
+
+  updateCe(ce: string, isTeacher: boolean): void {
+    let { newLeaf, v } = this.lastSplit!
+    this.lastCe = { value: ce, accepted: this.teacher.member(ce), isTeacher }
   }
 }

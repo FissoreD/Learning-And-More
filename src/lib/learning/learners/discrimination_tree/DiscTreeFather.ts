@@ -60,6 +60,10 @@ export class Leaf<LblType> {
       return true
     return false
   }
+
+  isRight() {
+    return this.parent.right === this
+  }
 }
 
 export type TreeElt<LblType> = InnerNode<LblType> | Leaf<LblType>
@@ -131,6 +135,10 @@ export default abstract class DiscTreeFather<LblType, StateType> implements Clon
 
   getLeaves() {
     return this.leaves
+  }
+
+  getLeaf(leafName: string) {
+    return this.leaves.get(leafName)
   }
 
   addRoot(s: string): Leaf<LblType> {
