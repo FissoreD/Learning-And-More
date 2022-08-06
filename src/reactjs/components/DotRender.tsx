@@ -19,7 +19,9 @@ export default class GraphDotToRender extends React.Component<Props, any> {
   }
 
   public render = (): JSX.Element => {
-    return <div className={this.props.className + " automaton img-fluid"} id={this.id} />;
+    console.log();
+
+    return <div className={`${this.props.className} automaton img-fluid`} id={this.id} />;
   };
 
   public componentDidMount = () => {

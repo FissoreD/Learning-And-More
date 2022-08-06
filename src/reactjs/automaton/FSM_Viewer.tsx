@@ -75,7 +75,7 @@ export default class FSM_Viewer extends React.Component<ReactProp, ReactState>{
           }
         });
         let oldOp = this.state.lastOperation
-        this.createResultAut(oldOp.operation, oldOp.is_a1)
+        this.updateResultAut(oldOp.operation, oldOp.is_a1)
       } else {
         alert("Not implemented")
       }
@@ -83,23 +83,24 @@ export default class FSM_Viewer extends React.Component<ReactProp, ReactState>{
     this.setState({ showRegexSetter: false })
   }
 
-  createResultAut(operation: Operation, is_a1 = true) {
+  createResultAut(operation: Operation, is_a1 = true, a1: VPA, a2: VPA) {
+    let res: VPA;
+    switch (operation) {
+      case "/": res = a1.difference(a2) as VPA; break;
+      case "∩": res = a1.intersection(a2) as VPA; break;
+      case "∪": res = a1.union(a2) as VPA; break;
+      case "△": res = a1.symmetricDifference(a2) as VPA; break;
+      case "~": res = (is_a1 ? a1 : a2).complement() as VPA; break;
+      case "Det": res = a1.determinize() as VPA; break;
+      default: throw new Error("Should not be here")
+    }
+    let opeartionList = { a1, a2, operation, res, is_a1 }
+    return { lastOperation: opeartionList }
+  }
+
+  updateResultAut(operation: Operation, is_a1 = true) {
     this.setState((state) => {
-      let { a1: r1, a2: r2 } = state
-      let [a1, a2] = [r1, r2].map(e => e)
-      let res: VPA;
-      switch (operation) {
-        case "/": res = a1.difference(a2) as VPA; break;
-        case "∩": res = a1.intersection(a2) as VPA; break;
-        case "∪": res = a1.union(a2) as VPA; break;
-        case "△": res = a1.symmetricDifference(a2) as VPA; break;
-        case "~": res = (is_a1 ? a1 : a2).complement() as VPA; break;
-        case "Det": res = a1.determinize() as VPA; break;
-        default: throw new Error("Should not be here")
-      }
-      let opeartionList = state.lastOperation
-      opeartionList = { a1, a2, operation, res, is_a1 }
-      return { lastOperation: opeartionList }
+      return this.createResultAut(operation, is_a1, state.a1 as VPA, state.a2 as VPA)
     })
   }
 
@@ -118,7 +119,7 @@ export default class FSM_Viewer extends React.Component<ReactProp, ReactState>{
     let { a1: r1, a2: r2, lastOperation: opeartionList } = this.state
     this.setState(() => { return { a1: r2, a2: r1 } })
     if ((["/", "~"] as Operation[]).includes(opeartionList.operation))
-      this.createResultAut(opeartionList.operation, opeartionList.is_a1)
+      this.updateResultAut(opeartionList.operation, opeartionList.is_a1)
   }
 
   createOpHeader() {
@@ -137,25 +138,43 @@ export default class FSM_Viewer extends React.Component<ReactProp, ReactState>{
       </Card.Header>
       <Card.Body className="py-1 px-0">
         <div className={FLEX_CENTER} style={{ minHeight: "130px" }}><GraphDotRender dot={r} /></div>
-        <div className={FLEX_CENTER}><Button onClick={() => this.createResultAut("~", pos === 1)}>Complement(A{pos})</Button></div>
+        <div className={FLEX_CENTER}><Button onClick={() => this.updateResultAut("~", pos === 1)}>Complement(A{pos})</Button></div>
       </Card.Body>
     </Card>
   }
 
   createAccordionItem(p: { key: string, aut: FSM<StateDFA | StateVPA>, isMinimized: boolean }) {
+    let aut = p.isMinimized ? p.aut.minimize() : p.aut
+    let colorPutInDiv = "secondary"
     return <Accordion.Item eventKey={p.key} >
       <Accordion.Header>
         {this.createOpHeader()} - {p.isMinimized ? "Minimized" : "Normal"}
       </Accordion.Header>
       <Accordion.Body className="justify-content-center">
-        <GraphDotRender dot={p.isMinimized ? p.aut.minimize() : p.aut} />
+        <div className="d-flex text-center position-absolute flex-column">
+          <p className={`m-0 p-1 text-${colorPutInDiv} border rounded-top border-bottom-0 border-${colorPutInDiv}`}
+            style={{ fontSize: "0.875rem" }}>Put in</p>
+          <ButtonGroup>
+            <Button variant={"outline-" + colorPutInDiv} size="sm" style={{ borderTopLeftRadius: 0 }} onClick={() => {
+              this.setState((state) => {
+                return { ...this.createResultAut(state.lastOperation.operation, true, aut as VPA, state.a2 as VPA), a1: aut }
+              })
+            }}>A1</Button>
+            <Button variant={"outline-" + colorPutInDiv} size="sm" style={{ borderTopRightRadius: 0 }} onClick={() => {
+              this.setState((state) => {
+                return { ...this.createResultAut(state.lastOperation.operation, false, state.a1 as VPA, aut as VPA), a2: aut }
+              })
+            }}>A2</Button>
+          </ButtonGroup>
+        </div>
+        <GraphDotRender dot={aut} />
       </Accordion.Body>
     </Accordion.Item>
   }
 
   createBinaryOperatorSwitcher() {
     return <>
-      {binaryOp.map(e => <Button key={e} onClick={() => this.createResultAut(e)}>{e}</Button>)}
+      {binaryOp.map(e => <Button key={e} onClick={() => this.updateResultAut(e)}>{e}</Button>)}
       <Button onClick={() => this.switchAutomata()}>⇌</Button>
     </>
   }
@@ -176,7 +195,8 @@ export default class FSM_Viewer extends React.Component<ReactProp, ReactState>{
       </Row>
       <Accordion defaultActiveKey={['0']} alwaysOpen className="mt-3">
         {this.createAccordionItem({ key: "0", aut: lastOp.res, isMinimized: false })}
-        {this.createAccordionItem({ key: "1", aut: lastOp.res, isMinimized: true })}
+        {this.state.a1 instanceof VPA ? <></> :
+          this.createAccordionItem({ key: "1", aut: lastOp.res, isMinimized: true })}
       </Accordion>
     </>
   }

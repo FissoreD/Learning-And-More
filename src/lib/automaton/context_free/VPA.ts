@@ -423,13 +423,11 @@ export default class VPA implements FSM<StateVPA>, ToDot {
 
     while (nextStates.size) {
       let symbol = findSymbol()
-      // console.log({ flatAlphabet, word, symbol });
       if (symbol === undefined) {
         return [undefined, false]
       }
 
       word = word.substring(symbol.length)
-      // console.log({ symbol, word, alph: this.alphabet.flatAlphabet() });
 
       let nextStates2: Set<StateVPA> = new Set();
       for (const state of nextStates) {
