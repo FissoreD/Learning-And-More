@@ -34,8 +34,6 @@ export default class AlphabetVPA implements Clonable, Alphabet {
       prev.RET = prev.RET.concat(curr.RET)
       return prev
     }, this.clone())
-    // Remove Duplicata
-    // Check if it is a disjoint union of three sets
     res.isValidAlphabet()
     return res
   }
@@ -53,6 +51,10 @@ export default class AlphabetVPA implements Clonable, Alphabet {
     return JSON.stringify({ INT: this.INT, CALL: this.CALL, RET: this.RET })
   }
 
+  /**
+   * Remove duplicata in alphabet and test for validity   
+   * e.g.: an alphabet is not valid if at least one symbol is owned by to set of INT, RET, CALL
+   */
   isValidAlphabet() {
     this.makeSet()
     let a = new Set([...this.CALL, ...this.INT, ...this.RET])

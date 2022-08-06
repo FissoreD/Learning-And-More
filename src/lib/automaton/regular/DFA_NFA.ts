@@ -203,7 +203,7 @@ export default class DFA_NFA implements FSM<StateDFA>, ToDot {
       txt = txt.concat(`\n"I${toEps(s.name)}" [label="", style=invis, width=0]\n"I${toEps(s.name)}" -> "${toEps(s.name)}"`);
     });
 
-    // Accepting states
+    /* Accepting states */
     allStates.forEach(s => {
       if (s.isAccepting)
         txt = txt.concat(`\n"${toEps(s.name)}" [peripheries=2]`)
@@ -282,7 +282,7 @@ export default class DFA_NFA implements FSM<StateDFA>, ToDot {
     let stateList = new Set<string>();
     stateList.add(aut.initialStates[0].name)
 
-    // BFS to remove not reachable node from initial state
+    /* BFS to remove not reachable node from initial state */
     let toExplore = [aut.initialStates[0]]
     while (toExplore.length > 0) {
       let newState = toExplore.shift()!
@@ -296,7 +296,7 @@ export default class DFA_NFA implements FSM<StateDFA>, ToDot {
       }
     }
 
-    let P: Set<string>[] = [new Set(), new Set()];  // P := {F, Q \ F} 
+    let P: Set<string>[] = [new Set(), new Set()];  /* P := {F, Q \ F} */
     stateList.forEach(s => {
       (aut.states.get(s)!.isAccepting ? P[0] : P[1]).add(s)
     })
@@ -308,11 +308,11 @@ export default class DFA_NFA implements FSM<StateDFA>, ToDot {
     while (W.length > 0) {
       let A = W.shift()!
       for (const letter of aut.alphabet.symbols) {
-        // X = the set of states for which a transition on letter leads to a state in A
+        /* X = the set of states for which a transition on letter leads to a state in A */
         let X: Set<string> = new Set()
         A.forEach(e => { aut.states.get(e)!.getPredecessor(letter)?.forEach(s => X.add(s.name)) })
 
-        // let {S1 = X ∩ Y; S2 = Y \ X} fotall Y in P
+        /* let {S1 = X ∩ Y; S2 = Y \ X} fotall Y in P */
         let P1 = P.map(Y => {
           let [X_inter_Y, Y_minus_X] = [new Set<string>(), new Set<string>()];
           Y.forEach(state => X.has(state) ? X_inter_Y.add(state) : Y_minus_X.add(state))
@@ -320,7 +320,7 @@ export default class DFA_NFA implements FSM<StateDFA>, ToDot {
         }).filter(({ X_inter_Y, Y_minus_X }) => X_inter_Y.size > 0 && Y_minus_X.size > 0);
 
         for (const { Y, X_inter_Y, Y_minus_X } of P1) {
-          // replace Y in P by the two sets X ∩ Y and Y \ X
+          /* replace Y in P by the two sets X ∩ Y and Y \ X */
           P.splice(P.indexOf(Y), 1)
           P.push(X_inter_Y)
           P.push(Y_minus_X)

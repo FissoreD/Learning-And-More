@@ -12,13 +12,20 @@ export default class ONE_SEVPA extends VPA {
     let successor = this.initialStates[0]
     this.states.forEach(state =>
       this.alphabet.CALL.forEach(symbol => {
-        { // Check SEVPA validity
-          let callSucc = state.getAllOutTransitions().CALL[symbol]
-          if (callSucc && !callSucc.successors.includes(successor) && callSucc.successors.length > 0) {
-            throw new Error("In 1-SEVPA, each CALL transition should point into the initial state")
-          }
-        }
-        state.addTransition({ successor, topStack: `(${toEps(state.name)},${toEps(symbol)})`, symbol })
+        this.isValid(state, symbol);
+        state.addTransition({ successor, topStack: `(${toEps(state.name)},${toEps(symbol)})`, symbol });
       }))
+  }
+
+  /**
+   * A ONE-SEVPA is valid if every call transition points to the initial state
+   * @param state to get its successors reading a CALL symbol
+   * @param symbol the CALL symbol
+   */
+  isValid(state: StateVPA, symbol: string) {
+    let callSucc = state.getAllOutTransitions().CALL[symbol];
+    if (callSucc && !callSucc.successors.includes(this.initialStates[0]) && callSucc.successors.length > 0) {
+      throw new Error("In 1-SEVPA, each CALL transition should point into the initial state");
+    }
   }
 }

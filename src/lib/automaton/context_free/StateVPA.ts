@@ -139,7 +139,6 @@ export default class StateVPA {
           if (p.stack) {
             p.stack.push(tr.symbolToPush);
           }
-          // else console.warn("Attention, you are looking for a call transition, but you do not provide a stack to make the push operation")
           return tr.successors
         }
         case "RET": {

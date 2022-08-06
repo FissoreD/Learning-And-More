@@ -79,27 +79,27 @@ test("Automaton Complement & Union & Intersection & Sym. Diff", () => {
 
   let words = new Array(10).fill(0).map((_, pos) => "a".repeat(pos));
 
-  words.forEach(w => expect(a1.acceptWord(w)).toBe(!a1_compl.acceptWord(w))); // w in a <=> w notin ~a
+  words.forEach(w => expect(a1.acceptWord(w)).toBe(!a1_compl.acceptWord(w))); /* w in a <=> w notin ~a */
 
-  expect(a1.union(a1_compl).isFull()).toBe(true) // A union ~A <=> T
+  expect(a1.union(a1_compl).isFull()).toBe(true) /* A union ~A <=> T */
 
   expect(a1.sameLanguage(a1)).toBe(true)
 
   expect(a1.difference(a1_compl).sameLanguage(a1)).toBe(true)
-  expect(a1.intersection(a1_compl).isEmpty()).toBe(true) // A inter ~A = bottom
-  expect(a1.symmetricDifference(a1).isEmpty()).toBe(true) // A △ A = bottom
-  expect(a1.symmetricDifference(a1_compl).isFull()).toBe(true) // A △ ~A = T
+  expect(a1.intersection(a1_compl).isEmpty()).toBe(true) /* A inter ~A = bottom */
+  expect(a1.symmetricDifference(a1).isEmpty()).toBe(true) /* A △ A = bottom */
+  expect(a1.symmetricDifference(a1_compl).isFull()).toBe(true) /* A △ ~A = T */
 })
 
 test("Automaton Difference", () => {
   let a1 = DFA_NFA.strToAutomaton(`[0]
   a,[0]->[0]
   b,[0]->[2]
-  [0]`) // L(a1) = a*
+  [0]`) /* L(a1) = a* */
   let a2 = DFA_NFA.strToAutomaton(`[3]
   a,[3]->[4]
   b,[3]->[5]
-  [4]`) // L(a2) = a
+  [4]`) /* L(a2) = a */
   let diff = DFA_NFA.strToAutomaton(`[6]
   a,[6]->[7]
   a,[7]->[8]

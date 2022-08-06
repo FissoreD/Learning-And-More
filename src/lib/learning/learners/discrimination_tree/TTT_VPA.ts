@@ -103,7 +103,7 @@ export default class TTT_VPA extends TTT_Father<StringCouple, StateVPA> {
     for (let i = 0; i < ce.length; i++) {
       uHat = ce.substring(0, i);
       aHat = ce[i];
-      // Skip all symbols := they should not be considered while splitting
+      /* Skip all CALL symbols := they should not be considered while splitting */
       if (this.alphabet.CALL.includes(aHat)) {
         continue;
       }

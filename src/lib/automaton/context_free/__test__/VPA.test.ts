@@ -14,13 +14,13 @@ test("State VPA creation", () => {
   state2.addTransition({ symbol: "A", topStack: "0", successor: state1 })
   state2.addTransition({ symbol: "A", topStack: "0", successor: state1 })
 
-  // TESTING INT
+  /* TESTING INT */
   expect(state1.getSuccessor({ symbol: "I" })[0]).toBe(state1)
   expect(state2.getSuccessor({ symbol: "I" })[0]).toBe(state1)
   expect(state1.getPredecessor({ symbol: "I" }).includes(state1)).toBeTruthy()
   expect(state1.getPredecessor({ symbol: "I" }).includes(state2)).toBeTruthy()
 
-  // TESTING RET
+  /* TESTING RET */
   expect(state2.getSuccessor({ symbol: "B", topStack: "0" })[0]).toBe(state1)
   expect(state1.getPredecessor({ symbol: "B", topStack: "0" })[0]).toBe(state2)
 })
@@ -75,7 +75,7 @@ test("Minimize VPA", () => {
 describe("VPA counter-example", () => {
   test("vpa3", () => {
     let aut = createVPA3()
-    // Here counter-example are fixed 
+    /* Here counter-example are fixed */
     expect(aut.findWordAccepted(0)).toBe("I")
     expect(aut.findWordAccepted(1)).toBe("I")
     expect(aut.findWordAccepted(2)).toBe("AIB")
@@ -85,7 +85,7 @@ describe("VPA counter-example", () => {
 
   test("vpa1", () => {
     let aut = createVPA1()
-    // Here counter-examples are not predictable: e.g. for i = 4, we can have AIIB, ABII, AABB...
+    /* Here counter-examples are not predictable: e.g. for i = 4, we can have AIIB, ABII, AABB... */
     for (let i = 0; i < 5; i++) {
       expect(aut.findWordAccepted(i)?.length).toBeGreaterThanOrEqual(i)
     }

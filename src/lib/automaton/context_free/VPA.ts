@@ -83,7 +83,7 @@ export default class VPA implements FSM<StateVPA>, ToDot {
     let stateList = new Set<string>();
     stateList.add(aut.initialStates[0].name)
 
-    // BFS to remove not reachable node from initial state
+    /* BFS to remove not reachable node from initial state */
     let toExplore = [aut.initialStates[0]]
 
     while (toExplore.length > 0) {
@@ -98,7 +98,7 @@ export default class VPA implements FSM<StateVPA>, ToDot {
     }
 
 
-    let P: Set<string>[] = [new Set(), new Set()];  // P := {F, Q \ F} 
+    let P: Set<string>[] = [new Set(), new Set()];  /* P := {F, Q \ F} */
     stateList.forEach(s => {
       (aut.states.get(s)!.isAccepting ? P[0] : P[1]).add(s)
     })
@@ -112,11 +112,11 @@ export default class VPA implements FSM<StateVPA>, ToDot {
     while (W.length > 0) {
       let A = W.shift()!
       for (const symbolTopStack of symbolTopStackList) {
-        // X = the set of states for which a transition on letter leads to a state in A
+        /* X = the set of states for which a transition on letter leads to a state in A */
         let X: Set<string> = new Set()
         A.forEach(e => { aut.states.get(e)!.getPredecessor(symbolTopStack)?.forEach(s => X.add(s.name)) })
 
-        // let {S1 = X ∩ Y; S2 = Y \ X} fotall Y in P
+        /* let {S1 = X ∩ Y; S2 = Y \ X} fotall Y in P */
         let P1 = P.map(Y => {
           let [X_inter_Y, Y_minus_X] = [new Set<string>(), new Set<string>()];
           Y.forEach(state => X.has(state) ? X_inter_Y.add(state) : Y_minus_X.add(state))
@@ -124,7 +124,7 @@ export default class VPA implements FSM<StateVPA>, ToDot {
         }).filter(({ X_inter_Y, Y_minus_X }) => X_inter_Y.size > 0 && Y_minus_X.size > 0);
 
         for (const { Y, X_inter_Y, Y_minus_X } of P1) {
-          // replace Y in P by the two sets X ∩ Y and Y \ X
+          /* replace Y in P by the two sets X ∩ Y and Y \ X */
           P.splice(P.indexOf(Y), 1)
           P.push(X_inter_Y)
           P.push(Y_minus_X)
@@ -216,7 +216,7 @@ export default class VPA implements FSM<StateVPA>, ToDot {
     let a1 = this.complete({ alphabet });
     let a2 = aut.complete({ alphabet });
 
-    // Start with the initial states of a1 and a2
+    /* Start with the initial states of a1 and a2 */
     let initState1 = a1.initialStates[0];
     let initState2 = a2.initialStates[0];
 
@@ -546,7 +546,7 @@ export default class VPA implements FSM<StateVPA>, ToDot {
       txt = txt.concat(`\n"I${toEps(s.name)}" [label="", style=invis, width=0]\n"I${toEps(s.name)}" -> "${toEps(s.name)}"`);
     });
 
-    // Accepting states
+    /* Accepting states */
     allStates.forEach(s => {
       if (s.isAccepting)
         txt = txt.concat(`\n"${toEps(s.name)}" [peripheries=2]`)
@@ -570,7 +570,7 @@ export default class VPA implements FSM<StateVPA>, ToDot {
     let acceptedWords: string[] = []
     type exploreType = {
       state: StateVPA; word: string; callNumber: number; stack: string[];
-      canPushOnStack: boolean // Note: this last property is because the stack once empty cannot be reused
+      canPushOnStack: boolean /* Note: this last property is because the stack once empty cannot be reused */
     }[]
     let toExplore: exploreType = [...aut.initialStates].map(state => ({ state, word: "", callNumber: 0, stack: [], canPushOnStack: true }))
 
@@ -586,17 +586,10 @@ export default class VPA implements FSM<StateVPA>, ToDot {
       if (performance.now() > start + 100) {
         throw new Error("Should be empty !!\n" + aut.toDot())
       }
-      // if (toExplore[0].word.length === 1) console.log(toExplore.filter(e => e.word.startsWith("A")).map(e => e.word));
-      // if (toExplore[0].word.length === 2) console.log(toExplore.filter(e => e.word.startsWith("AA")).map(e => e.word));
-      // if (toExplore[0].word.length === 3) console.log(toExplore.filter(e => e.word.startsWith("AAD")).map(e => e.word));
-      // if (toExplore[0].word.length === 4) console.log(toExplore.filter(e => e.word.startsWith("AADB")).map(e => e.word));
-      // if (toExplore[0].word.length === 5) console.log(toExplore.filter(e => e.word.startsWith("AADBT")).map(e => e.word));
-      // if (toExplore[0].word.length === 6) console.log(toExplore.filter(e => e.word.startsWith("AADBTC")).map(e => e.word));
       let newToExplore: exploreType = []
       for (const { state, word, stack, callNumber, canPushOnStack } of toExplore) {
-        // RET
+        /** RET */
         for (const symbol of RET) {
-          // Attention to this line
           if (callNumber === 0) break;
           let stackClone = [...stack]
 
@@ -615,7 +608,7 @@ export default class VPA implements FSM<StateVPA>, ToDot {
             }
           }
         }
-        // CALL
+        /** CALL */
         for (const symbol of CALL) {
           if (!canPushOnStack) break
           let stackClone = [...stack]
@@ -630,7 +623,7 @@ export default class VPA implements FSM<StateVPA>, ToDot {
             }
           }
         }
-        // INT
+        /** INT */
         for (const symbol of INT) {
           let successors = this.findTransition(state, { symbol, stack })
           if (successors) {
@@ -639,7 +632,6 @@ export default class VPA implements FSM<StateVPA>, ToDot {
                 state.getAllSuccessors().size === 1 &&
                 state.getAllSuccessors().has(state)) { continue }
               let newWord = word + symbol;
-              // Row to modify after refactor method
               if (state.isAccepting && callNumber === 0) {
                 acceptedWords.push(newWord);
                 if (newWord.length >= minLength) return newWord;
@@ -660,14 +652,11 @@ export default class VPA implements FSM<StateVPA>, ToDot {
     let exitingState = "qn"
     let freshSymbolStack = "Z"
 
-    // TODO: replace .clone with .complete ? or test for assenza di bug 
     let aut = this.clone()
 
     aut.acceptingStates().forEach(state => {
       state.addTransition({ successor: state, symbol: "$", topStack: freshSymbolStack, type: "RET" })
     })
-
-    // let aut = clone.complete({ alphabet })
 
     let stateNames: string[] = [], states: StateVPA[] = []
     aut.states.forEach((value, key) => { stateNames.push(key); states.push(value) })
@@ -751,8 +740,6 @@ export default class VPA implements FSM<StateVPA>, ToDot {
       for (const [key, values] of grammar) {
         let valuesList = [...values]
         let terminal = valuesList.find(e => !e.match(/{[^{}]*}/g))
-        // console.log({ key, values, terminal });
-
         if (terminal) {
           grammar.set(key, new Set([terminal]))
           continue
@@ -760,7 +747,7 @@ export default class VPA implements FSM<StateVPA>, ToDot {
       }
     }
 
-    // simplify recursive Rules of type A → A | x := A → x
+    /** simplify recursive Rules of type A → A | x := A → x */
     let removeRecursiveRule = () => {
       for (const [key, values] of grammar) {
         let valuesList = [...values]
@@ -770,7 +757,6 @@ export default class VPA implements FSM<StateVPA>, ToDot {
     }
 
     let removeEmptyRule = () => {
-      // Remove empty rules
       for (const key of [...grammar.keys()]) {
         if (grammar.get(key)?.size === 0) grammar.delete(key)
       }

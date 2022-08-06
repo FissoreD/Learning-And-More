@@ -95,7 +95,7 @@ export default abstract class DiscTreeFather<LblType, StateType> implements Clon
     let newInnerNode = new InnerNode<LblType>({ name: p.newDiscriminator, parent })
     this.innerNodes.add(newInnerNode)
 
-    // Set new child's parent after split
+    /* Set new child's parent after split */
     if (parent.right === leafToSplit) parent.right = newInnerNode
     else parent.left = newInnerNode
 

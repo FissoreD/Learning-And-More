@@ -35,7 +35,7 @@ export default abstract class Learner_OT_Father extends LearnerFather<Observatio
   makeMember(pref: string, suff: string) {
     let word = pref + suff;
     let answer: string;
-    // If we know already the answer, we do not query the teacher
+    /* If we know already the answer, we do not query the teacher */
     for (let i = 0; i < word.length + 1; i++) {
       let pref1 = word.substring(0, i);
       let suff1 = word.substring(i);
