@@ -1,11 +1,12 @@
 import { graphviz } from 'd3-graphviz';
 import * as React from 'react';
+import { Download } from 'react-bootstrap-icons';
 import ToDot from '../../lib/ToDot.interface';
+import { downloadSvg } from '../globalFunctions';
 import { GRAPHVIZ_OPTIONS } from '../globalVars';
 
 interface Props {
   dot: ToDot;
-  className?: string;
 }
 
 export default class GraphDotToRender extends React.Component<Props, any> {
@@ -19,9 +20,12 @@ export default class GraphDotToRender extends React.Component<Props, any> {
   }
 
   public render = (): JSX.Element => {
-    console.log();
-
-    return <div className={`${this.props.className} automaton img-fluid`} id={this.id} />;
+    return <div className='position-relative'>
+      <Download className='mx-1 float-end text-hover' onClick={() => {
+        downloadSvg(this.id)
+      }} />
+      <div className={`automaton img-fluid`} id={this.id} />
+    </div>;
   };
 
   public componentDidMount = () => {

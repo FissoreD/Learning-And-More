@@ -23,3 +23,14 @@ export const createButtonGroupAlgoSwitcher = (p: { labelList: string[], currentL
       </React.Fragment>)}
   </ButtonGroup>
 }
+
+export const downloadSvg = (fileName: string) => {
+  var svgBlob = new Blob([(document.getElementById(fileName)!.firstChild! as HTMLElement).outerHTML!], { type: "image/svg+xml;charset=utf-8" });
+  var svgUrl = URL.createObjectURL(svgBlob);
+  var downloadLink = document.createElement("a");
+  downloadLink.href = svgUrl;
+  downloadLink.download = fileName;
+  document.body.appendChild(downloadLink);
+  downloadLink.click();
+  document.body.removeChild(downloadLink);
+}

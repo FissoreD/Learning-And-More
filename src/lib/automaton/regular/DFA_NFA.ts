@@ -174,9 +174,17 @@ export default class DFA_NFA implements FSM<StateDFA>, ToDot {
     let symbols = this.alphabet.symbols
     let txt = "digraph {rankdir = LR\nfixedsize=true\n"
     let triples: { [id: string]: string[] } = {}
+
+    let allStates = this.allStates();
+    let bottoms = allStates.filter(s => s.isBottom())
+
     for (const [name, state] of this.states) {
+      if (bottoms.includes(state)) /* ignore bottom state */
+        continue
       for (const symbol of symbols) {
         for (const nextState of this.findTransition(state, { symbol })) {
+          if (bottoms.includes(nextState)) /* ignore bottom state */
+            continue
           let stateA_concat_stateB = name + '&' + nextState.name;
           if (triples[stateA_concat_stateB]) {
             triples[stateA_concat_stateB].push(symbol)
@@ -186,8 +194,6 @@ export default class DFA_NFA implements FSM<StateDFA>, ToDot {
         }
       }
     }
-
-    let allStates = this.allStates();
 
     let shape = "circle"
 

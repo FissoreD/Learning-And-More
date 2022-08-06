@@ -130,8 +130,8 @@ export default class FSM_Viewer extends React.Component<ReactProp, ReactState>{
   }
 
   createCardAutomaton(r: FSM<StateDFA | StateVPA>, pos: number) {
-    return <Card className="border-primary text-primary">
-      <Card.Header className={FLEX_CENTER + " justify-content-between"}>
+    return <Card className="border-primary">
+      <Card.Header className={`${FLEX_CENTER} justify-content-between text-primary`}>
         {this.state.fsmType} - Name: A{pos}
         <BootstrapReboot className="text-hover" onClick={() =>
           this.setState({ showRegexSetter: true, changeRegexA1: pos === 1 })} />
@@ -150,17 +150,17 @@ export default class FSM_Viewer extends React.Component<ReactProp, ReactState>{
       <Accordion.Header>
         {this.createOpHeader()} - {p.isMinimized ? "Minimized" : "Normal"}
       </Accordion.Header>
-      <Accordion.Body className="justify-content-center">
-        <div className="d-flex text-center position-absolute flex-column">
-          <p className={`m-0 p-1 text-${colorPutInDiv} border rounded-top border-bottom-0 border-${colorPutInDiv}`}
+      <Accordion.Body className="justify-content-center py-1 px-0">
+        <div className="text-center d-flex justify-content-end me-1">
+          <p className={`m-0 p-1 text-${colorPutInDiv} border rounded-start border-end-0 border-${colorPutInDiv}`}
             style={{ fontSize: "0.875rem" }}>Put in</p>
           <ButtonGroup>
-            <Button variant={"outline-" + colorPutInDiv} size="sm" style={{ borderTopLeftRadius: 0 }} onClick={() => {
+            <Button variant={"outline-" + colorPutInDiv} size="sm" style={{ borderRadius: 0 }} onClick={() => {
               this.setState((state) => {
                 return { ...this.createResultAut(state.lastOperation.operation, true, aut as VPA, state.a2 as VPA), a1: aut }
               })
             }}>A1</Button>
-            <Button variant={"outline-" + colorPutInDiv} size="sm" style={{ borderTopRightRadius: 0 }} onClick={() => {
+            <Button variant={"outline-" + colorPutInDiv} size="sm" onClick={() => {
               this.setState((state) => {
                 return { ...this.createResultAut(state.lastOperation.operation, false, state.a1 as VPA, aut as VPA), a2: aut }
               })
@@ -194,9 +194,9 @@ export default class FSM_Viewer extends React.Component<ReactProp, ReactState>{
         <Col className="mt-3 mt-sm-0" sm={5}>{this.createCardAutomaton(this.state.a2, 2)}</Col>
       </Row>
       <Accordion defaultActiveKey={['0']} alwaysOpen className="mt-3">
-        {this.createAccordionItem({ key: "0", aut: lastOp.res, isMinimized: false })}
         {this.state.a1 instanceof VPA ? <></> :
-          this.createAccordionItem({ key: "1", aut: lastOp.res, isMinimized: true })}
+          this.createAccordionItem({ key: "0", aut: lastOp.res, isMinimized: true })}
+        {this.createAccordionItem({ key: "1", aut: lastOp.res, isMinimized: false })}
       </Accordion>
     </>
   }

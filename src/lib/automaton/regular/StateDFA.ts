@@ -64,4 +64,8 @@ export default class StateDFA {
   clone(p: { name?: string, alphabet?: AlphabetDFA }) {
     return new StateDFA(p.name || this.name, this.isAccepting, this.isInitial, p.alphabet ? this.alphabet.union(p.alphabet) : this.alphabet)
   }
+
+  isBottom() {
+    return !this.isAccepting && [...this.successors].every(s => s === this)
+  }
 }
