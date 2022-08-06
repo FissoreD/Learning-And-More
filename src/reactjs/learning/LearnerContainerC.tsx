@@ -6,7 +6,7 @@ import L_star from "../../lib/learning/learners/observation_table/L_star";
 import NL_star from "../../lib/learning/learners/observation_table/NL_Star";
 import { TeacherAutomaton } from "../../lib/learning/teachers/TeacherDFA";
 import TeacherVPA from "../../lib/learning/teachers/TeacherVPA";
-import { createVPA4 } from "../../lib/__test__/VPAforTest";
+import { createVPAxml2 } from "../../lib/__test__/VPAforTest";
 import { setUrlFromPosition } from "../globalFunctions";
 import { URL_SEPARATOR } from "../globalVars";
 import TTT_DFA_C from "./discrimination_tree/TTT_DFA_C";
@@ -47,7 +47,7 @@ export default class LearnerContainerC extends React.Component<Prop, State> {
         updatePosition={this.updatePosition.bind(this)} changeRegexContainer={this.changeRegex.bind(this)} name={"L*"} learner={new L_star(teacher)} />,
       "NL*": <NLStarC pos={positions.get("NL*")!} updatePosition={this.updatePosition.bind(this)} changeRegexContainer={this.changeRegex.bind(this)} name={"NL*"} learner={new NL_star(teacher)} />,
       "TTT-DFA": <TTT_DFA_C pos={positions.get("TTT-DFA")!} updatePosition={this.updatePosition.bind(this)} changeRegexContainer={this.changeRegex.bind(this)} name={"TTT-DFA"} learner={new TTT_DFA(teacher)} />,
-      "TTT-VPA": <TTT_VPA_C pos={positions.get("TTT-VPA")!} updatePosition={this.updatePosition.bind(this)} changeRegexContainer={this.changeRegex.bind(this)} name={"TTT-VPA"} learner={new TTT_VPA(new TeacherVPA({ automaton: createVPA4() }))} />
+      "TTT-VPA": <TTT_VPA_C pos={positions.get("TTT-VPA")!} updatePosition={this.updatePosition.bind(this)} changeRegexContainer={this.changeRegex.bind(this)} name={"TTT-VPA"} learner={new TTT_VPA(new TeacherVPA({ automaton: createVPAxml2() }))} />
     }
     this.state = {
       cnt: algo,

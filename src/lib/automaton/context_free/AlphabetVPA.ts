@@ -68,4 +68,18 @@ export default class AlphabetVPA implements Clonable, Alphabet {
   flatAlphabet() {
     return ALPH_TYPE_LIST.map(e => this[e]).flat()
   }
+
+  tokenizeWord(word: string) {
+    let res: string[] = []
+    let flatAlph = this.flatAlphabet()
+    let findToken = () => flatAlph.find(e => word.startsWith(e))
+    while (word.length) {
+      let token = findToken()
+      if (token)
+        res.push(token)
+      else { res.push(word); break }
+      word = word.substring(token.length)
+    }
+    return res
+  }
 }

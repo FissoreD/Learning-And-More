@@ -79,9 +79,13 @@ export let createVPAxml1 = (): VPA => {
 }
 
 /** L = ABTCD w/[call=AB, ret=CD, int=T] */
-export let createVPAxml2 = (): VPA => {
-  // let xml = "<xml>", notXml = "</xml>", h1 = "<h1>", notH1 = "</h1>", text = "Text"
-  let xml = "A", notXml = "D", h1 = "B", notH1 = "C", text = "T"
+export let createVPAxml2 = (easyAlph = true): VPA => {
+  let xml, notXml, h1, notH1, text;
+  if (!easyAlph) {
+    xml = "A"; notXml = "D"; h1 = "B"; notH1 = "C"; text = "T"
+  } else {
+    xml = "<xml>"; notXml = "</xml>"; h1 = "<h1>"; notH1 = "</h1>"; text = "Text"
+  }
   let alphabet = new AlphabetVPA({ CALL: [xml, h1], RET: [notXml, notH1], INT: [text] })
   let stackAlphabet = ["0", "1"]
 

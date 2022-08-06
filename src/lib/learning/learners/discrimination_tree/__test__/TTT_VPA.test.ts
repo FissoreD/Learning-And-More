@@ -41,6 +41,9 @@ describe("TTT_VPA", () => {
     let teacher = new TeacherVPA({ automaton })
     let learner = new TTT_VPA(teacher)
     learner.makeAllQueries()
+    // for (let index = 0; index < 4; index++) {
+    //   learner.makeNextQuery()
+    // }
     expect(learner.finish).toBeTruthy()
   })
 
@@ -52,6 +55,9 @@ describe("TTT_VPA", () => {
     let learner = new TTT_VPA(teacher)
 
     learner.makeAllQueries()
+    // for (let index = 0; index < 4; index++) {
+    //   learner.makeNextQuery()
+    // }
     expect(learner.finish).toBeTruthy();
   })
 

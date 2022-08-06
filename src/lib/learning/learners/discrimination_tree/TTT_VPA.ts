@@ -87,30 +87,33 @@ export default class TTT_VPA extends TTT_Father<StringCouple, StateVPA> {
   }
 
   split_ce_in_uav(ce: string): LastSplitType<StringCouple> {
-    let splitU_Hat = (uHat: string, isInt: boolean) => {
+    let ceTockenized = this.alphabet.tokenizeWord(ce);
+
+    let splitU_Hat = (uHat: string[], isInt: boolean) => {
       let pos = uHat.length - 1, cnt = 0, addAfter = isInt ? 1 : 0
       while (pos > -1) {
         let char = uHat[pos]
         if (this.alphabet.CALL.includes(char)) cnt--
         else if (this.alphabet.RET.includes(char)) cnt++
-        if (cnt < 0) return { uPrime: uHat.substring(0, pos + addAfter), u: uHat.substring(pos + addAfter) }
+        if (cnt < 0) return { uPrime: uHat.slice(0, pos + addAfter).join(""), u: uHat.slice(pos + addAfter).join("") }
         pos--;
       }
       return { uPrime: "", u: uHat }
     }
 
-    let uHat: string, aHat: string, vHat: string;
-    for (let i = 0; i < ce.length; i++) {
-      uHat = ce.substring(0, i);
-      aHat = ce[i];
+    let uHat: string[], aHat: string, vHat: string;
+
+    for (let i = 0; i < ceTockenized.length; i++) {
+      uHat = ceTockenized.slice(0, i);
+      aHat = ceTockenized[i];
       /* Skip all CALL symbols := they should not be considered while splitting */
       if (this.alphabet.CALL.includes(aHat)) {
         continue;
       }
-      vHat = ce.substring(i + 1);
+      vHat = ceTockenized.slice(i + 1).join("");
 
-      let { state: uState, stateName: uStateName } = this.automaton!.giveState(uHat)!
-      let { stateName: uaStateName } = this.automaton!.giveState(uHat + aHat)!
+      let { state: uState, stateName: uStateName } = this.automaton!.giveState(uHat.join(""))!
+      let { stateName: uaStateName } = this.automaton!.giveState(uHat.join("") + aHat)!
 
       if (this.teacher.member(uStateName + aHat + vHat) !== this.teacher.member(uaStateName + vHat)) {
         let { uPrime, u } = splitU_Hat(uHat, this.alphabet.INT.includes(aHat));
@@ -119,7 +122,7 @@ export default class TTT_VPA extends TTT_Father<StringCouple, StateVPA> {
         let newLeaf = u + aHat
 
         // console.log({ ce, u: uHat, a: aHat, v: vHat, uaState, uState: uState.name, newNodeLabel, newLeaf });
-        return { u: uHat, a: aHat, v: vHat, uaState, uState: uState.name, newNodeLabel, newLeaf }
+        return { u: uHat.join(""), a: aHat, v: vHat, uaState, uState: uState.name, newNodeLabel, newLeaf }
       }
     }
     throw new Error(`Invalid counter-example: the ce is ${ce} and aut is\n${this.automaton?.toDot()}`)
