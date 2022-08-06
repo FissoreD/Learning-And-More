@@ -43,7 +43,7 @@ export default class VPA implements FSM<StateVPA>, ToDot {
     res.alphabet = alphabet;
     for (const type of ALPH_TYPE_LIST) {
       for (const symbol of alphabet[type]) {
-        for (let pos = 0; pos < (type === "INT" ? 1 : stackAlph.length); pos++) {
+        for (let pos = 0; pos < (type === "RET" ? stackAlph.length : 1); pos++) {
           let topStack = type === "INT" ? "" : stackAlph[pos]
           bottom.addTransition({ successor: bottom, symbol, topStack })
           for (const state of res.states.values()) {
@@ -73,17 +73,17 @@ export default class VPA implements FSM<StateVPA>, ToDot {
    */
   minimize(): VPA {
     if (!this.isDeterministic()) {
-      throw new Error("The VPA should be deterministic" + `\nThe automaton is : \n${this.toDot()}`)
+      throw new Error(`The VPA should be deterministic\nThe automaton is : \n${this.toDot()}`)
     }
     let complete = this.complete()
     let aut = complete.isDeterministic() ? complete : complete.determinize()
     return aut
-
-    /** List of states reachable from *the* initial state */
+    /*
+    /** List of states reachable from *the* initial state * /
     let stateList = new Set<string>();
     stateList.add(aut.initialStates[0].name)
 
-    /* BFS to remove not reachable node from initial state */
+    /* BFS to remove not reachable node from initial state * /
     let toExplore = [aut.initialStates[0]]
 
     while (toExplore.length > 0) {
@@ -98,7 +98,7 @@ export default class VPA implements FSM<StateVPA>, ToDot {
     }
 
 
-    let P: Set<string>[] = [new Set(), new Set()];  /* P := {F, Q \ F} */
+    let P: Set<string>[] = [new Set(), new Set()];  /* P := {F, Q \ F} * /
     stateList.forEach(s => {
       (aut.states.get(s)!.isAccepting ? P[0] : P[1]).add(s)
     })
@@ -112,11 +112,11 @@ export default class VPA implements FSM<StateVPA>, ToDot {
     while (W.length > 0) {
       let A = W.shift()!
       for (const symbolTopStack of symbolTopStackList) {
-        /* X = the set of states for which a transition on letter leads to a state in A */
+        /* X = the set of states for which a transition on letter leads to a state in A * /
         let X: Set<string> = new Set()
         A.forEach(e => { aut.states.get(e)!.getPredecessor(symbolTopStack)?.forEach(s => X.add(s.name)) })
 
-        /* let {S1 = X ∩ Y; S2 = Y \ X} fotall Y in P */
+        /* let {S1 = X ∩ Y; S2 = Y \ X} fotall Y in P * /
         let P1 = P.map(Y => {
           let [X_inter_Y, Y_minus_X] = [new Set<string>(), new Set<string>()];
           Y.forEach(state => X.has(state) ? X_inter_Y.add(state) : Y_minus_X.add(state))
@@ -124,7 +124,7 @@ export default class VPA implements FSM<StateVPA>, ToDot {
         }).filter(({ X_inter_Y, Y_minus_X }) => X_inter_Y.size > 0 && Y_minus_X.size > 0);
 
         for (const { Y, X_inter_Y, Y_minus_X } of P1) {
-          /* replace Y in P by the two sets X ∩ Y and Y \ X */
+          /* replace Y in P by the two sets X ∩ Y and Y \ X * /
           P.splice(P.indexOf(Y), 1)
           P.push(X_inter_Y)
           P.push(Y_minus_X)
@@ -179,6 +179,7 @@ export default class VPA implements FSM<StateVPA>, ToDot {
     let res = new VPA(newStates)
     console.assert(res.isDeterministic())
     return res
+    */
   }
 
   /**
@@ -381,7 +382,7 @@ export default class VPA implements FSM<StateVPA>, ToDot {
       state => {
         let intIsDeterministic = INT.every(symbol =>
           this.findTransition(state, { symbol }).length <= 1)
-        let callIsDeterministic = INT.every(symbol =>
+        let callIsDeterministic = CALL.every(symbol =>
           this.findTransition(state, { symbol }).length <= 1)
         let retIsDeterministic =
           RET.every(symbol =>
@@ -390,12 +391,12 @@ export default class VPA implements FSM<StateVPA>, ToDot {
               this.findTransition(state, { symbol, topStack }).length <= 1)
           )
         if (!intIsDeterministic) {
-          throw new Error("Int is not deterministic")
+          throw new Error(`Int is not deterministic\n${this.toDot()}\nIn state: "${state.name}"`)
         } else if (!callIsDeterministic) {
-          throw new Error("Call is not deterministic")
+          throw new Error(`Call is not deterministic\n${this.toDot()}\nIn state: "${state.name}"`)
         }
         if (!retIsDeterministic) {
-          throw new Error("Ret is not deterministic")
+          throw new Error(`Ret is not deterministic\n${this.toDot()}\nIn state: "${state.name}"`)
         }
         return intIsDeterministic && callIsDeterministic && retIsDeterministic
       }) && this.initialStates.length <= 1
@@ -409,7 +410,6 @@ export default class VPA implements FSM<StateVPA>, ToDot {
     let stackToString = (...stack: string[]) => {
       return stack.join().replace(/([^\x00-\x7F]|\(|\)|,)/g, "")
     }
-    let wordBackUp = word;
     if (word.length === 0) {
       let state = this.initialStates.find(e => e.isAccepting) || this.initialStates[0]
       return [{ state, stateName: "" }, this.initialStates.some(e => e.isAccepting)];
@@ -417,8 +417,12 @@ export default class VPA implements FSM<StateVPA>, ToDot {
     let nextStates: Set<StateVPA> = new Set(this.initialStates);
     let stack: string[] = []
 
+    let flatAlphabet = this.alphabet.flatAlphabet()
+
+    let findSymbol = () => flatAlphabet.find(e => word.startsWith(e))
+
     while (nextStates.size) {
-      let symbol = this.alphabet.flatAlphabet().find(e => word.startsWith(e))
+      let symbol = findSymbol()
 
       if (symbol === undefined) {
         return [undefined, false]

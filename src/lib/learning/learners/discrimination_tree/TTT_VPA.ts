@@ -126,7 +126,7 @@ export default class TTT_VPA extends TTT_Father<StringCouple, StateVPA> {
   }
 
   updateCe(ce: string, isTeacher: boolean): void {
-    let { newLeaf, v } = this.lastSplit!
+    // let { newLeaf, v } = this.lastSplit!
     this.lastCe = { value: ce, accepted: this.teacher.member(ce), isTeacher }
   }
 }

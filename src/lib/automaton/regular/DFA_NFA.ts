@@ -128,8 +128,9 @@ export default class DFA_NFA implements FSM<StateDFA>, ToDot {
     }
     let nextStates: Set<StateDFA> = new Set(this.initialStates);
 
+    let findSymbol = () => this.alphabet.symbols.find(e => word.startsWith(e))
     while (word.length && nextStates.size) {
-      let symbol = this.alphabet.symbols.find(e => word.startsWith(e))
+      let symbol = findSymbol()
 
       if (symbol === undefined) {
         return [undefined, false]
