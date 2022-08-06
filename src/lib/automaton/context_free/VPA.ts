@@ -77,6 +77,7 @@ export default class VPA implements FSM<StateVPA>, ToDot {
     }
     let complete = this.complete()
     let aut = complete.isDeterministic() ? complete : complete.determinize()
+    return aut
 
     /** List of states reachable from *the* initial state */
     let stateList = new Set<string>();
@@ -377,14 +378,27 @@ export default class VPA implements FSM<StateVPA>, ToDot {
   isDeterministic(): boolean {
     let { INT, CALL, RET } = this.alphabet
     return this.allStates().every(
-      state =>
-        INT.concat(CALL).every(symbol =>
+      state => {
+        let intIsDeterministic = INT.every(symbol =>
           this.findTransition(state, { symbol }).length <= 1)
-        &&
-        RET.every(symbol =>
-          this.stackAlphabet.every(topStack =>
-            this.findTransition(state, { symbol, topStack }).length <= 1)
-        )) && this.initialStates.length <= 1
+        let callIsDeterministic = INT.every(symbol =>
+          this.findTransition(state, { symbol }).length <= 1)
+        let retIsDeterministic =
+          RET.every(symbol =>
+            this.stackAlphabet.every(topStack =>
+              this.findTransition(state, { symbol, topStack }) === undefined ||
+              this.findTransition(state, { symbol, topStack }).length <= 1)
+          )
+        if (!intIsDeterministic) {
+          throw new Error("Int is not deterministic")
+        } else if (!callIsDeterministic) {
+          throw new Error("Call is not deterministic")
+        }
+        if (!retIsDeterministic) {
+          throw new Error("Ret is not deterministic")
+        }
+        return intIsDeterministic && callIsDeterministic && retIsDeterministic
+      }) && this.initialStates.length <= 1
   }
 
   sameLanguage(aut: VPA): boolean {
@@ -460,7 +474,7 @@ export default class VPA implements FSM<StateVPA>, ToDot {
 
   /**
    * @param state The state from which we start
-   * @param symbol The symbol read in the input (if it is RET or CALL 
+   * @param p.symbol The symbol read in the input (if it is RET or CALL 
    * symbol then the top of the stack is taken into account to know 
    * what will be the next state)
    * @returns the list of successors of state 
@@ -706,40 +720,22 @@ export default class VPA implements FSM<StateVPA>, ToDot {
       }))]
 
       aut.alphabet.CALL.forEach(symbol => {
-        aut.stackAlphabet.concat(freshSymbolStack).forEach(symbol2 => {
-          let { successors, symbolToPush: topStack } = CALL[symbol]
-
-          if (successors && successors.length) {
-            let succ = successors[0].name;
-            for (const xxx of [...predSymbol, topStack, freshSymbolStack]) {
-              for (const succ1 of stateNames.concat(exitingState)) {
-                for (const succ2 of stateNames.concat(exitingState)) {
-                  let key = makeRuleName(state.name, xxx, succ2);
-                  let ruleSet = grammar.get(key) || new Set();
-                  ruleSet.add(`${symbol}${makeRuleName(succ, topStack, succ1)}${makeRuleName(succ1, symbol2, succ2)}`)
-                  grammar.set(key, ruleSet);
-                }
+        let { successors, symbolToPush: topStack } = CALL[symbol]
+        if (successors && successors.length) {
+          let succ = successors[0].name;
+          for (const xxx of [...predSymbol, topStack, freshSymbolStack]) {
+            for (const succ1 of stateNames) {
+              for (const succ2 of stateNames.concat(exitingState)) {
+                if (succ2 === exitingState && state.name !== aut.initialStates[0].name)
+                  continue
+                let key = makeRuleName(state.name, xxx, succ2);
+                let ruleSet = grammar.get(key) || new Set();
+                ruleSet.add(`${symbol}${makeRuleName(succ, topStack, succ1)}${makeRuleName(succ1, xxx, succ2)}`)
+                grammar.set(key, ruleSet);
               }
             }
           }
-          // if (successors && successors.length) {
-          //   let succ = successors[0].name;
-          //   for (const succ1 of stateNames.concat(exitingState)) {
-          //     for (const succ2 of stateNames.concat(exitingState, ...predSymbol)) {
-          //       let key = makeRuleName(state.name, topStack, succ2);
-          //       let ruleSet = grammar.get(key) || new Set();
-          //       ruleSet.add(`${symbol}${makeRuleName(succ, topStack, succ1)}${makeRuleName(succ1, symbol2, succ2)}`)
-          //       grammar.set(key, ruleSet);
-
-          //       key = makeRuleName(state.name, freshSymbolStack, succ2);
-          //       ruleSet = grammar.get(key) || new Set();
-          //       ruleSet.add(`${symbol}${makeRuleName(succ, topStack, succ1)}${makeRuleName(succ1, symbol2, succ2)}`)
-          //       grammar.set(key, ruleSet);
-
-          //     }
-          //   }
-          // }
-        })
+        }
       })
     });
 
@@ -825,17 +821,17 @@ export default class VPA implements FSM<StateVPA>, ToDot {
 
     let counter = 0
 
+    removeRecursiveRule()
 
     let simplifyGrammar = () => {
       let oldSize = grammar.size
-      removeRecursiveRule()
       cleanGrammar()
       removeEmptyRule()
       replaceTerminalInG()
       removeEmptyRule()
       simplifyTerminal()
       if (print) console.log(grammar);
-      if (counter === 3 && print)
+      if (counter === 1 && print)
         throw new Error("STOP")
       counter++;
 
@@ -848,7 +844,7 @@ export default class VPA implements FSM<StateVPA>, ToDot {
 
     if (print) console.log(grammar);
     simplifyGrammar()
-    console.log(grammar.get("S"));
+    // console.log(grammar.get("S"));
 
     return grammar.has("S") && [...grammar.get("S")!].some(e => !e.match(/{[^{}]*}/g))
   }

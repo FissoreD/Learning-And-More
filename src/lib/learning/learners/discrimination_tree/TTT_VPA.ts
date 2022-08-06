@@ -118,7 +118,7 @@ export default class TTT_VPA extends TTT_Father<StringCouple, StateVPA> {
         let newNodeLabel: StringCouple = [uPrime, vHat]
         let newLeaf = u + aHat
 
-        console.log({ ce, u: uHat, a: aHat, v: vHat, uaState, uState: uState.name, newNodeLabel, newLeaf });
+        // console.log({ ce, u: uHat, a: aHat, v: vHat, uaState, uState: uState.name, newNodeLabel, newLeaf });
         return { u: uHat, a: aHat, v: vHat, uaState, uState: uState.name, newNodeLabel, newLeaf }
       }
     }

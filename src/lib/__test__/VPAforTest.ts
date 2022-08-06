@@ -83,21 +83,21 @@ export let createVPAxml2 = (): VPA => {
   // let xml = "<xml>", notXml = "</xml>", h1 = "<h1>", notH1 = "</h1>", text = "Text"
   let xml = "A", notXml = "D", h1 = "B", notH1 = "C", text = "T"
   let alphabet = new AlphabetVPA({ CALL: [xml, h1], RET: [notXml, notH1], INT: [text] })
-  let stackAlphabet = ["0"]
+  let stackAlphabet = ["0", "1"]
 
   let state1 = new StateVPA({ name: "1", alphabet, stackAlphabet, isInitial: true })
-  let state2 = new StateVPA({ name: "2", alphabet, stackAlphabet })
-  let state3 = new StateVPA({ name: "3", alphabet, stackAlphabet })
+  // let state2 = new StateVPA({ name: "2", alphabet, stackAlphabet })
+  // let state3 = new StateVPA({ name: "3", alphabet, stackAlphabet })
   let state4 = new StateVPA({ name: "4", alphabet, stackAlphabet })
   let state5 = new StateVPA({ name: "5", alphabet, stackAlphabet })
   let state6 = new StateVPA({ name: "6", alphabet, stackAlphabet, isAccepting: true })
 
-  state1.addTransition({ symbol: xml, successor: state2, topStack: "0" })
-  state2.addTransition({ symbol: h1, successor: state3, topStack: "0" })
-  state3.addTransition({ symbol: text, successor: state4 })
-  state4.addTransition({ symbol: notH1, successor: state5, topStack: "0" })
+  state1.addTransition({ symbol: xml, successor: state1, topStack: "0" })
+  state1.addTransition({ symbol: h1, successor: state1, topStack: "1" })
+  state1.addTransition({ symbol: text, successor: state4 })
+  state4.addTransition({ symbol: notH1, successor: state5, topStack: "1" })
   state5.addTransition({ symbol: notXml, successor: state6, topStack: "0" })
 
-  let vpa = new VPA([state1, state2, state3, state4, state5, state6])
+  let vpa = new VPA([state1, state4, state5, state6])
   return vpa
 }
