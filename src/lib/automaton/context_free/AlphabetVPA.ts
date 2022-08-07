@@ -1,10 +1,9 @@
-import Clonable from "../../Clonable.interface"
 import Alphabet from "../Alphabet.interface"
 
 export type ALPHABET_TYPE = "INT" | "RET" | "CALL"
 export const ALPH_TYPE_LIST: ALPHABET_TYPE[] = ["INT", "RET", "CALL"]
 
-export default class AlphabetVPA implements Clonable, Alphabet {
+export default class AlphabetVPA implements Alphabet {
   INT: string[]
   CALL: string[]
   RET: string[]

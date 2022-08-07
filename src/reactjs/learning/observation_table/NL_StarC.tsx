@@ -1,5 +1,5 @@
 import DFA_NFA from "../../../lib/automaton/regular/DFA_NFA";
-import ClonableInterface from "../../../lib/Clonable.interface";
+import DataStructure from "../../../lib/learning/learners/DataStructure.interface";
 import NL_star from "../../../lib/learning/learners/observation_table/NL_Star";
 import TeacherDFA from "../../../lib/learning/teachers/TeacherDFA";
 import { toEps } from "../../../lib/tools";
@@ -11,7 +11,7 @@ export default class NL_StarC extends Learner_OT_FatherC {
     return new NL_star(new TeacherDFA({ type: regex instanceof DFA_NFA ? "Automaton" : "Regex", automaton: regex }))
   }
 
-  dataStructureToNodeElement(ds: ClonableInterface) {
+  dataStructureToNodeElement(ds: DataStructure) {
     return super.dataStructureToNodeElement(ds, (this.state.learner as NL_star).primeLines)
   }
 

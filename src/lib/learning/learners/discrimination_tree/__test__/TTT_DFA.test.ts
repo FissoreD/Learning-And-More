@@ -6,11 +6,11 @@ test("TTT learn a+bb", () => {
   let t = new TeacherDFA({ type: "Regex", automaton: "a+bb" })
   let learner = new TTT_DFA(t);
 
-  expect(learner.dataStructure.sift("aaa", t)?.name).toBe("")
-  expect(learner.dataStructure.sift("aab", t)?.name).toBe("")
-  expect(learner.dataStructure.sift("bba", t)?.name).toBe("")
-  expect(learner.dataStructure.sift("bb", t)?.name).toBe("a")
-  expect(learner.dataStructure.sift("a", t)?.name).toBe("a")
+  expect(learner.getDataStructure().sift("aaa", t)?.name).toBe("")
+  expect(learner.getDataStructure().sift("aab", t)?.name).toBe("")
+  expect(learner.getDataStructure().sift("bba", t)?.name).toBe("")
+  expect(learner.getDataStructure().sift("bb", t)?.name).toBe("a")
+  expect(learner.getDataStructure().sift("a", t)?.name).toBe("a")
 
   expect(learner.makeAutomaton().acceptWord("a")).toBeTruthy()
   expect(learner.makeAutomaton().acceptWord("bb")).toBeFalsy()

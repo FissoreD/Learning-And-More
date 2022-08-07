@@ -1,17 +1,18 @@
 import Alphabet from "../../automaton/Alphabet.interface";
 import FSM from "../../automaton/FSM_interface";
 import Teacher from "../teachers/Teacher";
+import DataStructure from "./DataStructure.interface";
 
-export default abstract class LearnerFather<DataStType> {
+export default abstract class LearnerFather {
   alphabet: Alphabet;
   memberNumber = 0;
   equivNumber = 0;
   finish = false;
   automaton: undefined | FSM;
   teacher: Teacher;
-  dataStructure: DataStType;
+  protected dataStructure: DataStructure;
 
-  constructor(teacher: Teacher, dataStructure: DataStType) {
+  constructor(teacher: Teacher, dataStructure: DataStructure) {
     this.alphabet = teacher.alphabet;
     this.teacher = teacher;
     this.dataStructure = dataStructure;
@@ -54,4 +55,6 @@ export default abstract class LearnerFather<DataStType> {
   getTransitionNumber() {
     return this.automaton!.getTransitionNumber()
   }
+
+  abstract getDataStructure(): DataStructure;
 }

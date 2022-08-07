@@ -1,7 +1,8 @@
 import AlphabetDFA from "../../../automaton/regular/AlphabetDFA";
 import { sameVector } from "../../../tools";
+import DataStructure from "../DataStructure.interface";
 
-export default class ObservationTable {
+export default class ObservationTable implements DataStructure {
   private columns: string[];
   private rows: string[];
   private matrix: boolean[][];
@@ -57,6 +58,10 @@ export default class ObservationTable {
     const r2 = this.getRow(row2);
     return r1 !== undefined && r2 !== undefined &&
       sameVector(r1, r2);
+  }
+
+  toDot(): string {
+    return ""
   }
 
   clone() {

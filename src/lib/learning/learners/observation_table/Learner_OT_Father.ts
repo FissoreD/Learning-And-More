@@ -4,7 +4,7 @@ import TeacherDFA from "../../teachers/TeacherDFA";
 import LearnerFather from "../LearnerFather";
 import ObservationTable from "./ObservationTable";
 
-export default abstract class Learner_OT_Father extends LearnerFather<ObservationTable> {
+export default abstract class Learner_OT_Father extends LearnerFather {
   closednessCounter: number;
   consistenceCounter: number;
   counterExample: string | undefined = "";
@@ -16,13 +16,17 @@ export default abstract class Learner_OT_Father extends LearnerFather<Observatio
     this.closednessCounter = 0;
     this.consistenceCounter = 0;
     this.addRow("")
-    this.dataStructure.SA.forEach(elt => this.addRow(elt));
+    this.getDataStructure().SA.forEach(elt => this.addRow(elt));
   }
 
   updateObservationTable(key: string, value: string) {
-    let oldValue = this.dataStructure.assoc[key];
+    let oldValue = this.getDataStructure().assoc[key];
     if (oldValue !== undefined) value = oldValue + value
-    this.dataStructure.assoc[key] = value;
+    this.getDataStructure().assoc[key] = value;
+  }
+
+  getDataStructure(): ObservationTable {
+    return this.dataStructure as ObservationTable
   }
 
   /**
@@ -39,9 +43,9 @@ export default abstract class Learner_OT_Father extends LearnerFather<Observatio
       let pref1 = word.substring(0, i);
       let suff1 = word.substring(i);
       if (pref1 === pref) continue;
-      if (this.dataStructure.E.includes(suff1)) {
-        if ((this.dataStructure.S.includes(pref1) || this.dataStructure.SA.includes(pref1)) && this.dataStructure.assoc[pref1]) {
-          answer = this.dataStructure.assoc[pref1].charAt(this.dataStructure.E.indexOf(suff1));
+      if (this.getDataStructure().E.includes(suff1)) {
+        if ((this.getDataStructure().S.includes(pref1) || this.getDataStructure().SA.includes(pref1)) && this.getDataStructure().assoc[pref1]) {
+          answer = this.getDataStructure().assoc[pref1].charAt(this.getDataStructure().E.indexOf(suff1));
           this.updateObservationTable(pref, answer)
           if (answer === undefined) throw new Error('Parameter is not a number!');
           return;
@@ -63,25 +67,25 @@ export default abstract class Learner_OT_Father extends LearnerFather<Observatio
     let addedList: string[] = [];
     let prefixList = generatePrefixList(newElt);
     for (const prefix of prefixList) {
-      if (this.dataStructure.S.includes(prefix)) return;
-      if (this.dataStructure.SA.includes(prefix)) {
+      if (this.getDataStructure().S.includes(prefix)) return;
+      if (this.getDataStructure().SA.includes(prefix)) {
         this.moveFrom_SA_to_S(prefix);
         for (const a of this.alphabet.symbols) {
           const newWord = prefix + a;
-          if (!this.dataStructure.SA.includes(newWord) && !this.dataStructure.S.includes(newWord)) {
+          if (!this.getDataStructure().SA.includes(newWord) && !this.getDataStructure().S.includes(newWord)) {
             this.addRow(newWord, isAfterMember);
-            this.dataStructure.SA.push(newWord);
+            this.getDataStructure().SA.push(newWord);
             addedList.push(newWord);
           }
         }
       } else {
-        this.dataStructure.S.push(prefix);
+        this.getDataStructure().S.push(prefix);
         this.addRow(prefix, isAfterMember);
         addedList.push(prefix);
         this.alphabet.symbols.forEach(a => {
           let newWord = prefix + a;
-          if (!this.dataStructure.SA.includes(newWord) && !this.dataStructure.S.includes(newWord)) {
-            this.dataStructure.SA.push(prefix + a);
+          if (!this.getDataStructure().SA.includes(newWord) && !this.getDataStructure().S.includes(newWord)) {
+            this.getDataStructure().SA.push(prefix + a);
             this.addRow(prefix + a)
             addedList.push(prefix + a)
           }
@@ -101,18 +105,18 @@ export default abstract class Learner_OT_Father extends LearnerFather<Observatio
   addEltIn_E(newElt: string, after_equiv = false) {
     let suffixList = generateSuffixList(newElt);
     for (const suffix of suffixList) {
-      if (this.dataStructure.E.includes(suffix)) break;
-      this.dataStructure.SA.forEach(s => {
+      if (this.getDataStructure().E.includes(suffix)) break;
+      this.getDataStructure().SA.forEach(s => {
         if (s + suffix === newElt && after_equiv)
           this.updateObservationTable(s, boolToString(!this.automaton!.acceptWord(newElt)))
         else this.makeMember(s, suffix)
       });
-      this.dataStructure.S.forEach(s => {
+      this.getDataStructure().S.forEach(s => {
         if (s + suffix === newElt && after_equiv)
           this.updateObservationTable(s, boolToString(!this.automaton!.acceptWord(newElt)))
         else this.makeMember(s, suffix)
       });
-      this.dataStructure.E.push(suffix);
+      this.getDataStructure().E.push(suffix);
     }
   }
 
@@ -123,17 +127,17 @@ export default abstract class Learner_OT_Father extends LearnerFather<Observatio
    * @see {@link makeMember}
    */
   addRow(rowName: string, afterMember = false) {
-    this.dataStructure.E.forEach(e => {
+    this.getDataStructure().E.forEach(e => {
       if (afterMember && e === "")
-        this.dataStructure.assoc[rowName] = boolToString(!this.automaton!.acceptWord(rowName));
+        this.getDataStructure().assoc[rowName] = boolToString(!this.automaton!.acceptWord(rowName));
       else this.makeMember(rowName, e)
     });
   }
 
   moveFrom_SA_to_S(elt: string) {
-    const index = this.dataStructure.SA.indexOf(elt);
-    if (index !== -1) this.dataStructure.SA.splice(index, 1);
-    this.dataStructure.S.push(elt);
+    const index = this.getDataStructure().SA.indexOf(elt);
+    if (index !== -1) this.getDataStructure().SA.splice(index, 1);
+    this.getDataStructure().S.push(elt);
   }
 
   /**
@@ -174,7 +178,7 @@ export default abstract class Learner_OT_Father extends LearnerFather<Observatio
   abstract isConsistent(): string[] | undefined;
 
   sameRow(a: string, b: string) {
-    return this.dataStructure.assoc[a] === this.dataStructure.assoc[b];
+    return this.getDataStructure().assoc[a] === this.getDataStructure().assoc[b];
   }
 
   getConsistentCounter() {

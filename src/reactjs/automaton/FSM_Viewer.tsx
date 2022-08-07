@@ -21,10 +21,8 @@ interface ReactState {
   a1: FSM,
   a2: FSM,
   lastOperation: {
-    a1: FSM,
     operation: Operation,
     is_a1: boolean,
-    a2: FSM,
     res: FSM
   },
   showRegexSetter: boolean,
@@ -60,7 +58,7 @@ export default class FSMViewer extends React.Component<ReactProp, ReactState>{
     }
     return {
       fsmType: fsmType as FSM_Type, a1, a2,
-      lastOperation: { a1, a2, operation: "∪", res, is_a1: true, },
+      lastOperation: { operation: "∪", res, is_a1: true, },
       showRegexSetter: false,
       changeRegexA1: true
     }

@@ -4,7 +4,7 @@ import ToString from "../ToString.interface";
 import Alphabet from "./Alphabet.interface";
 import State from "./State.interface";
 
-export default interface FSM extends Clonable, ToDot, ToString {
+export default interface FSM extends Clonable<FSM>, ToDot, ToString {
   states: Map<string, State>;
   initialStates: State[];
   alphabet: Alphabet;
@@ -76,6 +76,4 @@ export default interface FSM extends Clonable, ToDot, ToString {
    * @returns a words of length at least minLength if it exists else the word of nearest length
    */
   findWordAccepted(minLength?: number): string | undefined;
-
-  clone(): FSM
 }

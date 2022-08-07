@@ -13,25 +13,31 @@ export default class TTT_DFA extends TTT_Father<string> {
     this.alphabet = teacher.alphabet as AlphabetDFA
   }
 
+  getDataStructure(): DiscTreeDFA {
+    return this.dataStructure as DiscTreeDFA
+  }
+
   initiate() {
-    let root = this.dataStructure.getRoot();
+    let dataStructure = this.dataStructure as DiscTreeDFA
+    let root = dataStructure.getRoot();
     let [addedRight, addedLeft] = [false, false]
     for (const symbol of ["", ...this.alphabet.symbols]) {
       if (addedRight && addedLeft) break
       let memberAnsower = this.teacher.member(symbol)
       if (memberAnsower && addedRight === false) {
-        this.dataStructure.addRightChild({ parent: root, name: symbol });
+        dataStructure.addRightChild({ parent: root, name: symbol });
         addedRight = true;
       } else if (!memberAnsower && addedLeft === false) {
-        this.dataStructure.addLeftChild({ parent: root, name: symbol });
+        dataStructure.addLeftChild({ parent: root, name: symbol });
         addedLeft = true;
       }
     }
   }
 
   makeAutomaton(): DFA_NFA {
-    let initial_state = this.dataStructure.sift("", this.teacher)!
-    let states = new Map([...this.dataStructure.getLeaves().values()].map(e => [e.name, new StateDFA(e.name, e.isAccepting!, e === initial_state, this.alphabet)]))
+    let dataStructure = this.dataStructure as DiscTreeDFA
+    let initial_state = dataStructure.sift("", this.teacher)!
+    let states = new Map([...dataStructure.getLeaves().values()].map(e => [e.name, new StateDFA(e.name, e.isAccepting!, e === initial_state, this.alphabet)]))
 
     let L = [...states.keys()]
 
@@ -39,10 +45,10 @@ export default class TTT_DFA extends TTT_Father<string> {
       const state = L.pop()!
       for (const symbol of this.alphabet.symbols) {
         let newWord = state + symbol
-        let res = this.dataStructure.sift(newWord, this.teacher)
+        let res = dataStructure.sift(newWord, this.teacher)
 
         if (res === undefined) {
-          res = this.dataStructure.addRoot(newWord)
+          res = dataStructure.addRoot(newWord)
           L.push(res.name)
           states.set(newWord, new StateDFA(newWord, res.isAccepting!, false, this.alphabet))
         }

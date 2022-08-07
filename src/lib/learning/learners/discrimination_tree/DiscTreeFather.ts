@@ -1,7 +1,5 @@
-import Clonable from "../../../Clonable.interface";
-import ToDot from "../../../ToDot.interface";
-import ToString from "../../../ToString.interface";
 import Teacher from "../../teachers/Teacher";
+import DataStructure from "../DataStructure.interface";
 
 export class InnerNode<LblType>  {
   name: LblType;
@@ -68,7 +66,7 @@ export class Leaf<LblType> {
 
 export type TreeElt<LblType> = InnerNode<LblType> | Leaf<LblType>
 
-export default abstract class DiscTreeFather<LblType> implements Clonable, ToDot, ToString {
+export default abstract class DiscTreeFather<LblType> implements DataStructure {
   protected root: InnerNode<LblType>;
   protected leaves: Map<string, Leaf<LblType>>;
   protected innerNodes: Set<InnerNode<LblType>>;

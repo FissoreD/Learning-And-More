@@ -14,12 +14,12 @@ export default class NL_star extends Learner_OT_Father {
 
   isPrime(rowKey: string): boolean {
     if (this.primeLines === undefined) this.primeLines = []
-    let rowValue = this.dataStructure.assoc[rowKey];
+    let rowValue = this.getDataStructure().assoc[rowKey];
     if (rowValue.length < 2 || parseInt(rowValue) === 0) return true;
 
     let res = "0".repeat(rowValue.length)
 
-    Object.values(this.dataStructure.assoc).forEach(value => {
+    Object.values(this.getDataStructure().assoc).forEach(value => {
       if (value !== rowValue && this.isCovered(value, rowValue)) {
         res = this.rowUnion(res, value);
       }
@@ -49,7 +49,7 @@ export default class NL_star extends Learner_OT_Father {
   }
 
   checkPrimeLines() {
-    this.primeLines = [...this.dataStructure.S, ...this.dataStructure.SA].filter(l => this.isPrime(l));
+    this.primeLines = [...this.getDataStructure().S, ...this.getDataStructure().SA].filter(l => this.isPrime(l));
   }
 
   addEltInS(newElt: string, afterEquiv = false) {
@@ -69,7 +69,7 @@ export default class NL_star extends Learner_OT_Father {
    * `s` is not in {@link S}
    */
   isClose(): string | undefined {
-    let res = this.dataStructure.SA.find(t => !this.dataStructure.S.some(s => this.sameRow(s, t)) && this.primeLines.includes(t));
+    let res = this.getDataStructure().SA.find(t => !this.getDataStructure().S.some(s => this.sameRow(s, t)) && this.primeLines.includes(t));
     this.closednessCounter += res === undefined ? 0 : 1
     return res
   }
@@ -81,18 +81,18 @@ export default class NL_star extends Learner_OT_Father {
    */
   isConsistent(): string[] | undefined {
     let testCovering = (s1: string, s2: string): string[] | undefined => {
-      let value_s1 = this.dataStructure.assoc[s1];
-      let value_s2 = this.dataStructure.assoc[s2];
+      let value_s1 = this.getDataStructure().assoc[s1];
+      let value_s2 = this.getDataStructure().assoc[s2];
       if (this.isCovered(value_s1, value_s2)) {
         for (const a of this.alphabet.symbols) {
-          let value_s1_p = this.dataStructure.assoc[s1 + a]
-          let value_s2_p = this.dataStructure.assoc[s2 + a]
+          let value_s1_p = this.getDataStructure().assoc[s1 + a]
+          let value_s2_p = this.getDataStructure().assoc[s2 + a]
           if (!this.isCovered(value_s1_p, value_s2_p)) {
-            for (let i = 0; i < this.dataStructure.E.length; i++) {
-              if (this.dataStructure.assoc[s1 + a][i] >
-                this.dataStructure.assoc[s2 + a][i] && !this.dataStructure.E.includes(a + this.dataStructure.E[i])) {
+            for (let i = 0; i < this.getDataStructure().E.length; i++) {
+              if (this.getDataStructure().assoc[s1 + a][i] >
+                this.getDataStructure().assoc[s2 + a][i] && !this.getDataStructure().E.includes(a + this.getDataStructure().E[i])) {
                 this.consistenceCounter++;
-                return [s1, s2, a + this.dataStructure.E[i]]
+                return [s1, s2, a + this.getDataStructure().E[i]]
               }
             }
           }
@@ -101,10 +101,10 @@ export default class NL_star extends Learner_OT_Father {
       }
     }
 
-    for (let s1_ind = 0; s1_ind < this.dataStructure.S.length; s1_ind++) {
-      for (let s2_ind = s1_ind + 1; s2_ind < this.dataStructure.S.length; s2_ind++) {
-        let s1 = this.dataStructure.S[s1_ind];
-        let s2 = this.dataStructure.S[s2_ind];
+    for (let s1_ind = 0; s1_ind < this.getDataStructure().S.length; s1_ind++) {
+      for (let s2_ind = s1_ind + 1; s2_ind < this.getDataStructure().S.length; s2_ind++) {
+        let s1 = this.getDataStructure().S[s1_ind];
+        let s2 = this.getDataStructure().S[s2_ind];
         let test1 = testCovering(s1, s2);
         if (test1) return test1;
         let test2 = testCovering(s2, s1);
@@ -118,10 +118,10 @@ export default class NL_star extends Learner_OT_Father {
     let wordForState: string[] = [], statesMap: Map<string, StateDFA> = new Map(),
       acceptingStates: StateDFA[] = [], initialStates: StateDFA[] = [], stateSet: Set<StateDFA> = new Set();
     this.primeLines.forEach(s => {
-      if (this.dataStructure.S.includes(s)) {
-        let name = this.dataStructure.assoc[s];
+      if (this.getDataStructure().S.includes(s)) {
+        let name = this.getDataStructure().assoc[s];
         if (!statesMap.get(name)) {
-          let state = new StateDFA(name, name[0] === "1", this.isCovered(name, this.dataStructure.assoc[""]), this.alphabet);
+          let state = new StateDFA(name, name[0] === "1", this.isCovered(name, this.getDataStructure().assoc[""]), this.alphabet);
           wordForState.push(s);
           if (state.isAccepting) acceptingStates.push(state)
           if (state.isInitial) initialStates.push(state)
@@ -131,9 +131,9 @@ export default class NL_star extends Learner_OT_Father {
       }
     })
     for (const word of wordForState) {
-      let name = this.dataStructure.assoc[word]
+      let name = this.getDataStructure().assoc[word]
       for (const symbol of this.alphabet.symbols) {
-        let rowNext = this.dataStructure.assoc[word + symbol]
+        let rowNext = this.getDataStructure().assoc[word + symbol]
         for (const [name1, state] of statesMap) {
           if (this.isCovered(name1, rowNext))
             statesMap.get(name)!.getSuccessor(symbol)!.push(state)

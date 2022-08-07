@@ -3,7 +3,7 @@ import React, { ReactElement } from "react";
 import { Button, ButtonGroup, Card } from "react-bootstrap";
 import { ArrowClockwise, ArrowCounterclockwise, CaretLeftFill, CaretRightFill } from "react-bootstrap-icons";
 import FSM from "../../lib/automaton/FSM_interface";
-import Clonable from "../../lib/Clonable.interface";
+import DataStructure from "../../lib/learning/learners/DataStructure.interface";
 import LearnerFather from "../../lib/learning/learners/LearnerFather";
 import Dialog from "../components/Dialog";
 import GraphDotRender from "../components/DotRender";
@@ -13,21 +13,21 @@ import { LearnerType } from "./LearnerContainerC";
 export type MessageType = "END" | "SEND-HYP" | "CE" | "CONSISTENCY" | "CLOSEDNESS" | "DISC-REF" | "HYP-STAB"
 
 export interface PropReact {
-  learner: LearnerFather<Clonable>,
+  learner: LearnerFather,
   name: LearnerType, pos: number,
   updatePosition: (l: LearnerType, pos: number) => void
 }
 
 export interface StateReact {
   doNext: boolean,
-  memory: { dataStructure: Clonable, automaton: FSM | undefined, message: { type: MessageType, val: JSX.Element } }[],
+  memory: { dataStructure: DataStructure, automaton: FSM | undefined, message: { type: MessageType, val: JSX.Element } }[],
   position: number,
-  learner: LearnerFather<Clonable>,
+  learner: LearnerFather,
   showRegexDialog: boolean,
   firstTime: boolean
 }
 
-type Learner = LearnerFather<Clonable>
+type Learner = LearnerFather
 
 export abstract class LearnerSection extends React.Component<PropReact, StateReact>{
   constructor(prop: PropReact) {
@@ -39,7 +39,7 @@ export abstract class LearnerSection extends React.Component<PropReact, StateRea
     };
   }
 
-  abstract dataStructureToNodeElement(ds: Clonable): React.ReactElement;
+  abstract dataStructureToNodeElement(ds: DataStructure): React.ReactElement;
   abstract nextOpChild(state: StateReact): StateReact;
 
   nextOp(state: StateReact): StateReact {
@@ -126,7 +126,7 @@ export abstract class LearnerSection extends React.Component<PropReact, StateRea
       doNext: true,
       memory: [{
         message: { type: "CE", val: <span>Learning with {this.props.name}</span> },
-        dataStructure: learner.dataStructure.clone(),
+        dataStructure: learner.getDataStructure().clone(),
         automaton: undefined
       }], position: 0, learner: learner,
       showRegexDialog: false,

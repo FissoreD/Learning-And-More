@@ -40,7 +40,7 @@ export default abstract class TTT_Father_C<LblType> extends LearnerSection {
     let memory = state.memory;
 
     memory.push({
-      message, dataStructure: learner.dataStructure.clone(),
+      message, dataStructure: learner.getDataStructure().clone(),
       automaton: learner.makeAutomaton()!.clone()
     })
     let position = state.position + 1

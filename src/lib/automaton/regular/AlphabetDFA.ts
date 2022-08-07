@@ -1,7 +1,6 @@
-import Clonable from "../../Clonable.interface";
 import Alphabet from "../Alphabet.interface";
 
-export default class AlphabetDFA implements Alphabet, Clonable {
+export default class AlphabetDFA implements Alphabet {
   symbols: string[];
 
   constructor(...symbols: string[]) {

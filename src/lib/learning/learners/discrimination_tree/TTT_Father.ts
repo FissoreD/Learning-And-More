@@ -6,7 +6,7 @@ import DiscTreeFather from "./DiscTreeFather";
 export type LastSplitType<LblType> = { u: string; a: string; v: string; uaState: string | undefined; uState: string | undefined; newNodeLabel: LblType; newLeaf: string; };
 
 
-export default abstract class TTT_Father<LblType> extends LearnerFather<DiscTreeFather<LblType>>{
+export default abstract class TTT_Father<LblType> extends LearnerFather {
   lastSplit?: LastSplitType<LblType>;
   lastCe?: { value: string, accepted: boolean, isTeacher: boolean };
 
@@ -45,7 +45,7 @@ export default abstract class TTT_Father<LblType> extends LearnerFather<DiscTree
   }
 
   updateTree(p: { newLeaf: string, v: string, uaState?: string, newNodeLabel: LblType }) {
-    this.dataStructure.splitLeaf({
+    (this.dataStructure as DiscTreeFather<LblType>).splitLeaf({
       leafName: p.uaState!,
       nameLeafToAdd: p.newLeaf,
       newDiscriminator: p.newNodeLabel,

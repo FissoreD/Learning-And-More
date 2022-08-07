@@ -15,17 +15,22 @@ export default class TTT_VPA extends TTT_Father<StringCouple> {
     this.alphabet = teacher.alphabet as AlphabetVPA;
   }
 
+  getDataStructure(): DiscTreeVPA {
+    return this.dataStructure as DiscTreeVPA
+  }
+
   initiate() {
-    let root = this.dataStructure.getRoot();
+    let dataStructure = this.dataStructure as DiscTreeVPA
+    let root = dataStructure.getRoot();
     let [addedRight, addedLeft] = [false, false]
     let alph = this.alphabet as AlphabetVPA
     let addChild = (symbol: string) => {
       let isOk = this.teacher.member(symbol)
       if (isOk && addedRight === false) {
-        this.dataStructure.addRightChild({ parent: root, name: symbol });
+        dataStructure.addRightChild({ parent: root, name: symbol });
         addedRight = true;
       } else if (!isOk && addedLeft === false) {
-        this.dataStructure.addLeftChild({ parent: root, name: symbol });
+        dataStructure.addLeftChild({ parent: root, name: symbol });
         addedLeft = true;
       }
     }
@@ -43,9 +48,10 @@ export default class TTT_VPA extends TTT_Father<StringCouple> {
   }
 
   makeAutomaton(): VPA {
-    let initial_state = this.dataStructure.sift("", this.teacher)!
+    let dataStructure = this.dataStructure as DiscTreeVPA
+    let initial_state = dataStructure.sift("", this.teacher)!
     let stackAlphabet: string[] = []
-    let states = new Map([...this.dataStructure.getLeaves().values()].map(e => [e.name,
+    let states = new Map([...dataStructure.getLeaves().values()].map(e => [e.name,
     new StateVPA({
       name: e.name, isAccepting: e.isAccepting!, isInitial: e === initial_state,
       alphabet: this.alphabet, stackAlphabet
@@ -54,10 +60,10 @@ export default class TTT_VPA extends TTT_Father<StringCouple> {
     let L = [...states.keys()]
 
     let updateAutomaton = (newWord: string) => {
-      let res = this.dataStructure.sift(newWord, this.teacher)
+      let res = dataStructure.sift(newWord, this.teacher)
 
       if (res === undefined) {
-        res = this.dataStructure.addRoot(newWord)
+        res = dataStructure.addRoot(newWord)
         L.push(res.name)
         states.set(newWord, new StateVPA({ name: newWord, isAccepting: res.isAccepting!, isInitial: false, alphabet: this.alphabet, stackAlphabet }))
       }

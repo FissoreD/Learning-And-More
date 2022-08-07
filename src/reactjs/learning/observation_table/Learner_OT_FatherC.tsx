@@ -1,5 +1,5 @@
 import { ReactElement } from "react";
-import Clonable from "../../../lib/Clonable.interface";
+import DataStructure from "../../../lib/learning/learners/DataStructure.interface";
 import Learner_OT_Father from "../../../lib/learning/learners/observation_table/Learner_OT_Father";
 import ObservationTable from "../../../lib/learning/learners/observation_table/ObservationTable";
 import { LearnerSection, MessageType, PropReact, StateReact } from "../LearnerFatherC";
@@ -13,7 +13,7 @@ export default abstract class Learner_OT_FatherC extends LearnerSection {
     this.tableToModifyAfterCe = tableToModif
   }
 
-  dataStructureToNodeElement(ds: Clonable, primeLines?: string[]): ReactElement {
+  dataStructureToNodeElement(ds: DataStructure, primeLines?: string[]): ReactElement {
     return <ObservationTableC dataStructure={ds.clone() as ObservationTable} primeLines={primeLines} />
   }
 
@@ -65,7 +65,7 @@ export default abstract class Learner_OT_FatherC extends LearnerSection {
     }
     let memory = state.memory;
     memory.push({
-      message, dataStructure: learner.dataStructure.clone(),
+      message, dataStructure: learner.getDataStructure().clone(),
       automaton: learner.automaton ? learner.automaton.clone() : undefined
     })
     let position = state.position + 1
