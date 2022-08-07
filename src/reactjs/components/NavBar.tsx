@@ -13,7 +13,7 @@ export class NavBar extends React.Component<ChangeCnt> {
     return (
       <Navbar bg="light" expand="sm" className="mb-2">
         <Container>
-          <Navbar.Brand className="text-hover" onClick={() => this.props.changeCnt("Home")}><House /></Navbar.Brand>
+          <Navbar.Brand className="my-hover" onClick={() => this.props.changeCnt("Home")}><House /></Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">

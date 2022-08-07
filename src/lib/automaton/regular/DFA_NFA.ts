@@ -217,9 +217,6 @@ export default class DFA_NFA implements FSM<StateDFA>, ToDot {
     })
 
     txt += "\n}"
-
-    console.log(txt);
-
     return txt
   }
 

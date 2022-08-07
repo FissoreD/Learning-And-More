@@ -21,7 +21,7 @@ export default class GraphDotToRender extends React.Component<Props, any> {
   }
 
   public render = (): JSX.Element => {
-    let donwloadImg = <Download className='mx-1 float-end text-hover' onClick={() => {
+    let donwloadImg = <Download className='mx-1 float-end my-hover' onClick={() => {
       downloadSvg(this.id)
     }} />
     return <div className='position-relative h-100 w-100'>

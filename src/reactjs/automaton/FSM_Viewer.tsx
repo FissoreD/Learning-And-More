@@ -9,6 +9,7 @@ import StateDFA from "../../lib/automaton/regular/StateDFA";
 import { createVPA2, createVPA4 } from "../../lib/__test__/VPAforTest";
 import Dialog from "../components/Dialog";
 import GraphDotRender from "../components/DotRender";
+import VPASwitcher from "../components/VPASwitcher";
 import { FLEX_CENTER } from "../globalVars";
 
 type Operation = "∪" | "∩" | "△" | "/" | "Det" | "~"
@@ -67,9 +68,13 @@ export default class FSM_Viewer extends React.Component<ReactProp, ReactState>{
   }
 
   setRegex(regex: string | undefined) {
-    if (regex) {
-      if (this.state.a1 instanceof DFA_NFA) {
-        let aut = DFA_NFA.regexToAutomaton(regex);
+    this.setFSM(regex ? DFA_NFA.regexToAutomaton(regex) : undefined)
+  }
+
+  setFSM(fsm: VPA | DFA_NFA | undefined) {
+    if (fsm) {
+      if (this.state.fsmType === "DFA") {
+        let aut = fsm as DFA_NFA;
         this.setState((state) => {
           if (state.changeRegexA1) {
             return { a1: aut!, a2: state.a2 }
@@ -80,7 +85,16 @@ export default class FSM_Viewer extends React.Component<ReactProp, ReactState>{
         let oldOp = this.state.lastOperation
         this.updateResultAut(oldOp.operation, oldOp.is_a1)
       } else {
-        alert("Not implemented")
+        let aut = fsm as VPA;
+        this.setState((state) => {
+          if (state.changeRegexA1) {
+            return { a1: aut!, a2: state.a2 }
+          } else {
+            return { a1: state.a1, a2: aut! }
+          }
+        });
+        let oldOp = this.state.lastOperation
+        this.updateResultAut(oldOp.operation, oldOp.is_a1)
       }
     }
     this.setState({ showRegexSetter: false })
@@ -145,7 +159,7 @@ export default class FSM_Viewer extends React.Component<ReactProp, ReactState>{
     return <Card className="border-primary">
       <Card.Header className={`${FLEX_CENTER} justify-content-between text-primary`}>
         {this.state.fsmType} - Name: A{pos}
-        <BootstrapReboot className="text-hover" onClick={() =>
+        <BootstrapReboot className="my-hover" onClick={() =>
           this.setState({ showRegexSetter: true, changeRegexA1: pos === 1 })} />
       </Card.Header>
       <Card.Body className="py-1 px-0 d-flex flex-column">
@@ -195,7 +209,9 @@ export default class FSM_Viewer extends React.Component<ReactProp, ReactState>{
   render(): React.ReactNode {
     let lastOp = this.state.lastOperation
     return <>
-      <Dialog fn={this.setRegex.bind(this)} show={this.state.showRegexSetter} />
+      {this.state.fsmType === "DFA" ?
+        <Dialog fn={this.setRegex.bind(this)} show={this.state.showRegexSetter} /> :
+        <VPASwitcher fn={this.setFSM.bind(this)} show={this.state.showRegexSetter} />}
       <Row className="d-flex justify-content-center">
         <Col className="mb-3 mb-sm-0" sm={5}>{this.createCardAutomaton(this.state.a1, 1)}</Col>
         <Col sm="auto" className="d-flex text-center align-self-center justify-content-center">

@@ -3,7 +3,7 @@ import StateVPA from "../automaton/context_free/StateVPA"
 import VPA from "../automaton/context_free/VPA"
 
 /**
- * @returns a VPA st G = A^n II* B^n
+ * @returns G = A^n II* B^n
  */
 export let createVPA1 = (): VPA => {
   let alphabet = new AlphabetVPA({ CALL: ["A"], RET: ["B", "C"], INT: ["I"] })
@@ -18,6 +18,11 @@ export let createVPA1 = (): VPA => {
   return vpa
 }
 
+/**
+ * @returns
+ * G := A.H.B | I.G | I  
+ * H := GG | G
+ */
 export let createVPA2 = (): VPA => {
   let alphabet = new AlphabetVPA({ CALL: ["A"], RET: ["B"], INT: ["I"] })
   let stackAlphabet = ["2"]
@@ -30,7 +35,7 @@ export let createVPA2 = (): VPA => {
 }
 
 /**
- * @returns a VPA st G = A^n I B^n
+ * @returns G = A^n I B^n
  */
 export let createVPA3 = (): VPA => {
   let alphabet = new AlphabetVPA({ CALL: ["A"], RET: ["B"], INT: ["I"] })
@@ -44,6 +49,11 @@ export let createVPA3 = (): VPA => {
   return vpa
 }
 
+/**
+ * @returns 
+ * G := A.G.(C | B).H | AB | H  
+ * H := I.H | I
+ */
 export let createVPA4 = (): VPA => {
   let alphabet = new AlphabetVPA({ CALL: ["A"], RET: ["B", "C"], INT: ["I"] })
   let stackAlphabet = ["0"]
@@ -106,6 +116,11 @@ export let createVPAxml2 = (easyAlph = true): VPA => {
   return vpa
 }
 
+/**
+ * @returns 
+ * G := <A H> G </A> | T  
+ * H := X | Y
+ */
 export let createVPAxml3 = (): VPA => {
   let alphabet = new AlphabetVPA({ INT: ["T", "X", "Y", ">"], CALL: ["<A"], RET: ["</A"] })
   let stackAlphabet = ["0"]
@@ -127,3 +142,13 @@ export let createVPAxml3 = (): VPA => {
   let res = new VPA(states)
   return res
 }
+
+export const VPAList: { desc: string; fn: VPA; }[] = [
+  { desc: `G := A.G.B | I`, fn: createVPA3() },
+  { desc: `G := A.G.B | I.G | G`, fn: createVPA1() },
+  { desc: `G := A.H.B | I.G | I\nH := GG | G`, fn: createVPA2() },
+  { desc: `G := A.G.(C | B).H | AB | H\nH := I.H | I`, fn: createVPA4() },
+  { desc: `G := B.T.G`, fn: createVPAxml1() },
+  { desc: `G := A.B.T.C.D`, fn: createVPAxml2() },
+  { desc: `G := <A H>G</A>|T\nH := X | Y`, fn: createVPAxml3() }
+]
