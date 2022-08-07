@@ -1,5 +1,5 @@
 import ToDot from "../../ToDot.interface";
-import { shuffle, todo, toEps } from "../../tools";
+import { edgeDotStyle, nodeDotRounded, shuffle, todo, toEps } from "../../tools";
 import FSM from "../FSM_interface";
 import AlphabetVPA, { ALPHABET_TYPE, ALPH_TYPE_LIST } from "./AlphabetVPA";
 import StateVPA from "./StateVPA";
@@ -498,7 +498,8 @@ export default class VPA implements FSM, ToDot {
 
   /* istanbul ignore next */
   toDot() {
-    let txt = "digraph {rankdir = LR\nfixedsize=true\n"
+    // let txt = "digraph {rankdir = LR\nfixedsize=true\n"
+    let txt = "digraph {rankdir = LR\n"
     let triples: { [id: string]: string[] } = {}
     let allStates = this.allStates().sort((a, b) => a.isInitial ? -1 : 1);
     for (const state of allStates) {
@@ -534,15 +535,19 @@ export default class VPA implements FSM, ToDot {
       }
     }
 
-    let shape = "circle"
+    let legend = ""
 
-    txt = txt.concat(`node [style=rounded, shape=${shape}, fixedsize=true]\n`);
+    // txt = txt.concat(`node [style=rounded, shape=${shape}, fixedsize=true]\n`);
+    txt = txt.concat(nodeDotRounded);
+    txt = txt.concat(edgeDotStyle);
 
     txt = txt.concat(Object.keys(triples).map(x => {
       let [states, transition] = [x, triples[x].join(",")]
       let split = states.split("&");
       let A = split[0], B = split[1];
-      return `"${toEps(A)}" -> "${toEps(B)}" [label = "${transition}"]`
+      legend = legend + `${toEps(A)} -> ${toEps(B)} := ${transition}\\n`
+      // return `"${toEps(A)}" -> "${toEps(B)}" [tooltip="${transition}"]`
+      return `"${toEps(A)}" -> "${toEps(B)}" [label="${transition}"]`
     }).join("\n"));
 
     this.initialStates.forEach(s => {
@@ -555,7 +560,11 @@ export default class VPA implements FSM, ToDot {
         txt = txt.concat(`\n"${toEps(s.name)}" [peripheries=2]`)
     })
 
+    // txt += `\nlabel="${legend}"`
+
     txt += "\n}"
+    console.log(txt);
+
     return txt
   }
 

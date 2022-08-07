@@ -1,5 +1,9 @@
 export type myFunction<S, T> = { (data: S): T; };
 
+export const edgeDotStyle = `edge [arrowhead="vee" penwidth="1"]\n`
+export const nodeDotCircleFixed = `node [style=rounded, shape=circle, fixedsize=true]\n`
+export const nodeDotRounded = `node [style=rounded]\n`
+
 export function sameVector(v1: any[], v2: any[]): boolean {
   return v1.length === v2.length && v1.every((elt, pos) => elt === v2[pos]);
 }
@@ -18,26 +22,8 @@ export const generatePrefixList = (str: string) =>
 export const generateSuffixList = (str: string) =>
   Array(str.length + 1).fill("").map((_, i) => str.substring(i, str.length + 1));
 
-export const countStrOccurrences = (str: string, obj: string) =>
-  Array.from(str).filter(f => f === obj).length
-
 export function boolToString(bool: boolean): string {
   return bool ? "1" : "0";
-}
-
-export function allStringFromAlphabet(params: { alphabet: string[] | string, maxLength: number }) {
-  let res: string[] = [""]
-  let alphabet = Array.from(params.alphabet).sort()
-  let level = [""]
-  while (res[res.length - 1].length < params.maxLength) {
-    let res1: string[] = []
-    level.forEach(e => alphabet.forEach(a => {
-      res.push(e + a)
-      res1.push(e + a)
-    }))
-    level = res1
-  }
-  return res;
 }
 
 export let myLog = ({ a, toLog = false }: { a: any[], toLog?: boolean }) => {

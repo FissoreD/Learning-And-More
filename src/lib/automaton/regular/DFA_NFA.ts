@@ -1,5 +1,5 @@
 import ToDot from "../../ToDot.interface";
-import { sameVector, shuffle, toEps } from "../../tools";
+import { edgeDotStyle, nodeDotRounded, sameVector, shuffle, toEps } from "../../tools";
 import FSM from "../FSM_interface";
 import AlphabetDFA from "./AlphabetDFA";
 import regexToAutomaton from "./parser/RegexParser";
@@ -197,9 +197,8 @@ export default class DFA_NFA implements FSM, ToDot {
       }
     }
 
-    let shape = "circle"
-
-    txt = txt.concat(`node [style=rounded, shape=${shape}, fixedsize=true]\n`);
+    txt = txt.concat(nodeDotRounded);
+    txt = txt.concat(edgeDotStyle);
 
     txt = txt.concat(Object.keys(triples).map(x => {
       let [states, transition] = [x, triples[x].join(",")]

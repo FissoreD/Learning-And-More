@@ -43,7 +43,6 @@ export default class VPASwitcher extends React.Component<Prop, State>{
   render(): React.ReactNode {
     let len = Math.ceil(VPAList.length / 2)
     let vpas = new Array(len).fill(0).map((_, pos) => [VPAList[pos * 2], VPAList[pos * 2 + 1]])
-    console.log(vpas);
 
     return <Modal show={this.props.show} onHide={() => this.quit()}>
       <Modal.Header closeButton>

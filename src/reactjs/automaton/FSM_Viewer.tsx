@@ -200,25 +200,26 @@ export default class FSMViewer extends React.Component<ReactProp, ReactState>{
   }
 
   render(): React.ReactNode {
-    let lastOp = this.state.lastOperation
+    let { lastOperation, fsmType, a1, a2, showRegexSetter } = this.state
+    let isDFA = fsmType === "DFA"
     return <>
-      {this.state.fsmType === "DFA" ?
-        <Dialog fn={this.setRegex.bind(this)} show={this.state.showRegexSetter} /> :
-        <VPASwitcher fn={this.setFSM.bind(this)} show={this.state.showRegexSetter} />}
+      {isDFA ?
+        <Dialog fn={this.setRegex.bind(this)} show={showRegexSetter} /> :
+        <VPASwitcher fn={this.setFSM.bind(this)} show={showRegexSetter} />}
       <Row className="d-flex justify-content-center">
-        <Col className="mb-3 mb-sm-0" sm={5}>{this.createCardAutomaton(this.state.a1, 1)}</Col>
+        <Col className="mb-3 mb-sm-0" sm={5}>{this.createCardAutomaton(a1, 1)}</Col>
         <Col sm="auto" className="d-flex text-center align-self-center justify-content-center">
           <ButtonGroup vertical className="secondary d-none d-sm-inline-flex">
             {this.createBinaryOperatorSwitcher()}</ButtonGroup>
           <ButtonGroup className="secondary d-sm-none">
             {this.createBinaryOperatorSwitcher()}</ButtonGroup>
         </Col>
-        <Col className="mt-3 mt-sm-0" sm={5}>{this.createCardAutomaton(this.state.a2, 2)}</Col>
+        <Col className="mt-3 mt-sm-0" sm={5}>{this.createCardAutomaton(a2, 2)}</Col>
       </Row>
-      <Accordion defaultActiveKey={'0'} className="mt-3">
-        {this.state.a1 instanceof VPA ? <></> :
-          this.createAccordionItem({ key: "0", aut: lastOp.res, isMinimized: true })}
-        {this.createAccordionItem({ key: "1", aut: lastOp.res, isMinimized: false })}
+      <Accordion defaultActiveKey={isDFA ? '0' : '1'} className="my-2">
+        {!isDFA ? <></> :
+          this.createAccordionItem({ key: "0", aut: lastOperation.res, isMinimized: true })}
+        {this.createAccordionItem({ key: "1", aut: lastOperation.res, isMinimized: false })}
       </Accordion>
     </>
   }
