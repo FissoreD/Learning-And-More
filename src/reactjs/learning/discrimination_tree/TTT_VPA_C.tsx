@@ -19,7 +19,6 @@ export default class TTT_VPA_C extends TTT_Father_C<StringCouple, StateVPA> {
     if (typeof regex === "string")
       throw new Error("Unable to transform string to VPA")
     let res = new TTT_VPA(new TeacherVPA({ automaton: regex }))
-    res.teacher.regex = `<xml><h1>Text</h1></xml>`
     return res;
   }
 

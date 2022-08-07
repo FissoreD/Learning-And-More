@@ -8,6 +8,7 @@ export default interface FSM extends Clonable, ToDot, ToString {
   states: Map<string, State>;
   initialStates: State[];
   alphabet: Alphabet;
+  grammar: string;
 
   /** 
    * @param p.bottom if present indicates the state to add in the complete automaton

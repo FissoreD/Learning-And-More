@@ -3,8 +3,8 @@ import StateVPA from "./StateVPA";
 import VPA from "./VPA";
 
 export default class ONE_SEVPA extends VPA {
-  constructor(stateList: Set<StateVPA> | StateVPA[]) {
-    super(stateList)
+  constructor(stateList: Set<StateVPA> | StateVPA[], grammar = "") {
+    super(stateList, grammar)
     this.addAllCallTransitions()
   }
 

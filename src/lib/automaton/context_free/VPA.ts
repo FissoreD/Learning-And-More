@@ -13,10 +13,12 @@ export default class VPA implements FSM, ToDot {
   alphabet: AlphabetVPA;
   stack: string[];
   stackAlphabet: string[];
+  grammar: string;
 
 
   /** @todo: stack alphabet can be undefined and therefore self-created */
-  constructor(stateList: Set<StateVPA> | StateVPA[]) {
+  constructor(stateList: Set<StateVPA> | StateVPA[], grammar = "") {
+    this.grammar = grammar
     stateList = new Set(stateList);
     this.states = new Map();
     stateList.forEach(e => this.states.set(e.name, e));
@@ -298,6 +300,7 @@ export default class VPA implements FSM, ToDot {
       }
     }
     // return res.determinize()
+    // TODO : pass the new grammar in parameter ?
     return new VPA([...mapNewStateNameState.values()])
   }
 
@@ -320,7 +323,7 @@ export default class VPA implements FSM, ToDot {
   clone(): VPA {
     let allStates = this.allStates()
     let myMap = new Map(allStates.map(e => [e, e.clone()]))
-    let res = new VPA([...myMap.values()]);
+    let res = new VPA([...myMap.values()], this.grammar);
 
     myMap.forEach((newS, oldS) => {
 
@@ -497,7 +500,7 @@ export default class VPA implements FSM, ToDot {
   toDot() {
     let txt = "digraph {rankdir = LR\nfixedsize=true\n"
     let triples: { [id: string]: string[] } = {}
-    let allStates = this.allStates().sort((a, b) => a.isAccepting ? -1 : 1)
+    let allStates = this.allStates().sort((a, b) => a.isInitial ? -1 : 1);
     for (const state of allStates) {
       let { INT, CALL, RET } = this.alphabet
       let types: ("INT" | "CALL" | "RET")[] = ["INT", "CALL", "RET"]

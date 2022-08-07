@@ -176,25 +176,25 @@ export default abstract class DiscTreeFather<LblType, StateType> implements Clon
     let toExplore: TreeElt<LblType>[] = [this.root];
     while (toExplore.length > 0) {
       let current = toExplore.pop()!;
-      let matched = map.get(current)
+      let matched = map.get(current) as InnerNode<LblType>
       if (current instanceof InnerNode<LblType>) {
         if (current.left instanceof InnerNode<LblType>) {
-          let newN = new InnerNode<LblType>({ name: current.left.name, parent: matched as InnerNode<LblType> });
-          (matched as InnerNode<LblType>).left = newN
+          let newN = new InnerNode<LblType>({ name: current.left.name, parent: matched });
+          matched.left = newN
           map.set(current.left, newN)
           toExplore.push(current.left)
           res.innerNodes.add(newN)
         } else if (current.left instanceof Leaf) {
-          res.addLeftChild({ parent: matched as InnerNode<LblType>, name: current.left.name });
+          res.addLeftChild({ parent: matched, name: current.left.name });
         }
         if (current.right instanceof InnerNode<LblType>) {
-          let newN = new InnerNode<LblType>({ name: current.right.name, parent: matched as InnerNode<LblType> });
-          (matched as InnerNode<LblType>).right = newN
+          let newN = new InnerNode<LblType>({ name: current.right.name, parent: matched });
+          matched.right = newN
           map.set(current.right, newN)
           toExplore.push(current.right)
           res.innerNodes.add(newN)
         } else if (current.right instanceof Leaf) {
-          res.addRightChild({ parent: matched as InnerNode<LblType>, name: current.right.name });
+          res.addRightChild({ parent: matched, name: current.right.name });
         }
       }
     }

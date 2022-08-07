@@ -5,13 +5,13 @@ export default abstract class Teacher {
   description: string;
   alphabet: Alphabet;
   counterExamples?: string[];
-  regex: string;
+  readonly regex: string;
   automaton: FSM;
 
   constructor(p: { automaton: FSM }) {
     this.description = ""
     this.alphabet = p.automaton.alphabet.clone()
-    this.regex = ""
+    this.regex = p.automaton.grammar
     this.automaton = p.automaton.minimize()
   }
 

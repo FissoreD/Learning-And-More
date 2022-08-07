@@ -14,7 +14,7 @@ export let createVPA1 = (): VPA => {
   state2.addTransition({ symbol: "I", successor: state1 })
   state1.addTransition({ symbol: "B", topStack: "0", successor: state1 })
   state2.addTransition({ symbol: "A", topStack: "0", successor: state2 })
-  let vpa = new VPA([state1, state2])
+  let vpa = new VPA([state1, state2], `G := A.G.B | I`)
   return vpa
 }
 
@@ -30,7 +30,7 @@ export let createVPA2 = (): VPA => {
   s1.addTransition({ symbol: "I", successor: s1 })
   s1.addTransition({ symbol: "A", topStack: "2", successor: s1 })
   s1.addTransition({ symbol: "B", topStack: "2", successor: s1 })
-  let vpa = new VPA([s1])
+  let vpa = new VPA([s1], `G := A.G.B | I.G | G`)
   return vpa
 }
 
@@ -45,13 +45,13 @@ export let createVPA3 = (): VPA => {
   state2.addTransition({ symbol: "I", successor: state1 })
   state1.addTransition({ symbol: "B", topStack: "0", successor: state1 })
   state2.addTransition({ symbol: "A", topStack: "0", successor: state2 })
-  let vpa = new VPA([state1, state2])
+  let vpa = new VPA([state1, state2], `G := A.H.B | I.G | I\nH := GG | G`)
   return vpa
 }
 
 /**
  * @returns 
- * G := A.G.(C | B).H | AB | H  
+ * G := A.G.(C|B).H | AB | H  
  * H := I.H | I
  */
 export let createVPA4 = (): VPA => {
@@ -65,7 +65,7 @@ export let createVPA4 = (): VPA => {
   state1.addTransition({ symbol: "B", topStack: "0", successor: state1 })
   state1.addTransition({ symbol: "C", topStack: "0", successor: state1 })
   state2.addTransition({ symbol: "A", topStack: "0", successor: state2 })
-  let vpa = new VPA([state1, state2])
+  let vpa = new VPA([state1, state2], `G := A.G.(C|B).H | AB | H\nH := I.H | I`)
   return vpa
 }
 
@@ -84,14 +84,14 @@ export let createVPAxml1 = (): VPA => {
   state3.addTransition({ symbol: text, successor: state4 })
   state4.addTransition({ symbol: notH1, successor: state5, topStack: "0" })
 
-  let vpa = new VPA([state2, state3, state4, state5])
+  let vpa = new VPA([state2, state3, state4, state5], `G := B.T.G`)
   return vpa
 }
 
 /** L = ABTCD w/[call=AB, ret=CD, int=T] */
 export let createVPAxml2 = (easyAlph = true): VPA => {
   let xml, notXml, h1, notH1, text;
-  if (!easyAlph) {
+  if (easyAlph) {
     xml = "A"; notXml = "D"; h1 = "B"; notH1 = "C"; text = "T"
   } else {
     xml = "<xml>"; notXml = "</xml>"; h1 = "<h1>"; notH1 = "</h1>"; text = "Text"
@@ -112,7 +112,9 @@ export let createVPAxml2 = (easyAlph = true): VPA => {
   state4.addTransition({ symbol: notH1, successor: state5, topStack: "1" })
   state5.addTransition({ symbol: notXml, successor: state6, topStack: "0" })
 
-  let vpa = new VPA([state1, state4, state5, state6])
+  let vpa = new VPA([state1, state4, state5, state6],
+    easyAlph ? `G := A.B.T.C.D` : `G := <xml>.<h1>.Text.</h1>.</xml>`
+  )
   return vpa
 }
 
@@ -139,16 +141,17 @@ export let createVPAxml3 = (): VPA => {
   state1.addTransition({ topStack: stackAlphabet[0], successor: state4, symbol: alphabet.INT[0] })
   state4.addTransition({ topStack: stackAlphabet[0], successor: state5, symbol: alphabet.RET[0] })
   state5.addTransition({ topStack: stackAlphabet[0], successor: state4, symbol: alphabet.INT[3] })
-  let res = new VPA(states)
+  let res = new VPA(states, `G := <A H>G</A>|T\nH := X | Y`)
   return res
 }
 
-export const VPAList: { desc: string; fn: VPA; }[] = [
-  { desc: `G := A.G.B | I`, fn: createVPA3() },
-  { desc: `G := A.G.B | I.G | G`, fn: createVPA1() },
-  { desc: `G := A.H.B | I.G | I\nH := GG | G`, fn: createVPA2() },
-  { desc: `G := A.G.(C | B).H | AB | H\nH := I.H | I`, fn: createVPA4() },
-  { desc: `G := B.T.G`, fn: createVPAxml1() },
-  { desc: `G := A.B.T.C.D`, fn: createVPAxml2() },
-  { desc: `G := <A H>G</A>|T\nH := X | Y`, fn: createVPAxml3() }
+export const VPAList: VPA[] = [
+  createVPA3(),
+  createVPA1(),
+  createVPA2(),
+  createVPA4(),
+  createVPAxml2(),
+  createVPAxml1(),
+  createVPAxml2(false),
+  createVPAxml3()
 ]

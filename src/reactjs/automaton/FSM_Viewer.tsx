@@ -1,6 +1,6 @@
 import React, { RefObject } from "react";
 import { Accordion, Button, ButtonGroup, Card, Col, Row } from "react-bootstrap";
-import { BootstrapReboot } from "react-bootstrap-icons";
+import { Eyedropper } from "react-bootstrap-icons";
 import VPA from "../../lib/automaton/context_free/VPA";
 import FSM from "../../lib/automaton/FSM_interface";
 import DFA_NFA from "../../lib/automaton/regular/DFA_NFA";
@@ -70,43 +70,39 @@ export default class FSM_Viewer extends React.Component<ReactProp, ReactState>{
   }
 
   setFSM(fsm: VPA | DFA_NFA | undefined) {
-    if (fsm) {
-      if (this.state.fsmType === "DFA") {
-        let aut = fsm as DFA_NFA;
-        this.setState((state) => {
-          if (state.changeRegexA1) {
-            return { a1: aut!, a2: state.a2 }
-          } else {
-            return { a1: state.a1, a2: aut! }
-          }
-        });
-        let oldOp = this.state.lastOperation
-        this.updateResultAut(oldOp.operation, oldOp.is_a1)
-      } else {
-        let aut = fsm as VPA;
-        this.setState((state) => {
-          if (state.changeRegexA1) {
-            return { a1: aut!, a2: state.a2 }
-          } else {
-            return { a1: state.a1, a2: aut! }
-          }
-        });
-        let oldOp = this.state.lastOperation
-        this.updateResultAut(oldOp.operation, oldOp.is_a1)
-      }
+    if (fsm instanceof DFA_NFA) {
+      this.setState((state) => {
+        if (state.changeRegexA1) {
+          return { a1: fsm!, a2: state.a2 }
+        } else {
+          return { a1: state.a1, a2: fsm! }
+        }
+      });
+      let oldOp = this.state.lastOperation
+      this.updateResultAut(oldOp.operation, oldOp.is_a1)
+    } else if (fsm instanceof VPA) {
+      this.setState((state) => {
+        if (state.changeRegexA1) {
+          return { a1: fsm!, a2: state.a2 }
+        } else {
+          return { a1: state.a1, a2: fsm! }
+        }
+      });
+      let oldOp = this.state.lastOperation
+      this.updateResultAut(oldOp.operation, oldOp.is_a1)
     }
     this.setState({ showRegexSetter: false })
   }
 
-  createResultAut(operation: Operation, is_a1 = true, a1: VPA, a2: VPA) {
-    let res: VPA;
+  createResultAut(operation: Operation, is_a1 = true, a1: FSM, a2: FSM) {
+    let res: FSM;
     switch (operation) {
-      case "/": res = a1.difference(a2) as VPA; break;
-      case "∩": res = a1.intersection(a2) as VPA; break;
-      case "∪": res = a1.union(a2) as VPA; break;
-      case "△": res = a1.symmetricDifference(a2) as VPA; break;
-      case "~": res = (is_a1 ? a1 : a2).complement() as VPA; break;
-      case "Det": res = a1.determinize() as VPA; break;
+      case "/": res = a1.difference(a2); break;
+      case "∩": res = a1.intersection(a2); break;
+      case "∪": res = a1.union(a2); break;
+      case "△": res = a1.symmetricDifference(a2); break;
+      case "~": res = (is_a1 ? a1 : a2).complement(); break;
+      case "Det": res = a1.determinize(); break;
       default: throw new Error("Should not be here")
     }
     let opeartionList = { a1, a2, operation, res, is_a1 }
@@ -115,7 +111,7 @@ export default class FSM_Viewer extends React.Component<ReactProp, ReactState>{
 
   updateResultAut(operation: Operation, is_a1 = true) {
     this.setState((state) => {
-      return this.createResultAut(operation, is_a1, state.a1 as VPA, state.a2 as VPA)
+      return this.createResultAut(operation, is_a1, state.a1, state.a2)
     })
     this.updateView()
   }
@@ -157,7 +153,7 @@ export default class FSM_Viewer extends React.Component<ReactProp, ReactState>{
     return <Card className="border-primary">
       <Card.Header className={`${FLEX_CENTER} justify-content-between text-primary`}>
         {this.state.fsmType} - Name: A{pos}
-        <BootstrapReboot className="my-hover" onClick={() =>
+        <Eyedropper className="my-hover" onClick={() =>
           this.setState({ showRegexSetter: true, changeRegexA1: pos === 1 })} />
       </Card.Header>
       <Card.Body className="py-1 px-0 d-flex flex-column">

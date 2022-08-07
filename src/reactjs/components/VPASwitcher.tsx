@@ -18,19 +18,22 @@ export default class VPASwitcher extends React.Component<Prop, State>{
 
   alphabetToVpa(vpa: VPA) {
     let { INT, CALL, RET } = vpa.alphabet
-    return <p>
-      <b>CALL</b>: [ {CALL.join(", ")} ]<br />
-      <b>RET</b>: [ {RET.join(", ")} ]<br />
-      <b>INT</b>: [ {INT.join(", ")} ]<br />
-    </p>
+    return <div>
+      <h5 className="text-center">Alphabet</h5>
+      <p>
+        <b>CALL</b>: [ {CALL.join(", ")} ]<br />
+        <b>RET</b>: [ {RET.join(", ")} ]<br />
+        <b>INT</b>: [ {INT.join(", ")} ]<br />
+      </p>
+    </div>
   }
 
-  createCard = (title: string | number, desc: string, vpa: VPA) => {
+  createCard = (title: string | number, vpa: VPA) => {
     return <Col sm="6">
-      <Card className="cursor" onClick={() => this.props.fn(vpa)}>
+      <Card className="cursor h-100" onClick={() => this.props.fn(vpa)}>
         <Card.Body>
           <Card.Title>VPA {title}</Card.Title>
-          <Card.Subtitle className="mb-2 text-muted">{desc}</Card.Subtitle>
+          <Card.Subtitle className="mb-2 text-muted"><pre>{vpa.grammar}</pre></Card.Subtitle>
           <Card.Text>{this.alphabetToVpa(vpa)}</Card.Text>
         </Card.Body>
       </Card>
@@ -47,10 +50,10 @@ export default class VPASwitcher extends React.Component<Prop, State>{
         <Modal.Title>VPA chooser</Modal.Title>
       </Modal.Header>
       <Modal.Body className="overflow-auto" style={{ height: "15rem" }}>
-        {vpas.map(([{ desc, fn }, b], pos) =>
+        {vpas.map(([a, b], pos) =>
           <Row key={pos} className="pb-3">
-            {this.createCard(pos * 2 + 1, desc, fn)}
-            {b ? this.createCard((pos + 1) * 2, b.desc, b.fn) : <></>}
+            {this.createCard(pos * 2 + 1, a)}
+            {b ? this.createCard((pos + 1) * 2, b) : <></>}
           </Row>
         )}
       </Modal.Body>

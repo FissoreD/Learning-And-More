@@ -10,9 +10,6 @@ export class TeacherAutomaton extends Teacher {
 
   constructor(params: constructorType) {
     super({ automaton: TeacherAutomaton.giveAutomaton(params) })
-    if (params.type === "Regex") {
-      this.regex = params.automaton as string
-    }
   }
 
   private static giveAutomaton(p: constructorType) {

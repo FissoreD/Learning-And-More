@@ -9,9 +9,11 @@ export default class DFA_NFA implements FSM, ToDot {
   states: Map<string, StateDFA>;
   initialStates: StateDFA[];
   alphabet: AlphabetDFA;
+  grammar: string;
 
-  constructor(stateList: Set<StateDFA> | StateDFA[]) {
+  constructor(stateList: Set<StateDFA> | StateDFA[], grammar = "") {
     stateList = new Set(stateList);
+    this.grammar = grammar
     this.states = new Map();
     stateList.forEach(e => this.states.set(e.name, e));
 
@@ -277,7 +279,7 @@ export default class DFA_NFA implements FSM, ToDot {
         }
       }
     }
-    let res = new DFA_NFA([...newStates.values()])
+    let res = new DFA_NFA([...newStates.values()], this.grammar)
     return res
   }
 
@@ -368,13 +370,13 @@ export default class DFA_NFA implements FSM, ToDot {
       }
     }
 
-    let res = new DFA_NFA(newStates)
+    let res = new DFA_NFA(newStates, this.grammar)
     return res;
   }
 
   clone(alphabet?: AlphabetDFA) {
     let allStates = this.allStates()
-    let res = new DFA_NFA(allStates.map(e => e.clone({ alphabet })));
+    let res = new DFA_NFA(allStates.map(e => e.clone({ alphabet })), this.grammar);
     this.alphabet.symbols.forEach(l =>
       allStates.forEach((e, pos) =>
         e.getSuccessor(l).forEach(succ => res.allStates()[pos].addTransition(l, res.allStates()[allStates.indexOf(succ)]))

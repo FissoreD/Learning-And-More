@@ -15,7 +15,7 @@ interface HisAutomaton {
   acceptingStates: number[] | number[][]
 }
 
-function HisAutomaton2Mine(aut: HisAutomaton): DFA_NFA {
+function HisAutomaton2Mine(aut: HisAutomaton, regex: string): DFA_NFA {
 
   let states: StateDFA[] = aut.states.map(
     e => new StateDFA(
@@ -39,7 +39,7 @@ function HisAutomaton2Mine(aut: HisAutomaton): DFA_NFA {
       statesMap.get(from + "")?.addTransition(symbol, statesMap.get(state + "")!))
   }
 
-  return new DFA_NFA(statesSet);
+  return new DFA_NFA(statesSet, regex);
 }
 
 // export function MyAutomatonToHis(aut: DFA_NFA): HisAutomaton {
@@ -73,18 +73,19 @@ function HisAutomaton2Mine(aut: HisAutomaton): DFA_NFA {
 
 /** Return the mDFA for a regex */
 export default function regexToAutomaton(regex: string): DFA_NFA {
-  // const noam = require("./noam");
   let res = noam.re.string.toAutomaton(regex);
-  return minimizeAutomaton(res);
+  let aut = minimizeAutomaton(res, regex);
+  aut.grammar = regex;
+  return aut;
 }
 
-function minimizeAutomaton(automatonInput: HisAutomaton): DFA_NFA {
+function minimizeAutomaton(automatonInput: HisAutomaton, regex: string): DFA_NFA {
   // const noam = require("./noam");
   let automaton = automatonInput
   automaton = noam.fsm.convertEnfaToNfa(automaton);
   automaton = noam.fsm.convertNfaToDfa(automaton);
   let statesToNumbers = (noam.fsm.convertStatesToNumbers(automaton))
-  let aa = HisAutomaton2Mine(statesToNumbers)
+  let aa = HisAutomaton2Mine(statesToNumbers, regex)
   let minimized = aa.minimize()
   return minimized
 }
