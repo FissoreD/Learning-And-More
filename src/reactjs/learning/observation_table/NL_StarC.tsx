@@ -1,18 +1,18 @@
 import DFA_NFA from "../../../lib/automaton/regular/DFA_NFA";
 import ClonableInterface from "../../../lib/Clonable.interface";
-import { default as NL_Star, default as NL_star } from "../../../lib/learning/learners/observation_table/NL_Star";
-import { TeacherAutomaton } from "../../../lib/learning/teachers/TeacherDFA";
+import NL_star from "../../../lib/learning/learners/observation_table/NL_Star";
+import TeacherDFA from "../../../lib/learning/teachers/TeacherDFA";
 import { toEps } from "../../../lib/tools";
 import { PropReact } from "../LearnerFatherC";
 import Learner_OT_FatherC from "./Learner_OT_FatherC";
 
 export default class NL_StarC extends Learner_OT_FatherC {
   createNewLearner(regex: string | DFA_NFA): NL_star {
-    return new NL_star(new TeacherAutomaton({ type: regex instanceof DFA_NFA ? "Automaton" : "Regex", automaton: regex }))
+    return new NL_star(new TeacherDFA({ type: regex instanceof DFA_NFA ? "Automaton" : "Regex", automaton: regex }))
   }
 
   dataStructureToNodeElement(ds: ClonableInterface) {
-    return super.dataStructureToNodeElement(ds, (this.state.learner as NL_Star).primeLines)
+    return super.dataStructureToNodeElement(ds, (this.state.learner as NL_star).primeLines)
   }
 
   constructor(prop: PropReact) {

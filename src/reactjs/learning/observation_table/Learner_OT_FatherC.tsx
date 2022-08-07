@@ -3,7 +3,7 @@ import Clonable from "../../../lib/Clonable.interface";
 import Learner_OT_Father from "../../../lib/learning/learners/observation_table/Learner_OT_Father";
 import ObservationTable from "../../../lib/learning/learners/observation_table/ObservationTable";
 import { LearnerSection, MessageType, PropReact, StateReact } from "../LearnerFatherC";
-import { ObservationTableC } from "./ObservationTableC";
+import ObservationTableC from "./ObservationTableC";
 
 export default abstract class Learner_OT_FatherC extends LearnerSection {
   tableToModifyAfterCe: string;

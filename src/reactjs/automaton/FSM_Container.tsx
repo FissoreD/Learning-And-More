@@ -1,7 +1,7 @@
 import React from "react";
 import { Tab, Tabs } from "react-bootstrap";
 import { setUrlFromPosition } from "../globalFunctions";
-import { DFAViewer, VPAViewer } from "./FSM_Viewer";
+import FSMViewer from "./FSM_Viewer";
 
 type FSM_Type = 'VPA' | 'DFA'
 const FSM_LIST: FSM_Type[] = ['DFA', 'VPA']
@@ -18,8 +18,8 @@ export default class FSMContainer extends React.Component<ReactProp, ReactState>
   constructor(prop: ReactProp) {
     super(prop)
     let FSM = {
-      "DFA": <DFAViewer cnt="DFA" />,
-      "VPA": <VPAViewer cnt="VPA" />
+      "DFA": <FSMViewer cnt="DFA" />,
+      "VPA": <FSMViewer cnt="VPA" />
     }
     this.state = {
       current: (FSM_LIST.includes(prop.url as FSM_Type) ? prop.url : "DFA") as FSM_Type,

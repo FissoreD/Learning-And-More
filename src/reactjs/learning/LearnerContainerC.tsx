@@ -4,7 +4,7 @@ import TTT_DFA from "../../lib/learning/learners/discrimination_tree/TTT_DFA";
 import TTT_VPA from "../../lib/learning/learners/discrimination_tree/TTT_VPA";
 import L_star from "../../lib/learning/learners/observation_table/L_star";
 import NL_star from "../../lib/learning/learners/observation_table/NL_Star";
-import { TeacherAutomaton } from "../../lib/learning/teachers/TeacherDFA";
+import TeacherDFA from "../../lib/learning/teachers/TeacherDFA";
 import TeacherVPA from "../../lib/learning/teachers/TeacherVPA";
 import { createVPAxml2 } from "../../lib/__test__/VPAforTest";
 import { setUrlFromPosition } from "../globalFunctions";
@@ -15,7 +15,7 @@ import LStarC from "./observation_table/L_StarC";
 import NLStarC from "./observation_table/NL_StarC";
 
 export type LearnerType = "L*" | "NL*" | "TTT-DFA" | "TTT-VPA"
-let algos: LearnerType[] = ["L*", "NL*", "TTT-DFA", "TTT-VPA"]
+let algos: string[] = ["L*", "NL*", "TTT-DFA", "TTT-VPA"]
 interface State {
   cnt: LearnerType, regex: string, pos: Map<LearnerType, number>, algoList: {
     "L*": JSX.Element;
@@ -31,13 +31,13 @@ export default class LearnerContainerC extends React.Component<Prop, State> {
   constructor(prop: Prop) {
     super(prop)
 
-    let teacher = new TeacherAutomaton({
+    let teacher = new TeacherDFA({
       automaton: (regex),
       type: "Regex"
     })
 
     let [fstElt, sndElt] = prop.cnt.split(URL_SEPARATOR) as [LearnerType, string, string[]]
-    let positions = new Map(algos.map(e => [e, 0]))
+    let positions = new Map(algos.map(e => [e as LearnerType, 0]))
 
     let algo = algos.includes(fstElt) ? fstElt : "L*"
 
@@ -62,7 +62,7 @@ export default class LearnerContainerC extends React.Component<Prop, State> {
   }
 
   setAlgo(algoName: string) {
-    let algo: LearnerType = algos.includes(algoName as LearnerType) ? (algoName as LearnerType) : "L*"
+    let algo = (algos.includes(algoName) ? algoName : "L*") as LearnerType
     this.setState({ cnt: algo })
     setUrlFromPosition(algo, 1)
     this.updatePosition(algo, this.state.pos.get(algo)!, true)
@@ -88,7 +88,7 @@ export default class LearnerContainerC extends React.Component<Prop, State> {
         onSelect={e => this.setAlgo(e!)}
         transition={false}
       >
-        {algos.map(name =>
+        {(algos as LearnerType[]).map(name =>
           <Tab eventKey={name} title={name} key={name}>
             {this.state.algoList[name]}
           </Tab>)}

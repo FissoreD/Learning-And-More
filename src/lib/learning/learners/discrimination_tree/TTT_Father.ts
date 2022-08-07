@@ -6,11 +6,11 @@ import DiscTreeFather from "./DiscTreeFather";
 export type LastSplitType<LblType> = { u: string; a: string; v: string; uaState: string | undefined; uState: string | undefined; newNodeLabel: LblType; newLeaf: string; };
 
 
-export default abstract class TTT_Father<LblType, StateType> extends LearnerFather<DiscTreeFather<LblType, StateType>>{
+export default abstract class TTT_Father<LblType> extends LearnerFather<DiscTreeFather<LblType>>{
   lastSplit?: LastSplitType<LblType>;
   lastCe?: { value: string, accepted: boolean, isTeacher: boolean };
 
-  constructor(teacher: Teacher, discTree: DiscTreeFather<LblType, StateType>) {
+  constructor(teacher: Teacher, discTree: DiscTreeFather<LblType>) {
     super(teacher, discTree)
     this.initiate()
     this.makeNextQuery()

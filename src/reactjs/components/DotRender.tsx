@@ -1,5 +1,5 @@
 import { graphviz } from 'd3-graphviz';
-import * as React from 'react';
+import React from 'react';
 import { Download } from 'react-bootstrap-icons';
 import ToDot from '../../lib/ToDot.interface';
 import { downloadSvg } from '../globalFunctions';

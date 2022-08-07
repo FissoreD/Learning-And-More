@@ -5,7 +5,7 @@ import { AlgosNavBarType, ALGO_NAVBAR_LIST } from "../..";
 
 interface ChangeCnt { changeCnt: (algo: AlgosNavBarType) => void; }
 
-export class NavBar extends React.Component<ChangeCnt> {
+export default class NavBar extends React.Component<ChangeCnt> {
   render(): React.ReactElement {
     let links = ALGO_NAVBAR_LIST.slice(1).map((e, pos) => <Nav.Link key={pos} onClick={() => {
       this.props.changeCnt(e);

@@ -4,7 +4,7 @@ import React from 'react';
 import { Container, Row } from "react-bootstrap";
 import ReactDOM from 'react-dom/client';
 import FSMContainer from './reactjs/automaton/FSM_Container';
-import { NavBar } from './reactjs/components/NavBar';
+import NavBar from './reactjs/components/NavBar';
 import { removeFirstUrlPath, setUrlFromPosition } from './reactjs/globalFunctions';
 import { URL_SEPARATOR } from './reactjs/globalVars';
 import Home from './reactjs/Home';
@@ -17,7 +17,7 @@ export type AlgosNavBarType = "Home" | "Automaton" | "Learning"
 export const ALGO_NAVBAR_LIST: AlgosNavBarType[] = ["Home", "Automaton", "Learning"]
 
 
-export class Main extends React.Component<{}, ReactState> {
+class Main extends React.Component<{}, ReactState> {
   constructor(prop: {}) {
     super(prop)
     this.state = this.giveContent()

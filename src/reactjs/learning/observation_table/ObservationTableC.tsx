@@ -5,7 +5,7 @@ import { toEps } from "../../../lib/tools";
 
 interface Prop { dataStructure: ObservationTable; primeLines?: string[] }
 
-export class ObservationTableC extends React.Component<Prop>{
+export default class ObservationTableC extends React.Component<Prop>{
   createTable(name: string, cnt: string[]) {
     return cnt.map((S, pos) => <tr key={S + "trs"}>
       {pos === 0 ?

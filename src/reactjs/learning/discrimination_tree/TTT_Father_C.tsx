@@ -2,9 +2,9 @@ import TTT_Father from "../../../lib/learning/learners/discrimination_tree/TTT_F
 import { toEps } from "../../../lib/tools";
 import { LearnerSection, MessageType, StateReact } from "../LearnerFatherC";
 
-export default abstract class TTT_Father_C<LblType, StateType> extends LearnerSection {
+export default abstract class TTT_Father_C<LblType> extends LearnerSection {
   nextOpChild(state: StateReact): StateReact {
-    let learner = state.learner as TTT_Father<LblType, StateType>
+    let learner = state.learner as TTT_Father<LblType>
     if (learner.finish) return state;
     var message: { type: MessageType, val: JSX.Element };
     let oldMsg = state.memory[state.position].message

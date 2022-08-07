@@ -68,7 +68,7 @@ export class Leaf<LblType> {
 
 export type TreeElt<LblType> = InnerNode<LblType> | Leaf<LblType>
 
-export default abstract class DiscTreeFather<LblType, StateType> implements Clonable, ToDot, ToString {
+export default abstract class DiscTreeFather<LblType> implements Clonable, ToDot, ToString {
   protected root: InnerNode<LblType>;
   protected leaves: Map<string, Leaf<LblType>>;
   protected innerNodes: Set<InnerNode<LblType>>;
@@ -167,9 +167,9 @@ export default abstract class DiscTreeFather<LblType, StateType> implements Clon
     return a;
   }
 
-  abstract newChild(name: LblType): DiscTreeFather<LblType, StateType>;
+  abstract newChild(name: LblType): DiscTreeFather<LblType>;
 
-  clone(): DiscTreeFather<LblType, StateType> {
+  clone(): DiscTreeFather<LblType> {
     let res = this.newChild(this.root.name);
     let map = new Map<TreeElt<LblType>, TreeElt<LblType>>();
     map.set(this.root, res.root)

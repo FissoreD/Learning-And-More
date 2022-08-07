@@ -1,6 +1,6 @@
 import AlphabetDFA from "../../../automaton/regular/AlphabetDFA";
 import { boolToString, generatePrefixList, generateSuffixList } from "../../../tools";
-import { TeacherAutomaton } from "../../teachers/TeacherDFA";
+import TeacherDFA from "../../teachers/TeacherDFA";
 import LearnerFather from "../LearnerFather";
 import ObservationTable from "./ObservationTable";
 
@@ -10,7 +10,7 @@ export default abstract class Learner_OT_Father extends LearnerFather<Observatio
   counterExample: string | undefined = "";
   alphabet: AlphabetDFA;
 
-  constructor(teacher: TeacherAutomaton) {
+  constructor(teacher: TeacherDFA) {
     super(teacher, new ObservationTable((teacher.alphabet as AlphabetDFA).clone()))
     this.alphabet = teacher.alphabet as AlphabetDFA
     this.closednessCounter = 0;

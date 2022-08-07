@@ -1,11 +1,10 @@
-import StateVPA from "../../../automaton/context_free/StateVPA";
 import { toEps } from "../../../tools";
 import Teacher from "../../teachers/Teacher";
 import DiscTreeFather, { InnerNode, Leaf, TreeElt } from "./DiscTreeFather";
 
 export type StringCouple = [string, string]
 
-export default class DiscTreeVPA extends DiscTreeFather<StringCouple, StateVPA> {
+export default class DiscTreeVPA extends DiscTreeFather<StringCouple> {
   nodeNameToString(node: TreeElt<StringCouple>): string {
     if (node instanceof InnerNode)
       return `${toEps(node.name[0])},${toEps(node.name[1])}`
@@ -13,7 +12,7 @@ export default class DiscTreeVPA extends DiscTreeFather<StringCouple, StateVPA> 
   }
 
 
-  newChild(name: StringCouple): DiscTreeFather<StringCouple, StateVPA> {
+  newChild(name: StringCouple): DiscTreeFather<StringCouple> {
     return new DiscTreeVPA(name)
   }
 

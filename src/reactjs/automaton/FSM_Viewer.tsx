@@ -36,7 +36,7 @@ interface ReactProp {
 }
 
 
-export default class FSM_Viewer extends React.Component<ReactProp, ReactState>{
+export default class FSMViewer extends React.Component<ReactProp, ReactState>{
 
   refMinim: RefObject<HTMLDivElement> = React.createRef()
   refNormal: RefObject<HTMLDivElement> = React.createRef()
@@ -47,19 +47,20 @@ export default class FSM_Viewer extends React.Component<ReactProp, ReactState>{
   }
 
   changeCnt(fsmType: string): ReactState {
-    let a1, a2;
+    let a1, a2, res;
     switch (fsmType) {
-      case "VPA": { a1 = createVPA4(); a2 = createVPA2(); break; }
+      case "VPA": { a1 = createVPA4(); a2 = createVPA2(); res = a1.union(a2); break; }
       default: {
         a1 = DFA_NFA.regexToAutomaton("(ac+b)*(b+c)")
         a2 = DFA_NFA.regexToAutomaton("(a+b)*c")
+        res = a1.union(a2)
         fsmType = "DFA"
         break;
       }
     }
     return {
       fsmType: fsmType as FSM_Type, a1, a2,
-      lastOperation: { a1, a2, operation: "∪", res: (a1 as VPA).union(a2 as VPA), is_a1: true, },
+      lastOperation: { a1, a2, operation: "∪", res, is_a1: true, },
       showRegexSetter: false,
       changeRegexA1: true
     }
@@ -138,7 +139,7 @@ export default class FSM_Viewer extends React.Component<ReactProp, ReactState>{
   switchAutomata() {
     let { a1: r1, a2: r2, lastOperation: opeartionList } = this.state
     this.setState(() => { return { a1: r2, a2: r1 } })
-    if ((["/", "~"] as Operation[]).includes(opeartionList.operation))
+    if (["/", "~"].includes(opeartionList.operation))
       this.updateResultAut(opeartionList.operation, opeartionList.is_a1)
   }
 
@@ -178,12 +179,12 @@ export default class FSM_Viewer extends React.Component<ReactProp, ReactState>{
           <ButtonGroup>
             <Button variant={"outline-" + colorPutInDiv} size="sm" style={{ borderRadius: 0 }} onClick={() => {
               this.setState((state) => {
-                return { ...this.createResultAut(state.lastOperation.operation, true, aut as VPA, state.a2 as VPA), a1: aut }
+                return { ...this.createResultAut(state.lastOperation.operation, true, aut, state.a2), a1: aut }
               })
             }}>A1</Button>
             <Button variant={"outline-" + colorPutInDiv} size="sm" onClick={() => {
               this.setState((state) => {
-                return { ...this.createResultAut(state.lastOperation.operation, false, state.a1 as VPA, aut as VPA), a2: aut }
+                return { ...this.createResultAut(state.lastOperation.operation, false, state.a1, aut), a2: aut }
               })
             }}>A2</Button>
           </ButtonGroup>
@@ -224,6 +225,3 @@ export default class FSM_Viewer extends React.Component<ReactProp, ReactState>{
     </>
   }
 }
-
-export class DFAViewer extends FSM_Viewer { }
-export class VPAViewer extends FSM_Viewer { }

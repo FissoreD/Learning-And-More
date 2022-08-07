@@ -6,10 +6,10 @@ type constructorType = {
   automaton: DFA_NFA | string
 }
 
-export class TeacherAutomaton extends Teacher {
+export default class TeacherDFA extends Teacher {
 
   constructor(params: constructorType) {
-    super({ automaton: TeacherAutomaton.giveAutomaton(params) })
+    super({ automaton: TeacherDFA.giveAutomaton(params) })
   }
 
   private static giveAutomaton(p: constructorType) {
