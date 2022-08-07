@@ -1,5 +1,4 @@
 import DFA_NFA from "../../../lib/automaton/regular/DFA_NFA";
-import StateDFA from "../../../lib/automaton/regular/StateDFA";
 import L_Star from "../../../lib/learning/learners/observation_table/L_star";
 import { TeacherAutomaton } from "../../../lib/learning/teachers/TeacherDFA";
 import { toEps } from "../../../lib/tools";
@@ -11,7 +10,7 @@ export default class LStarC extends Learner_OT_FatherC {
     return new L_Star(new TeacherAutomaton({ type: regex instanceof DFA_NFA ? "Automaton" : "Regex", automaton: regex }))
   }
 
-  constructor(prop: PropReact<StateDFA>) {
+  constructor(prop: PropReact) {
     super(prop, "S")
   }
 

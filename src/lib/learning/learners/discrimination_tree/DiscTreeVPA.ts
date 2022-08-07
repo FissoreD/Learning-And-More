@@ -17,7 +17,7 @@ export default class DiscTreeVPA extends DiscTreeFather<StringCouple, StateVPA> 
     return new DiscTreeVPA(name)
   }
 
-  sift(word: string, teacher: Teacher<StateVPA>): Leaf<StringCouple> | undefined {
+  sift(word: string, teacher: Teacher): Leaf<StringCouple> | undefined {
     let currentNode: InnerNode<StringCouple> | Leaf<StringCouple> | undefined = this.root;
     while (currentNode instanceof InnerNode) {
       currentNode = teacher.member(currentNode.name[0] + word + currentNode.name[1]) ? currentNode.right : currentNode.left

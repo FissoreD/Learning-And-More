@@ -1,5 +1,4 @@
 import DFA_NFA from "../../automaton/regular/DFA_NFA";
-import StateDFA from "../../automaton/regular/StateDFA";
 import Teacher from "./Teacher";
 
 type constructorType = {
@@ -7,7 +6,7 @@ type constructorType = {
   automaton: DFA_NFA | string
 }
 
-export class TeacherAutomaton extends Teacher<StateDFA> {
+export class TeacherAutomaton extends Teacher {
 
   constructor(params: constructorType) {
     super({ automaton: TeacherAutomaton.giveAutomaton(params) })

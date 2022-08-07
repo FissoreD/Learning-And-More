@@ -7,7 +7,7 @@ import StateVPA from "./StateVPA";
 type Grammar = Map<string, Set<string>>
 /** A grammar is a map of a rule name linked to a list (set) of productions */
 
-export default class VPA implements FSM<StateVPA>, ToDot {
+export default class VPA implements FSM, ToDot {
   states: Map<string, StateVPA>;
   initialStates: StateVPA[];
   alphabet: AlphabetVPA;

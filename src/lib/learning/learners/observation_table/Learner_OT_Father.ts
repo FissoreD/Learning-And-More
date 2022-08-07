@@ -1,11 +1,10 @@
 import AlphabetDFA from "../../../automaton/regular/AlphabetDFA";
-import StateDFA from "../../../automaton/regular/StateDFA";
 import { boolToString, generatePrefixList, generateSuffixList } from "../../../tools";
 import { TeacherAutomaton } from "../../teachers/TeacherDFA";
 import LearnerFather from "../LearnerFather";
 import ObservationTable from "./ObservationTable";
 
-export default abstract class Learner_OT_Father extends LearnerFather<ObservationTable, StateDFA> {
+export default abstract class Learner_OT_Father extends LearnerFather<ObservationTable> {
   closednessCounter: number;
   consistenceCounter: number;
   counterExample: string | undefined = "";

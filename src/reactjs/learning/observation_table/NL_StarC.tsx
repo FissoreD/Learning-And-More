@@ -1,5 +1,4 @@
 import DFA_NFA from "../../../lib/automaton/regular/DFA_NFA";
-import StateDFA from "../../../lib/automaton/regular/StateDFA";
 import ClonableInterface from "../../../lib/Clonable.interface";
 import { default as NL_Star, default as NL_star } from "../../../lib/learning/learners/observation_table/NL_Star";
 import { TeacherAutomaton } from "../../../lib/learning/teachers/TeacherDFA";
@@ -16,7 +15,7 @@ export default class NL_StarC extends Learner_OT_FatherC {
     return super.dataStructureToNodeElement(ds, (this.state.learner as NL_Star).primeLines)
   }
 
-  constructor(prop: PropReact<StateDFA>) {
+  constructor(prop: PropReact) {
     super(prop, "E")
   }
   closeMessage(closeRep: string) {

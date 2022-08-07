@@ -1,13 +1,13 @@
 import React, { RefObject } from "react";
 import { Accordion, Button, ButtonGroup, Card, Col, Row } from "react-bootstrap";
 import { BootstrapReboot } from "react-bootstrap-icons";
-import StateVPA from "../../lib/automaton/context_free/StateVPA";
 import VPA from "../../lib/automaton/context_free/VPA";
 import FSM from "../../lib/automaton/FSM_interface";
 import DFA_NFA from "../../lib/automaton/regular/DFA_NFA";
-import StateDFA from "../../lib/automaton/regular/StateDFA";
 import { createVPA2, createVPA4 } from "../../lib/__test__/VPAforTest";
+import Dialog from "../components/Dialog";
 import GraphDotRender from "../components/DotRender";
+import VPASwitcher from "../components/VPASwitcher";
 import { FLEX_CENTER } from "../globalVars";
 
 type Operation = "∪" | "∩" | "△" | "/" | "Det" | "~"
@@ -18,14 +18,14 @@ type FSM_Type = 'VPA' | 'DFA'
 
 interface ReactState {
   fsmType: FSM_Type,
-  a1: FSM<StateDFA | StateVPA>,
-  a2: FSM<StateDFA | StateVPA>,
+  a1: FSM,
+  a2: FSM,
   lastOperation: {
-    a1: FSM<StateDFA | StateVPA>,
+    a1: FSM,
     operation: Operation,
     is_a1: boolean,
-    a2: FSM<StateDFA | StateVPA>,
-    res: FSM<StateDFA | StateVPA>
+    a2: FSM,
+    res: FSM
   },
   showRegexSetter: boolean,
   changeRegexA1: boolean
@@ -153,7 +153,7 @@ export default class FSM_Viewer extends React.Component<ReactProp, ReactState>{
     return this.operationToString(op) + (isUnary ? `(A${is_a1 ? 1 : 2})` : "(A1, A2)")
   }
 
-  createCardAutomaton(r: FSM<StateDFA | StateVPA>, pos: number) {
+  createCardAutomaton(r: FSM, pos: number) {
     return <Card className="border-primary">
       <Card.Header className={`${FLEX_CENTER} justify-content-between text-primary`}>
         {this.state.fsmType} - Name: A{pos}
@@ -168,7 +168,7 @@ export default class FSM_Viewer extends React.Component<ReactProp, ReactState>{
     </Card>
   }
 
-  createAccordionItem(p: { key: string, aut: FSM<StateDFA | StateVPA>, isMinimized: boolean }) {
+  createAccordionItem(p: { key: string, aut: FSM, isMinimized: boolean }) {
     let aut = p.isMinimized ? p.aut.minimize() : p.aut
     let colorPutInDiv = "secondary"
     return <Accordion.Item eventKey={p.key} ref={p.isMinimized ? this.refMinim : this.refNormal}>
@@ -207,10 +207,9 @@ export default class FSM_Viewer extends React.Component<ReactProp, ReactState>{
   render(): React.ReactNode {
     let lastOp = this.state.lastOperation
     return <>
-      {/* TODO OOOOO */}
-      {/* {this.state.fsmType === "DFA" ?
+      {this.state.fsmType === "DFA" ?
         <Dialog fn={this.setRegex.bind(this)} show={this.state.showRegexSetter} /> :
-        <VPASwitcher fn={this.setFSM.bind(this)} show={this.state.showRegexSetter} />} */}
+        <VPASwitcher fn={this.setFSM.bind(this)} show={this.state.showRegexSetter} />}
       <Row className="d-flex justify-content-center">
         <Col className="mb-3 mb-sm-0" sm={5}>{this.createCardAutomaton(this.state.a1, 1)}</Col>
         <Col sm="auto" className="d-flex text-center align-self-center justify-content-center">

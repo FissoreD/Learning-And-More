@@ -1,14 +1,14 @@
 import Alphabet from "../../automaton/Alphabet.interface";
 import FSM from "../../automaton/FSM_interface";
 
-export default abstract class Teacher<State> {
+export default abstract class Teacher {
   description: string;
   alphabet: Alphabet;
   counterExamples?: string[];
   regex: string;
-  automaton: FSM<State>;
+  automaton: FSM;
 
-  constructor(p: { automaton: FSM<State> }) {
+  constructor(p: { automaton: FSM }) {
     this.description = ""
     this.alphabet = p.automaton.alphabet.clone()
     this.regex = ""
@@ -29,7 +29,7 @@ export default abstract class Teacher<State> {
    */
 
 
-  equiv(automaton: FSM<State>): string | undefined {
+  equiv(automaton: FSM): string | undefined {
     let symDiff = this.automaton?.symmetricDifference(automaton)
     return symDiff.findWordAccepted()
   }

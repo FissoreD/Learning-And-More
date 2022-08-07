@@ -1,4 +1,5 @@
 import { todo } from "../../tools";
+import State from "../State.interface";
 import AlphabetVPA, { ALPHABET_TYPE, ALPH_TYPE_LIST } from "./AlphabetVPA";
 
 type transition = {
@@ -7,7 +8,7 @@ type transition = {
   RET: { [letter: string]: { [stackTop: string]: StateVPA[] } }
 }
 
-export default class StateVPA {
+export default class StateVPA implements State {
   isAccepting: boolean;
   isInitial: boolean;
   alphabet: AlphabetVPA;

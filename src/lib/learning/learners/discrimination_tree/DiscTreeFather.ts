@@ -148,7 +148,7 @@ export default abstract class DiscTreeFather<LblType, StateType> implements Clon
       return this.addLeftChild({ parent: this.root, name: s })
   }
 
-  abstract sift(word: string, teacher: Teacher<StateType>): Leaf<LblType> | undefined;
+  abstract sift(word: string, teacher: Teacher): Leaf<LblType> | undefined;
   abstract nodeNameToString(node: TreeElt<LblType>): string;
 
   toString() {

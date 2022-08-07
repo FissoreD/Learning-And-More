@@ -6,18 +6,18 @@ import DiscTreeFather from "./DiscTreeFather";
 export type LastSplitType<LblType> = { u: string; a: string; v: string; uaState: string | undefined; uState: string | undefined; newNodeLabel: LblType; newLeaf: string; };
 
 
-export default abstract class TTT_Father<LblType, StateType> extends LearnerFather<DiscTreeFather<LblType, StateType>, StateType>{
+export default abstract class TTT_Father<LblType, StateType> extends LearnerFather<DiscTreeFather<LblType, StateType>>{
   lastSplit?: LastSplitType<LblType>;
   lastCe?: { value: string, accepted: boolean, isTeacher: boolean };
 
-  constructor(teacher: Teacher<StateType>, discTree: DiscTreeFather<LblType, StateType>) {
+  constructor(teacher: Teacher, discTree: DiscTreeFather<LblType, StateType>) {
     super(teacher, discTree)
     this.initiate()
     this.makeNextQuery()
   }
 
   abstract initiate(): void;
-  abstract makeAutomaton(): FSM_interface<StateType>;
+  abstract makeAutomaton(): FSM_interface;
   abstract split_ce_in_uav(ce: string): LastSplitType<LblType>;
   abstract updateCe(ce: string, isTeacher: boolean): void;
 

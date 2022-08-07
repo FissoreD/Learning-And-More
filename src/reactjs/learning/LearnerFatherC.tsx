@@ -5,30 +5,32 @@ import { ArrowClockwise, ArrowCounterclockwise, CaretLeftFill, CaretRightFill } 
 import FSM from "../../lib/automaton/FSM_interface";
 import Clonable from "../../lib/Clonable.interface";
 import LearnerFather from "../../lib/learning/learners/LearnerFather";
+import Dialog from "../components/Dialog";
 import GraphDotRender from "../components/DotRender";
+import VPASwitcher from "../components/VPASwitcher";
 import { LearnerType } from "./LearnerContainerC";
 
 export type MessageType = "END" | "SEND-HYP" | "CE" | "CONSISTENCY" | "CLOSEDNESS" | "DISC-REF" | "HYP-STAB"
 
-export interface PropReact<StateType> {
-  learner: LearnerFather<Clonable, StateType>,
+export interface PropReact {
+  learner: LearnerFather<Clonable>,
   name: LearnerType, pos: number,
   updatePosition: (l: LearnerType, pos: number) => void
 }
 
-export interface StateReact<StateType> {
+export interface StateReact {
   doNext: boolean,
-  memory: { dataStructure: Clonable, automaton: FSM<StateType> | undefined, message: { type: MessageType, val: JSX.Element } }[],
+  memory: { dataStructure: Clonable, automaton: FSM | undefined, message: { type: MessageType, val: JSX.Element } }[],
   position: number,
-  learner: LearnerFather<Clonable, StateType>,
+  learner: LearnerFather<Clonable>,
   showRegexDialog: boolean,
   firstTime: boolean
 }
 
-type Learner<StateType> = LearnerFather<Clonable, StateType>
+type Learner = LearnerFather<Clonable>
 
-export abstract class LearnerSection<StateType> extends React.Component<PropReact<StateType>, StateReact<StateType>>{
-  constructor(prop: PropReact<StateType>) {
+export abstract class LearnerSection extends React.Component<PropReact, StateReact>{
+  constructor(prop: PropReact) {
     super(prop)
     this.state = {
       ...this.allSteps(
@@ -38,9 +40,9 @@ export abstract class LearnerSection<StateType> extends React.Component<PropReac
   }
 
   abstract dataStructureToNodeElement(ds: Clonable): React.ReactElement;
-  abstract nextOpChild(state: StateReact<StateType>): StateReact<StateType>;
+  abstract nextOpChild(state: StateReact): StateReact;
 
-  nextOp(state: StateReact<StateType>): StateReact<StateType> {
+  nextOp(state: StateReact): StateReact {
     if (state.position === state.memory.length - 1) {
       state = this.nextOpChild(state)
     } else {
@@ -56,7 +58,7 @@ export abstract class LearnerSection<StateType> extends React.Component<PropReac
     }
   }
 
-  allSteps(state: StateReact<StateType>, pos?: number) {
+  allSteps(state: StateReact, pos?: number) {
     if (state.position === state.memory.length) return state;
     let i = 0;
     while (pos === undefined || (pos !== undefined && i < pos)) {
@@ -85,7 +87,7 @@ export abstract class LearnerSection<StateType> extends React.Component<PropReac
     this.setState({ showRegexDialog: false })
   }
 
-  changeLearner(fsm: FSM<StateType> | undefined) {
+  changeLearner(fsm: FSM | undefined) {
     if (fsm) {
       let learner = this.createNewLearner(fsm)
       let newState = this.createNewState(fsm)
@@ -116,9 +118,9 @@ export abstract class LearnerSection<StateType> extends React.Component<PropReac
     return <p className="text-center m-0">{msg}</p>
   }
 
-  abstract createNewLearner(fsm: FSM<StateType> | string): Learner<StateType>;
+  abstract createNewLearner(fsm: FSM | string): Learner;
 
-  createNewState(fsm: FSM<StateType>): StateReact<StateType> {
+  createNewState(fsm: FSM): StateReact {
     let learner = this.createNewLearner(fsm)
     return {
       doNext: true,
@@ -165,11 +167,10 @@ export abstract class LearnerSection<StateType> extends React.Component<PropReac
     let memoryCell = this.state.memory[position]
     return <div className="body-container">
       {/* To change regex panel */}
-      {/* TODO OOOO */}
-      {/* {this.props.name === "TTT-VPA" ?
+      {this.props.name === "TTT-VPA" ?
         <VPASwitcher show={this.state.showRegexDialog} fn={this.changeLearner.bind(this)} /> :
         <Dialog show={this.state.showRegexDialog} fn={this.changeRegex.bind(this)} />
-      } */}
+      }
       {/* Buttons sticky on top to change regex and change algo step */}
       <div className="text-end sticky-top d-flex justify-content-between">
         <Button className="btn-secondary" onClick={() => {

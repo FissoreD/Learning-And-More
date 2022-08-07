@@ -5,7 +5,7 @@ import AlphabetDFA from "./AlphabetDFA";
 import regexToAutomaton from "./parser/RegexParser";
 import StateDFA from "./StateDFA";
 
-export default class DFA_NFA implements FSM<StateDFA>, ToDot {
+export default class DFA_NFA implements FSM, ToDot {
   states: Map<string, StateDFA>;
   initialStates: StateDFA[];
   alphabet: AlphabetDFA;

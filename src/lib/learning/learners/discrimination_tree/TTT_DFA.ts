@@ -8,7 +8,7 @@ import TTT_Father, { LastSplitType } from "./TTT_Father";
 export default class TTT_DFA extends TTT_Father<string, StateDFA> {
   alphabet: AlphabetDFA;
 
-  constructor(teacher: Teacher<StateDFA>) {
+  constructor(teacher: Teacher) {
     super(teacher, new DiscTreeDFA(""))
     this.alphabet = teacher.alphabet as AlphabetDFA
   }
