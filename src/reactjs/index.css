@@ -11,10 +11,6 @@
   z-index: 1200;
 }
 
-/* .card {
-  margin: 10px 0;
-} */
-
 .btn:focus,
 label {
   outline: none !important;
@@ -32,4 +28,8 @@ p {
 .text-hover:hover {
   transform: scale(1.2);
   cursor: pointer;
+}
+
+.text-overline {
+  text-decoration: overline;
 }

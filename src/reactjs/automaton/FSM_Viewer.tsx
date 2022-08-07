@@ -1,4 +1,4 @@
-import React from "react";
+import React, { RefObject } from "react";
 import { Accordion, Button, ButtonGroup, Card, Col, Row } from "react-bootstrap";
 import { BootstrapReboot } from "react-bootstrap-icons";
 import StateVPA from "../../lib/automaton/context_free/StateVPA";
@@ -38,6 +38,9 @@ interface ReactProp {
 
 
 export default class FSM_Viewer extends React.Component<ReactProp, ReactState>{
+
+  refMinim: RefObject<HTMLDivElement> = React.createRef()
+  refNormal: RefObject<HTMLDivElement> = React.createRef()
 
   constructor(props: ReactProp) {
     super(props)
@@ -102,6 +105,15 @@ export default class FSM_Viewer extends React.Component<ReactProp, ReactState>{
     this.setState((state) => {
       return this.createResultAut(operation, is_a1, state.a1 as VPA, state.a2 as VPA)
     })
+    this.updateView()
+  }
+
+  updateView() {
+    if (this.state.fsmType === "DFA") {
+      this.refMinim.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    } else {
+      this.refNormal.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
   }
 
   operationToString(op: Operation) {
@@ -136,9 +148,10 @@ export default class FSM_Viewer extends React.Component<ReactProp, ReactState>{
         <BootstrapReboot className="text-hover" onClick={() =>
           this.setState({ showRegexSetter: true, changeRegexA1: pos === 1 })} />
       </Card.Header>
-      <Card.Body className="py-1 px-0">
-        <div className={FLEX_CENTER} style={{ minHeight: "130px" }}><GraphDotRender dot={r} /></div>
-        <div className={FLEX_CENTER}><Button onClick={() => this.updateResultAut("~", pos === 1)}>Complement(A{pos})</Button></div>
+      <Card.Body className="py-1 px-0 d-flex flex-column">
+        <div ><GraphDotRender dot={r} /></div>
+        <div className={`${FLEX_CENTER}`}><Button className="text-overline" onClick={() => this.updateResultAut("~", pos === 1)}>A{pos}</Button>
+        </div>
       </Card.Body>
     </Card>
   }
@@ -146,7 +159,7 @@ export default class FSM_Viewer extends React.Component<ReactProp, ReactState>{
   createAccordionItem(p: { key: string, aut: FSM<StateDFA | StateVPA>, isMinimized: boolean }) {
     let aut = p.isMinimized ? p.aut.minimize() : p.aut
     let colorPutInDiv = "secondary"
-    return <Accordion.Item eventKey={p.key} >
+    return <Accordion.Item eventKey={p.key} ref={p.isMinimized ? this.refMinim : this.refNormal}>
       <Accordion.Header>
         {this.createOpHeader()} - {p.isMinimized ? "Minimized" : "Normal"}
       </Accordion.Header>
@@ -183,9 +196,9 @@ export default class FSM_Viewer extends React.Component<ReactProp, ReactState>{
     let lastOp = this.state.lastOperation
     return <>
       <Dialog fn={this.setRegex.bind(this)} show={this.state.showRegexSetter} />
-      <Row>
+      <Row className="d-flex justify-content-center">
         <Col className="mb-3 mb-sm-0" sm={5}>{this.createCardAutomaton(this.state.a1, 1)}</Col>
-        <Col className="d-flex text-center align-self-center justify-content-center">
+        <Col sm="auto" className="d-flex text-center align-self-center justify-content-center">
           <ButtonGroup vertical className="secondary d-none d-sm-inline-flex">
             {this.createBinaryOperatorSwitcher()}</ButtonGroup>
           <ButtonGroup className="secondary d-sm-none">
@@ -193,7 +206,7 @@ export default class FSM_Viewer extends React.Component<ReactProp, ReactState>{
         </Col>
         <Col className="mt-3 mt-sm-0" sm={5}>{this.createCardAutomaton(this.state.a2, 2)}</Col>
       </Row>
-      <Accordion defaultActiveKey={['0']} alwaysOpen className="mt-3">
+      <Accordion defaultActiveKey={'0'} className="mt-3">
         {this.state.a1 instanceof VPA ? <></> :
           this.createAccordionItem({ key: "0", aut: lastOp.res, isMinimized: true })}
         {this.createAccordionItem({ key: "1", aut: lastOp.res, isMinimized: false })}

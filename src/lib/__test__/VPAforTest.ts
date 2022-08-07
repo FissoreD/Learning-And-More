@@ -105,3 +105,25 @@ export let createVPAxml2 = (easyAlph = true): VPA => {
   let vpa = new VPA([state1, state4, state5, state6])
   return vpa
 }
+
+export let createVPAxml3 = (): VPA => {
+  let alphabet = new AlphabetVPA({ INT: ["T", "X", "Y", ">"], CALL: ["<A"], RET: ["</A"] })
+  let stackAlphabet = ["0"]
+  let state1 = new StateVPA({ name: "1", alphabet, stackAlphabet })
+  let state2 = new StateVPA({ name: "2", alphabet, stackAlphabet })
+  let state3 = new StateVPA({ name: "3", alphabet, stackAlphabet })
+  let state4 = new StateVPA({ name: "4", alphabet, stackAlphabet })
+  let state5 = new StateVPA({ name: "5", alphabet, stackAlphabet })
+  state1.isInitial = true; state4.isAccepting = true;
+  let states = [state1, state2, state3, state4, state5]
+  // states.forEach(e => e.isAccepting = true)
+  state1.addTransition({ topStack: stackAlphabet[0], successor: state2, symbol: alphabet.CALL[0] })
+  state2.addTransition({ topStack: stackAlphabet[0], successor: state3, symbol: alphabet.INT[1] })
+  state2.addTransition({ topStack: stackAlphabet[0], successor: state3, symbol: alphabet.INT[2] })
+  state3.addTransition({ topStack: stackAlphabet[0], successor: state1, symbol: alphabet.INT[3] })
+  state1.addTransition({ topStack: stackAlphabet[0], successor: state4, symbol: alphabet.INT[0] })
+  state4.addTransition({ topStack: stackAlphabet[0], successor: state5, symbol: alphabet.RET[0] })
+  state5.addTransition({ topStack: stackAlphabet[0], successor: state4, symbol: alphabet.INT[3] })
+  let res = new VPA(states)
+  return res
+}

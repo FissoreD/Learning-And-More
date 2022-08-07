@@ -497,7 +497,8 @@ export default class VPA implements FSM<StateVPA>, ToDot {
   toDot() {
     let txt = "digraph {rankdir = LR\nfixedsize=true\n"
     let triples: { [id: string]: string[] } = {}
-    for (const [name, state] of this.states) {
+    let allStates = this.allStates().sort((a, b) => a.isAccepting ? -1 : 1)
+    for (const state of allStates) {
       let { INT, CALL, RET } = this.alphabet
       let types: ("INT" | "CALL" | "RET")[] = ["INT", "CALL", "RET"]
       for (const type of types) {
@@ -512,7 +513,7 @@ export default class VPA implements FSM<StateVPA>, ToDot {
             let nextStates = this.findTransition(state, { symbol: alph[j], topStack: type === "INT" ? "" : this.stackAlphabet[i], type })
             if (nextStates)
               for (const nextState of nextStates) {
-                let stateA_concat_stateB = name + '&' + nextState.name;
+                let stateA_concat_stateB = state.name + '&' + nextState.name;
                 let transDescr;
                 switch (type) {
                   case "INT": transDescr = `${alph[j]}`; break;
@@ -529,9 +530,6 @@ export default class VPA implements FSM<StateVPA>, ToDot {
         }
       }
     }
-
-
-    let allStates = this.allStates();
 
     let shape = "circle"
 
@@ -675,11 +673,11 @@ export default class VPA implements FSM<StateVPA>, ToDot {
     states.forEach(state => {
       let { INT, CALL, RET } = state.getAllOutTransitions()
       aut.alphabet.INT.forEach(symbol => {
-        aut.stackAlphabet.forEach(topStack => {
+        aut.stackAlphabet.concat(freshSymbolStack).forEach(topStack => {
           let successors = INT[symbol]
           if (successors && successors.length) {
             let succ = successors[0]
-            for (const succ1 of stateNames) {
+            for (const succ1 of stateNames.concat(exitingState)) {
               let key = makeRuleName(state.name, topStack, succ1)
               let ruleSet = grammar.get(key) || new Set()
               ruleSet.add(`${symbol}${makeRuleName(succ.name, topStack, succ1)}`)
@@ -819,7 +817,7 @@ export default class VPA implements FSM<StateVPA>, ToDot {
       removeEmptyRule()
       simplifyTerminal()
       if (print) console.log(grammar);
-      if (counter === 1 && print)
+      if (counter === 0 && print)
         throw new Error("STOP")
       counter++;
 
@@ -832,7 +830,7 @@ export default class VPA implements FSM<StateVPA>, ToDot {
 
     if (print) console.log(grammar);
     simplifyGrammar()
-    // console.log(grammar.get("S"));
+    console.log(grammar.get("S"));
 
     return grammar.has("S") && [...grammar.get("S")!].some(e => !e.match(/{[^{}]*}/g))
   }

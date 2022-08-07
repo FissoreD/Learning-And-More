@@ -1,7 +1,7 @@
 import AlphabetVPA from "../../../../automaton/context_free/AlphabetVPA";
 import StateVPA from "../../../../automaton/context_free/StateVPA";
 import VPA from "../../../../automaton/context_free/VPA";
-import { createVPA2, createVPAxml1, createVPAxml2 } from "../../../../__test__/VPAforTest";
+import { createVPA2, createVPAxml1, createVPAxml2, createVPAxml3 } from "../../../../__test__/VPAforTest";
 import TeacherVPA from "../../../teachers/TeacherVPA";
 import TTT_VPA from "../TTT_VPA";
 
@@ -61,11 +61,23 @@ describe("TTT_VPA", () => {
     expect(learner.finish).toBeTruthy();
   })
 
-  // test("Test emptyness", () => {
-  //   let aut = autMaker()
-  //   console.log(aut.toDot());
+  test("vpaXML3", () => {
+    let automaton = createVPAxml3();
+    // console.log(automaton.toDot());
+    expect(automaton.isEmpty()).toBeFalsy();
 
-  //   expect(aut.isEmpty()).toBeTruthy()
-  // })
+    let teacher = new TeacherVPA({ automaton })
+    let learner = new TTT_VPA(teacher)
+
+    // learner.makeAllQueries()
+    for (let index = 0; index < 10; index++) {
+      learner.makeNextQuery()
+    }
+    console.log(learner.dataStructure.toDot());
+    console.log(learner.automaton?.toDot());
+
+
+    expect(learner.finish).toBeTruthy();
+  })
 })
 

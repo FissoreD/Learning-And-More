@@ -4,6 +4,7 @@ import { Download } from 'react-bootstrap-icons';
 import ToDot from '../../lib/ToDot.interface';
 import { downloadSvg } from '../globalFunctions';
 import { GRAPHVIZ_OPTIONS } from '../globalVars';
+import TooltipImg from './Tooltip';
 
 interface Props {
   dot: ToDot;
@@ -20,10 +21,11 @@ export default class GraphDotToRender extends React.Component<Props, any> {
   }
 
   public render = (): JSX.Element => {
-    return <div className='position-relative'>
-      <Download className='mx-1 float-end text-hover' onClick={() => {
-        downloadSvg(this.id)
-      }} />
+    let donwloadImg = <Download className='mx-1 float-end text-hover' onClick={() => {
+      downloadSvg(this.id)
+    }} />
+    return <div className='position-relative h-100 w-100'>
+      <TooltipImg title='Download' cnt={donwloadImg} />
       <div className={`automaton img-fluid`} id={this.id} />
     </div>;
   };
