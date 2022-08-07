@@ -1,4 +1,5 @@
 import { ReactElement } from "react";
+import DFA_NFA from "../../../lib/automaton/regular/DFA_NFA";
 import StateDFA from "../../../lib/automaton/regular/StateDFA";
 import Clonable from "../../../lib/Clonable.interface";
 import DiscTreeDFA from "../../../lib/learning/learners/discrimination_tree/DiscTreeDFA";
@@ -12,8 +13,8 @@ export default class TTT_DFA_C extends TTT_Father_C<string, StateDFA> {
     return n;
   }
 
-  createNewLearner(regex: string): TTT_DFA {
-    return new TTT_DFA(new TeacherAutomaton({ type: "Regex", automaton: regex }))
+  createNewLearner(regex: string | DFA_NFA): TTT_DFA {
+    return new TTT_DFA(new TeacherAutomaton({ type: regex instanceof DFA_NFA ? "Automaton" : "Regex", automaton: regex }))
   }
 
   dataStructureToNodeElement(ds: Clonable): ReactElement {

@@ -44,10 +44,10 @@ export default class LearnerContainerC extends React.Component<Prop, State> {
     positions.set(algo, parseInt(sndElt) || 0)
     let algoList = {
       "L*": <LStarC pos={positions.get("L*")!}
-        updatePosition={this.updatePosition.bind(this)} changeRegexContainer={this.changeRegex.bind(this)} name={"L*"} learner={new L_star(teacher)} />,
-      "NL*": <NLStarC pos={positions.get("NL*")!} updatePosition={this.updatePosition.bind(this)} changeRegexContainer={this.changeRegex.bind(this)} name={"NL*"} learner={new NL_star(teacher)} />,
-      "TTT-DFA": <TTT_DFA_C pos={positions.get("TTT-DFA")!} updatePosition={this.updatePosition.bind(this)} changeRegexContainer={this.changeRegex.bind(this)} name={"TTT-DFA"} learner={new TTT_DFA(teacher)} />,
-      "TTT-VPA": <TTT_VPA_C pos={positions.get("TTT-VPA")!} updatePosition={this.updatePosition.bind(this)} changeRegexContainer={this.changeRegex.bind(this)} name={"TTT-VPA"} learner={new TTT_VPA(new TeacherVPA({ automaton: createVPAxml2() }))} />
+        updatePosition={this.updatePosition.bind(this)} name={"L*"} learner={new L_star(teacher)} />,
+      "NL*": <NLStarC pos={positions.get("NL*")!} updatePosition={this.updatePosition.bind(this)} name={"NL*"} learner={new NL_star(teacher)} />,
+      "TTT-DFA": <TTT_DFA_C pos={positions.get("TTT-DFA")!} updatePosition={this.updatePosition.bind(this)} name={"TTT-DFA"} learner={new TTT_DFA(teacher)} />,
+      "TTT-VPA": <TTT_VPA_C pos={positions.get("TTT-VPA")!} updatePosition={this.updatePosition.bind(this)} name={"TTT-VPA"} learner={new TTT_VPA(new TeacherVPA({ automaton: createVPAxml2() }))} />
     }
     this.state = {
       cnt: algo,

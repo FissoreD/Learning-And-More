@@ -1,6 +1,7 @@
+import State from "../State.interface";
 import AlphabetDFA from "./AlphabetDFA";
 
-export default class StateDFA {
+export default class StateDFA implements State {
   static Bottom = (alphabet: AlphabetDFA) => new StateDFA("⊥", false, false, alphabet)
   isAccepting: boolean;
   isInitial: boolean;

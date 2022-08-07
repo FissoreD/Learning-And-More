@@ -5,7 +5,6 @@ import { ArrowClockwise, ArrowCounterclockwise, CaretLeftFill, CaretRightFill } 
 import FSM from "../../lib/automaton/FSM_interface";
 import Clonable from "../../lib/Clonable.interface";
 import LearnerFather from "../../lib/learning/learners/LearnerFather";
-import Dialog from "../components/Dialog";
 import GraphDotRender from "../components/DotRender";
 import { LearnerType } from "./LearnerContainerC";
 
@@ -13,8 +12,7 @@ export type MessageType = "END" | "SEND-HYP" | "CE" | "CONSISTENCY" | "CLOSEDNES
 
 export interface PropReact<StateType> {
   learner: LearnerFather<Clonable, StateType>,
-  name: LearnerType,
-  changeRegexContainer: (regex: string) => void, pos: number,
+  name: LearnerType, pos: number,
   updatePosition: (l: LearnerType, pos: number) => void
 }
 
@@ -34,7 +32,7 @@ export abstract class LearnerSection<StateType> extends React.Component<PropReac
     super(prop)
     this.state = {
       ...this.allSteps(
-        this.createNewState(prop.learner.teacher.regex), prop.pos
+        this.createNewState(prop.learner.teacher.automaton), prop.pos
       ), firstTime: true
     };
   }
@@ -78,12 +76,20 @@ export abstract class LearnerSection<StateType> extends React.Component<PropReac
     this.props.updatePosition(this.props.name, 0)
   }
 
-  changeLearner(regex: string | undefined) {
+  changeRegex(regex: string | undefined) {
     if (regex) {
       let learner = this.createNewLearner(regex)
-      let newState = this.createNewState(regex)
+      let newState = this.createNewState(learner.teacher.automaton)
       this.setState({ ...newState, learner })
-      this.props.changeRegexContainer(regex)
+    }
+    this.setState({ showRegexDialog: false })
+  }
+
+  changeLearner(fsm: FSM<StateType> | undefined) {
+    if (fsm) {
+      let learner = this.createNewLearner(fsm)
+      let newState = this.createNewState(fsm)
+      this.setState({ ...newState, learner })
     }
     this.setState({ showRegexDialog: false })
   }
@@ -110,10 +116,10 @@ export abstract class LearnerSection<StateType> extends React.Component<PropReac
     return <p className="text-center m-0">{msg}</p>
   }
 
-  abstract createNewLearner(regex: string): Learner<StateType>;
+  abstract createNewLearner(fsm: FSM<StateType> | string): Learner<StateType>;
 
-  createNewState(regex: string): StateReact<StateType> {
-    let learner = this.createNewLearner(regex)
+  createNewState(fsm: FSM<StateType>): StateReact<StateType> {
+    let learner = this.createNewLearner(fsm)
     return {
       doNext: true,
       memory: [{
@@ -159,12 +165,16 @@ export abstract class LearnerSection<StateType> extends React.Component<PropReac
     let memoryCell = this.state.memory[position]
     return <div className="body-container">
       {/* To change regex panel */}
-      <Dialog show={this.state.showRegexDialog} fn={this.changeLearner.bind(this)} />
+      {/* TODO OOOO */}
+      {/* {this.props.name === "TTT-VPA" ?
+        <VPASwitcher show={this.state.showRegexDialog} fn={this.changeLearner.bind(this)} /> :
+        <Dialog show={this.state.showRegexDialog} fn={this.changeRegex.bind(this)} />
+      } */}
       {/* Buttons sticky on top to change regex and change algo step */}
       <div className="text-end sticky-top d-flex justify-content-between">
         <Button className="btn-secondary" onClick={() => {
           this.setState({ showRegexDialog: true })
-        }} disabled={this.props.name === "TTT-VPA"}> Change Teacher </Button>
+        }}> Change Teacher </Button>
         {this.createNextSetpButtonGroup()}
       </div>
       {/* Algorithms sections */}
