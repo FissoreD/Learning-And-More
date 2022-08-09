@@ -1,7 +1,6 @@
 import { ReactElement } from "react";
 import VPA from "../../../../lib/automaton/context_free/VPA";
 import DiscTreeDFA from "../../../../lib/learning/learners/discrimination_tree/DiscTreeDFA";
-import { StringCouple } from "../../../../lib/learning/learners/discrimination_tree/DiscTreeVPA";
 import TttVpa from "../../../../lib/learning/learners/discrimination_tree/TttVpa";
 import TeacherVPA from "../../../../lib/learning/teachers/TeacherVPA";
 import { toEps } from "../../../../lib/tools";

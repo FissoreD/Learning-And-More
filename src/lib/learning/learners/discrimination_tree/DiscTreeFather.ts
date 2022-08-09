@@ -1,71 +1,9 @@
 import { edgeDotStyle } from "../../../tools";
 import Teacher from "../../teachers/Teacher";
 import DataStructure from "../DataStructure.interface";
-
-export class InnerNode<LblType>  {
-  name: LblType;
-  right: InnerNode<LblType> | Leaf<LblType> | undefined;
-  left: InnerNode<LblType> | Leaf<LblType> | undefined;
-  parent: InnerNode<LblType> | undefined;
-  depth = 0;
-  constructor(p: {
-    name: LblType,
-    right?: InnerNode<LblType> | Leaf<LblType>,
-    left?: InnerNode<LblType> | Leaf<LblType>,
-    parent?: InnerNode<LblType>
-  }) {
-    this.name = p.name
-    this.right = p.right
-    this.left = p.left
-    this.parent = p.parent
-    this.depth = p.parent?.depth || 0
-  }
-
-  addRightLeaf(l: Leaf<LblType>) {
-    this.right = l
-    l.setParent(this, true)
-  }
-
-  addLeftLeaf(l: Leaf<LblType>) {
-    this.left = l
-    l.setParent(this, false)
-  }
-}
-
-export class Leaf<LblType> {
-  name: string
-  parent: InnerNode<LblType>
-  depth: number
-  isAccepting: boolean | undefined;
-  constructor(p: { name: string, parent: InnerNode<LblType> }) {
-    this.name = p.name;
-    this.parent = p.parent;
-    this.depth = p.parent.depth + 1;
-  }
-
-  setParent(i: InnerNode<LblType>, isRight: boolean) {
-    this.parent = i;
-    this.isAccepting = this.isAcceptingMethod(i, isRight)
-  }
-
-  isAcceptingMethod(parent: InnerNode<LblType>, isRight: boolean): boolean {
-    if (this.isAccepting !== undefined) return this.isAccepting
-    if (isRight && parent.parent === undefined)
-      return true
-    while (parent.parent?.parent !== undefined) {
-      parent = parent.parent
-    }
-    if (parent?.parent?.right === parent)
-      return true
-    return false
-  }
-
-  isRight() {
-    return this.parent.right === this
-  }
-}
-
-export type TreeElt<LblType> = InnerNode<LblType> | Leaf<LblType>
+import { InnerNode } from "./tree_elt/InnerNode";
+import { Leaf } from "./tree_elt/Leaf";
+import { TreeElt } from "./tree_elt/TreeElt";
 
 export default abstract class DiscTreeFather<LblType> implements DataStructure {
   protected root: InnerNode<LblType>;

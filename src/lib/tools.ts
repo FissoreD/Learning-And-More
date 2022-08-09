@@ -1,5 +1,3 @@
-export type myFunction<S, T> = { (data: S): T; };
-
 export const edgeDotStyle = `edge [arrowhead="vee" penwidth="1"]\n`
 export const nodeDotCircleFixed = `node [style=rounded, shape=circle, fixedsize=true]\n`
 export const nodeDotRounded = `node [style=rounded]\n`

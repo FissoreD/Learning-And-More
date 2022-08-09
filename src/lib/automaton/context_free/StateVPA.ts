@@ -1,6 +1,7 @@
 import { todo } from "../../tools";
 import State from "../State.interface";
-import AlphabetVPA, { ALPHABET_TYPE, ALPH_TYPE_LIST } from "./AlphabetVPA";
+import AlphabetVPA from "./AlphabetVPA";
+import { VPA_ALPHABET_TYPE, VPA_ALPH_TYPE_LIST } from "./AlphabetVPAType";
 
 type transition = {
   INT: { [letter: string]: StateVPA[] },
@@ -16,7 +17,7 @@ export default class StateVPA implements State {
   inTransitions: transition;
   successors: Set<StateVPA>;
   predecessors: Set<StateVPA>;
-  mapAlphSymbolToType: Map<String, ALPHABET_TYPE>
+  mapAlphSymbolToType: Map<String, VPA_ALPHABET_TYPE>
   name: string;
   stackAlphabet: string[];
 
@@ -38,7 +39,7 @@ export default class StateVPA implements State {
     this.successors = new Set();
     this.predecessors = new Set();
     this.mapAlphSymbolToType = new Map()
-    ALPH_TYPE_LIST.forEach(type => p.alphabet[type].forEach(s => {
+    VPA_ALPH_TYPE_LIST.forEach(type => p.alphabet[type].forEach(s => {
       if (this.mapAlphSymbolToType.has(s) && this.mapAlphSymbolToType.get(s) !== type)
         throw new Error("The alphabet is not valid since it is not a disjoint union of three sets !")
       this.mapAlphSymbolToType.set(s, type)
@@ -61,7 +62,7 @@ export default class StateVPA implements State {
     }
   }
 
-  addTransition(p: { type?: ALPHABET_TYPE, symbol: string, topStack?: string, successor: StateVPA }) {
+  addTransition(p: { type?: VPA_ALPHABET_TYPE, symbol: string, topStack?: string, successor: StateVPA }) {
     if (p.successor === undefined)
       throw new Error(`p.successor is undefined !\nLooking for ${JSON.stringify({ symbol: p.symbol, topStack: p.topStack, fromState: this.name, toState: p.successor })}`)
     p.topStack = p.topStack || undefined
@@ -126,7 +127,7 @@ export default class StateVPA implements State {
     return succ
   }
 
-  getSuccessor(p: { type?: ALPHABET_TYPE, symbol: string, topStack?: string, stack?: string[] }): StateVPA[] {
+  getSuccessor(p: { type?: VPA_ALPHABET_TYPE, symbol: string, topStack?: string, stack?: string[] }): StateVPA[] {
     p.type = p.type || this.mapAlphSymbolToType.get(p.symbol)
     if (p.type === undefined)
       throw new Error(`You should specify a type for this symbol : ${p.symbol}`)
@@ -156,7 +157,7 @@ export default class StateVPA implements State {
     throw new Error(`The top stack symbol should be specified for ${p.symbol} for a ${p.type} transitions`)
   }
 
-  getPredecessor(p: { type?: ALPHABET_TYPE, symbol: string, topStack?: string }) {
+  getPredecessor(p: { type?: VPA_ALPHABET_TYPE, symbol: string, topStack?: string }) {
     let type = p.type || this.mapAlphSymbolToType.get(p.symbol)
     try {
       if (type === undefined)

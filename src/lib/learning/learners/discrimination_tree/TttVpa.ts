@@ -1,10 +1,10 @@
 import AlphabetVPA from "../../../automaton/context_free/AlphabetVPA";
-import ONE_SEVPA from "../../../automaton/context_free/ONE_SEVPA";
+import OneSEVPA from "../../../automaton/context_free/ONE_SEVPA";
 import StateVPA from "../../../automaton/context_free/StateVPA";
 import VPA from "../../../automaton/context_free/VPA";
 import { toEps } from "../../../tools";
 import TeacherVPA from "../../teachers/TeacherVPA";
-import DiscTreeVPA, { StringCouple } from "./DiscTreeVPA";
+import DiscTreeVPA from "./DiscTreeVPA";
 import TTT_Father, { LastSplitType } from "./TTT_Father";
 
 export default class TttVpa extends TTT_Father<StringCouple> {
@@ -89,7 +89,7 @@ export default class TttVpa extends TTT_Father<StringCouple> {
         }
       }
     }
-    return (this.automaton = new ONE_SEVPA([...states.values()]))
+    return (this.automaton = new OneSEVPA([...states.values()]))
   }
 
   split_ce_in_uav(ce: string): LastSplitType<StringCouple> {

@@ -2,7 +2,7 @@ import { toEps } from "../../tools";
 import StateVPA from "./StateVPA";
 import VPA from "./VPA";
 
-export default class ONE_SEVPA extends VPA {
+export default class OneSEVPA extends VPA {
   constructor(stateList: Set<StateVPA> | StateVPA[], grammar = "") {
     super(stateList, grammar)
     this.addAllCallTransitions()

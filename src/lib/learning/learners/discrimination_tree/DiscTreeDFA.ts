@@ -1,6 +1,9 @@
 import { toEps } from "../../../tools";
 import Teacher from "../../teachers/Teacher";
-import DiscTreeFather, { InnerNode, Leaf, TreeElt } from "./DiscTreeFather";
+import DiscTreeFather from "./DiscTreeFather";
+import { InnerNode } from "./tree_elt/InnerNode";
+import { Leaf } from "./tree_elt/Leaf";
+import { TreeElt } from "./tree_elt/TreeElt";
 
 export default class DiscTreeDFA extends DiscTreeFather<string> {
   nodeNameToString(node: TreeElt<string>): string {

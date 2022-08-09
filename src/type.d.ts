@@ -1,0 +1,1 @@
+type StringCouple = [string, string]

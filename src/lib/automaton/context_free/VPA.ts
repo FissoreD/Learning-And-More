@@ -1,7 +1,8 @@
 import ToDot from "../../ToDot.interface";
 import { edgeDotStyle, nodeDotRounded, shuffle, todo, toEps } from "../../tools";
 import FSM from "../FSM.interface";
-import AlphabetVPA, { ALPHABET_TYPE, ALPH_TYPE_LIST } from "./AlphabetVPA";
+import AlphabetVPA from "./AlphabetVPA";
+import { VPA_ALPHABET_TYPE, VPA_ALPH_TYPE_LIST } from "./AlphabetVPAType";
 import StateVPA from "./StateVPA";
 
 type Grammar = Map<string, Set<string>>
@@ -43,7 +44,7 @@ export default class VPA implements FSM, ToDot {
     let bottom = p?.bottom || StateVPA.Bottom(alphabet, stackAlph)
     let toAdd = false;
     res.alphabet = alphabet;
-    for (const type of ALPH_TYPE_LIST) {
+    for (const type of VPA_ALPH_TYPE_LIST) {
       for (const symbol of alphabet[type]) {
         for (let pos = 0; pos < (type === "RET" ? stackAlph.length : 1); pos++) {
           let topStack = type === "INT" ? "" : stackAlph[pos]
@@ -484,7 +485,7 @@ export default class VPA implements FSM, ToDot {
    * what will be the next state)
    * @returns the list of successors of state 
    */
-  findTransition(state: StateVPA, p: { type?: ALPHABET_TYPE, symbol: string, topStack?: string, stack?: string[] }): StateVPA[] {
+  findTransition(state: StateVPA, p: { type?: VPA_ALPHABET_TYPE, symbol: string, topStack?: string, stack?: string[] }): StateVPA[] {
     return state!.getSuccessor(p)!
   }
 

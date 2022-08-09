@@ -1,7 +1,7 @@
 import DFA_NFA from "../../automaton/regular/DFA_NFA";
 import Teacher from "./Teacher";
 
-type constructorType = {
+interface constructorType {
   type: "Automaton" | "Regex" | "Dot",
   automaton: DFA_NFA | string
 }

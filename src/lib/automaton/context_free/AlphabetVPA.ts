@@ -1,7 +1,5 @@
 import Alphabet from "../Alphabet.interface"
-
-export type ALPHABET_TYPE = "INT" | "RET" | "CALL"
-export const ALPH_TYPE_LIST: ALPHABET_TYPE[] = ["INT", "RET", "CALL"]
+import { VPA_ALPH_TYPE_LIST } from "./AlphabetVPAType"
 
 export default class AlphabetVPA implements Alphabet {
   INT: string[]
@@ -65,7 +63,7 @@ export default class AlphabetVPA implements Alphabet {
    * @returns a list of all alphabet symbols
    */
   flatAlphabet() {
-    return ALPH_TYPE_LIST.map(e => this[e]).flat()
+    return VPA_ALPH_TYPE_LIST.map(e => this[e]).flat()
   }
 
   tokenizeWord(word: string) {
