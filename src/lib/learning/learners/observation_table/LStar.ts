@@ -1,9 +1,9 @@
 import DFA_NFA from "../../../automaton/regular/DFA_NFA";
 import StateDFA from "../../../automaton/regular/StateDFA";
-import Learner_OT_Father from "./Learner_OT_Father";
+import LearnerObsTableFather from "./LearnerObsTableFather";
 
 
-export default class L_star extends Learner_OT_Father {
+export default class LStar extends LearnerObsTableFather {
   makeAutomaton() {
     const
       wordForState: string[] = [],

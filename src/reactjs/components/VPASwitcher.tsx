@@ -2,6 +2,7 @@ import React from "react";
 import { Button, Card, Col, Modal, Row } from "react-bootstrap";
 import VPA from "../../lib/automaton/context_free/VPA";
 import { VPAList } from "../../lib/__test__/VPAforTest";
+import { logRender } from "../globalFunctions";
 
 interface Prop { fn: (a: VPA | undefined) => void, show: boolean }
 interface State { regex: string | undefined }
@@ -18,14 +19,14 @@ export default class VPASwitcher extends React.Component<Prop, State>{
 
   alphabetToVpa(vpa: VPA) {
     let { INT, CALL, RET } = vpa.alphabet
-    return <div>
-      <h5 className="text-center">Alphabet</h5>
-      <p>
-        <b>CALL</b>: [ {CALL.join(", ")} ]<br />
-        <b>RET</b>: [ {RET.join(", ")} ]<br />
-        <b>INT</b>: [ {INT.join(", ")} ]<br />
-      </p>
-    </div>
+    return <>
+      <b className="text-center">Alphabet</b><br />
+      {/* <p> */}
+      <b>CALL</b>: [ {CALL.join(", ")} ]<br />
+      <b>RET</b>: [ {RET.join(", ")} ]<br />
+      <b>INT</b>: [ {INT.join(", ")} ]<br />
+      {/* </p> */}
+    </>
   }
 
   createCard = (title: string | number, vpa: VPA) => {
@@ -41,6 +42,7 @@ export default class VPASwitcher extends React.Component<Prop, State>{
   }
 
   render(): React.ReactNode {
+    logRender("VPASwitcher");
     let len = Math.ceil(VPAList.length / 2)
     let vpas = new Array(len).fill(0).map((_, pos) => [VPAList[pos * 2], VPAList[pos * 2 + 1]])
 

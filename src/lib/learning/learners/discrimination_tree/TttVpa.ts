@@ -7,7 +7,7 @@ import TeacherVPA from "../../teachers/TeacherVPA";
 import DiscTreeVPA, { StringCouple } from "./DiscTreeVPA";
 import TTT_Father, { LastSplitType } from "./TTT_Father";
 
-export default class TTT_VPA extends TTT_Father<StringCouple> {
+export default class TttVpa extends TTT_Father<StringCouple> {
   alphabet: AlphabetVPA;
 
   constructor(teacher: TeacherVPA) {

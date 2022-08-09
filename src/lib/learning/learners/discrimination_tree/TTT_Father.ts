@@ -1,4 +1,4 @@
-import FSM_interface from "../../../automaton/FSM_interface";
+import FSM_interface from "../../../automaton/FSM.interface";
 import Teacher from "../../teachers/Teacher";
 import LearnerFather from "../LearnerFather";
 import DiscTreeFather from "./DiscTreeFather";

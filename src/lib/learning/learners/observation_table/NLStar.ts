@@ -2,9 +2,9 @@ import AlphabetDFA from "../../../automaton/regular/AlphabetDFA";
 import DFA_NFA from "../../../automaton/regular/DFA_NFA";
 import StateDFA from "../../../automaton/regular/StateDFA";
 import TeacherDFA from "../../teachers/TeacherDFA";
-import Learner_OT_Father from "./Learner_OT_Father";
+import LearnerObsTableFather from "./LearnerObsTableFather";
 
-export default class NL_star extends Learner_OT_Father {
+export default class NLStar extends LearnerObsTableFather {
   primeLines: string[];
 
   constructor(teacher: TeacherDFA) {

@@ -1,14 +1,15 @@
-import { motion } from "framer-motion";
 import React, { ReactElement } from "react";
 import { Button, ButtonGroup, Card } from "react-bootstrap";
 import { ArrowClockwise, ArrowCounterclockwise, CaretLeftFill, CaretRightFill } from "react-bootstrap-icons";
-import FSM from "../../lib/automaton/FSM_interface";
-import DataStructure from "../../lib/learning/learners/DataStructure.interface";
-import LearnerFather from "../../lib/learning/learners/LearnerFather";
-import Dialog from "../components/Dialog";
-import GraphDotRender from "../components/DotRender";
-import VPASwitcher from "../components/VPASwitcher";
-import { LearnerType } from "./LearnerContainerC";
+import VPA from "../../../lib/automaton/context_free/VPA";
+import FSM from "../../../lib/automaton/FSM.interface";
+import DataStructure from "../../../lib/learning/learners/DataStructure.interface";
+import LearnerFather from "../../../lib/learning/learners/LearnerFather";
+import Dialog from "../../components/Dialog";
+import GraphDotRender from "../../components/DotRender";
+import VPASwitcher from "../../components/VPASwitcher";
+import { logRender } from "../../globalFunctions";
+import { LearnerType } from "./LearnerPage";
 
 export type MessageType = "END" | "SEND-HYP" | "CE" | "CONSISTENCY" | "CLOSEDNESS" | "DISC-REF" | "HYP-STAB"
 
@@ -23,13 +24,10 @@ export interface StateReact {
   memory: { dataStructure: DataStructure, automaton: FSM | undefined, message: { type: MessageType, val: JSX.Element } }[],
   position: number,
   learner: LearnerFather,
-  showRegexDialog: boolean,
   firstTime: boolean
 }
 
-type Learner = LearnerFather
-
-export abstract class LearnerSection extends React.Component<PropReact, StateReact>{
+export abstract class LearnerViewer extends React.Component<PropReact, StateReact>{
   constructor(prop: PropReact) {
     super(prop)
     this.state = {
@@ -84,7 +82,6 @@ export abstract class LearnerSection extends React.Component<PropReact, StateRea
       let newState = this.createNewState(learner.teacher.automaton)
       this.setState({ ...newState, learner })
     }
-    this.setState({ showRegexDialog: false })
   }
 
   changeLearner(fsm: FSM | undefined) {
@@ -93,7 +90,6 @@ export abstract class LearnerSection extends React.Component<PropReact, StateRea
       let newState = this.createNewState(fsm)
       this.setState({ ...newState, learner })
     }
-    this.setState({ showRegexDialog: false })
   }
 
   createCard(title: string, content: React.ReactElement) {
@@ -102,14 +98,7 @@ export abstract class LearnerSection extends React.Component<PropReact, StateRea
         {title}
       </Card.Header>
       <Card.Body className="text-center">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-          key={this.state.position + title}
-        >
-          {content}
-        </motion.div>
+        {content}
       </Card.Body>
     </Card>
   }
@@ -118,7 +107,7 @@ export abstract class LearnerSection extends React.Component<PropReact, StateRea
     return <p className="text-center m-0">{msg}</p>
   }
 
-  abstract createNewLearner(fsm: FSM | string): Learner;
+  abstract createNewLearner(fsm: FSM | string): LearnerFather;
 
   createNewState(fsm: FSM): StateReact {
     let learner = this.createNewLearner(fsm)
@@ -129,7 +118,6 @@ export abstract class LearnerSection extends React.Component<PropReact, StateRea
         dataStructure: learner.getDataStructure().clone(),
         automaton: undefined
       }], position: 0, learner: learner,
-      showRegexDialog: false,
       firstTime: false
     }
   }
@@ -163,19 +151,13 @@ export abstract class LearnerSection extends React.Component<PropReact, StateRea
   }
 
   render(): React.ReactElement {
+    logRender("LearnerFather")
     let position = this.state.position
     let memoryCell = this.state.memory[position]
     return <div className="body-container">
-      {/* To change regex panel */}
-      {this.props.name === "TTT-VPA" ?
-        <VPASwitcher show={this.state.showRegexDialog} fn={this.changeLearner.bind(this)} /> :
-        <Dialog show={this.state.showRegexDialog} fn={this.changeRegex.bind(this)} />
-      }
       {/* Buttons sticky on top to change regex and change algo step */}
       <div className="text-end sticky-top d-flex justify-content-between">
-        <Button className="btn-secondary" onClick={() => {
-          this.setState({ showRegexDialog: true })
-        }}> Change Teacher </Button>
+        <VPASwitcherButton isVpa={this.props.name === "TTT-VPA"} changeLearner={this.changeLearner.bind(this)} changeRegex={this.changeRegex.bind(this)} />
         {this.createNextSetpButtonGroup()}
       </div>
       {/* Algorithms sections */}
@@ -184,5 +166,39 @@ export abstract class LearnerSection extends React.Component<PropReact, StateRea
       {memoryCell.automaton ? this.createCard("Automaton", <GraphDotRender dot={memoryCell.automaton!} />) : <></>}
       {this.createCard("Observation Table", this.dataStructureToNodeElement(memoryCell.dataStructure))}
     </div >
+  }
+}
+
+interface VPASwitcherButtonProp {
+  isVpa: boolean,
+  changeLearner: (l?: VPA) => void,
+  changeRegex: (s?: string) => void
+}
+
+class VPASwitcherButton extends React.Component<VPASwitcherButtonProp, { show: boolean }>{
+  constructor(prop: VPASwitcherButtonProp) {
+    super(prop)
+    this.state = { show: false }
+  }
+
+  hideDialogWrapper<T>(f: (args: T) => void, args: T) {
+    this.setState({ show: false });
+    f(args);
+  }
+
+  render(): React.ReactNode {
+    logRender("VPASwitcherButton")
+    let { changeLearner, changeRegex, isVpa } = this.props
+
+    return <>
+      {/* To change regex panel */}
+      {isVpa ?
+        <VPASwitcher show={this.state.show} fn={(l?: VPA) => this.hideDialogWrapper(changeLearner, l)} /> :
+        <Dialog show={this.state.show} fn={(s?: string) => this.hideDialogWrapper(changeRegex, s)} />
+      }
+      <Button className="btn-secondary" onClick={() => {
+        this.setState({ show: true })
+      }}> Change Teacher </Button>
+    </>
   }
 }

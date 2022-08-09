@@ -34,3 +34,7 @@ export const downloadSvg = (fileName: string) => {
   downloadLink.click();
   document.body.removeChild(downloadLink);
 }
+
+export const logRender = (className: string) => {
+  console.log("Rendering", className)
+}

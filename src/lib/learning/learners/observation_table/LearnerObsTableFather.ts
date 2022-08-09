@@ -4,7 +4,7 @@ import TeacherDFA from "../../teachers/TeacherDFA";
 import LearnerFather from "../LearnerFather";
 import ObservationTable from "./ObservationTable";
 
-export default abstract class Learner_OT_Father extends LearnerFather {
+export default abstract class LearnerObsTableFather extends LearnerFather {
   closednessCounter: number;
   consistenceCounter: number;
   counterExample: string | undefined = "";

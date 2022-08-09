@@ -1,13 +1,13 @@
 import aut from "../../../../../json/automata.json";
 import DFA_NFA from "../../../../automaton/regular/DFA_NFA";
 import TeacherDFA from "../../../teachers/TeacherDFA";
-import NL_star from "../NL_Star";
+import NLStar from "../NLStar";
 
 test("Learner NL-Star Bollig et al", () => {
   aut.regex.forEach(regex => {
     let automaton = DFA_NFA.regexToAutomaton(regex)
     let teacher = new TeacherDFA({ type: "Automaton", automaton })
-    let learner = new NL_star(teacher)
+    let learner = new NLStar(teacher)
     learner.makeAllQueries()
     expect(learner.automaton!.sameLanguage(automaton));
   })

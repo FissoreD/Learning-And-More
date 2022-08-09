@@ -1,5 +1,5 @@
 import Alphabet from "../../automaton/Alphabet.interface";
-import FSM from "../../automaton/FSM_interface";
+import FSM from "../../automaton/FSM.interface";
 import Teacher from "../teachers/Teacher";
 import DataStructure from "./DataStructure.interface";
 

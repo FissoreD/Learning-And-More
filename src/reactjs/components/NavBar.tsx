@@ -2,11 +2,13 @@ import React from "react";
 import { Container, Nav, Navbar } from "react-bootstrap";
 import { House } from "react-bootstrap-icons";
 import { AlgosNavBarType, ALGO_NAVBAR_LIST } from "../..";
+import { logRender } from "../globalFunctions";
 
 interface ChangeCnt { changeCnt: (algo: AlgosNavBarType) => void; }
 
 export default class NavBar extends React.Component<ChangeCnt> {
   render(): React.ReactElement {
+    logRender("NavBar");
     let links = ALGO_NAVBAR_LIST.slice(1).map((e, pos) => <Nav.Link key={pos} onClick={() => {
       this.props.changeCnt(e);
     }}>{e}</Nav.Link>)

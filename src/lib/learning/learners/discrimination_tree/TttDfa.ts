@@ -5,7 +5,7 @@ import Teacher from "../../teachers/Teacher";
 import DiscTreeDFA from "./DiscTreeDFA";
 import TTT_Father, { LastSplitType } from "./TTT_Father";
 
-export default class TTT_DFA extends TTT_Father<string> {
+export default class TttDfa extends TTT_Father<string> {
   alphabet: AlphabetDFA;
 
   constructor(teacher: Teacher) {

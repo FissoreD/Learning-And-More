@@ -1,8 +1,8 @@
-import TTT_Father from "../../../lib/learning/learners/discrimination_tree/TTT_Father";
-import { toEps } from "../../../lib/tools";
-import { LearnerSection, MessageType, StateReact } from "../LearnerFatherC";
+import TTT_Father from "../../../../lib/learning/learners/discrimination_tree/TTT_Father";
+import { toEps } from "../../../../lib/tools";
+import { LearnerViewer, MessageType, StateReact } from "../LearnerViewer";
 
-export default abstract class TTT_Father_C<LblType> extends LearnerSection {
+export default abstract class TttFatherViewer<LblType> extends LearnerViewer {
   nextOpChild(state: StateReact): StateReact {
     let learner = state.learner as TTT_Father<LblType>
     if (learner.finish) return state;
@@ -44,7 +44,7 @@ export default abstract class TTT_Father_C<LblType> extends LearnerSection {
       automaton: learner.makeAutomaton()!.clone()
     })
     let position = state.position + 1
-    state = { position, doNext: !state.doNext, memory, learner: state.learner, showRegexDialog: false, firstTime: false }
+    state = { position, doNext: !state.doNext, memory, learner: state.learner, firstTime: false }
     return state
   }
 

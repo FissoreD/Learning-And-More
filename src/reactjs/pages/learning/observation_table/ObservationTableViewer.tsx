@@ -1,11 +1,12 @@
 import React from "react";
 import { Table } from "react-bootstrap";
-import ObservationTable from "../../../lib/learning/learners/observation_table/ObservationTable";
-import { toEps } from "../../../lib/tools";
+import ObservationTable from "../../../../lib/learning/learners/observation_table/ObservationTable";
+import { toEps } from "../../../../lib/tools";
+import { logRender } from "../../../globalFunctions";
 
 interface Prop { dataStructure: ObservationTable; primeLines?: string[] }
 
-export default class ObservationTableC extends React.Component<Prop>{
+export default class ObservationTableViewer extends React.Component<Prop>{
   createTable(name: string, cnt: string[]) {
     return cnt.map((S, pos) => <tr key={S + "trs"}>
       {pos === 0 ?
@@ -19,6 +20,7 @@ export default class ObservationTableC extends React.Component<Prop>{
 
 
   render(): React.ReactElement {
+    logRender("ObservationTable")
     return <><Table responsive striped className="align-middle text-center">
       <thead>
         <tr>

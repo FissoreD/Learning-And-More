@@ -3,13 +3,13 @@ import 'bootstrap/dist/js/bootstrap.js';
 import React from 'react';
 import { Container, Row } from "react-bootstrap";
 import ReactDOM from 'react-dom/client';
-import FSMContainer from './reactjs/automaton/FSM_Container';
 import NavBar from './reactjs/components/NavBar';
-import { removeFirstUrlPath, setUrlFromPosition } from './reactjs/globalFunctions';
+import { logRender, removeFirstUrlPath, setUrlFromPosition } from './reactjs/globalFunctions';
 import { URL_SEPARATOR } from './reactjs/globalVars';
-import Home from './reactjs/Home';
 import "./reactjs/index.css";
-import LearnerContainerC from './reactjs/learning/LearnerContainerC';
+import FSMPage from './reactjs/pages/automaton/FSMPage';
+import HomePage from './reactjs/pages/HomePage';
+import LearnerPage from './reactjs/pages/learning/LearnerPage';
 import reportWebVitals from './reactjs/reportWebVitals';
 
 interface ReactState { sectionNumber: number, urlCnt: string }
@@ -17,7 +17,7 @@ export type AlgosNavBarType = "Home" | "Automaton" | "Learning"
 export const ALGO_NAVBAR_LIST: AlgosNavBarType[] = ["Home", "Automaton", "Learning"]
 
 
-class Main extends React.Component<{}, ReactState> {
+class App extends React.Component<{}, ReactState> {
   constructor(prop: {}) {
     super(prop)
     this.state = this.giveContent()
@@ -43,11 +43,13 @@ class Main extends React.Component<{}, ReactState> {
   }
 
   render(): React.ReactNode {
-    let dfaViewer = <FSMContainer url={this.state.urlCnt} />
-    let learnerSection = <LearnerContainerC cnt={this.state.urlCnt} />
-    let home = <Home switchSection={this.swicthContent.bind(this)} />
+    logRender("Index");
 
-    let sectionList = [home, dfaViewer, learnerSection]
+    let dfaViewer = <FSMPage url={this.state.urlCnt} />;
+    let learnerSection = <LearnerPage cnt={this.state.urlCnt} />;
+    let home = <HomePage switchSection={this.swicthContent.bind(this)} />;
+
+    let sectionList = [home, dfaViewer, learnerSection];
 
     return <>
       <NavBar changeCnt={this.swicthContent.bind(this)} />
@@ -68,7 +70,7 @@ const root = ReactDOM.createRoot(
 
 root.render(
   <React.StrictMode>
-    <Main />
+    <App />
   </React.StrictMode>
 );
 

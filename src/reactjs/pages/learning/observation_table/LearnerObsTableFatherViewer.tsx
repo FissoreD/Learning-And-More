@@ -1,11 +1,11 @@
 import { ReactElement } from "react";
-import DataStructure from "../../../lib/learning/learners/DataStructure.interface";
-import Learner_OT_Father from "../../../lib/learning/learners/observation_table/Learner_OT_Father";
-import ObservationTable from "../../../lib/learning/learners/observation_table/ObservationTable";
-import { LearnerSection, MessageType, PropReact, StateReact } from "../LearnerFatherC";
-import ObservationTableC from "./ObservationTableC";
+import DataStructure from "../../../../lib/learning/learners/DataStructure.interface";
+import LearnerObsTableFather from "../../../../lib/learning/learners/observation_table/LearnerObsTableFather";
+import ObservationTable from "../../../../lib/learning/learners/observation_table/ObservationTable";
+import { LearnerViewer, MessageType, PropReact, StateReact } from "../LearnerViewer";
+import ObservationTableViewer from "./ObservationTableViewer";
 
-export default abstract class Learner_OT_FatherC extends LearnerSection {
+export default abstract class LearnerObsTableFatherViewer extends LearnerViewer {
   tableToModifyAfterCe: string;
 
   constructor(prop: PropReact, tableToModif: string) {
@@ -14,14 +14,14 @@ export default abstract class Learner_OT_FatherC extends LearnerSection {
   }
 
   dataStructureToNodeElement(ds: DataStructure, primeLines?: string[]): ReactElement {
-    return <ObservationTableC dataStructure={ds.clone() as ObservationTable} primeLines={primeLines} />
+    return <ObservationTableViewer dataStructure={ds.clone() as ObservationTable} primeLines={primeLines} />
   }
 
   abstract closeMessage(closeRep: string): JSX.Element;
   abstract consistentMessage(s1: string, s2: string, newCol: string): JSX.Element;
 
   nextOpChild(state: StateReact): StateReact {
-    let learner = state.learner as Learner_OT_Father;
+    let learner = state.learner as LearnerObsTableFather;
     if (learner.finish) return state
     var message: { type: MessageType, val: JSX.Element };
     if (state.doNext) {
@@ -69,7 +69,7 @@ export default abstract class Learner_OT_FatherC extends LearnerSection {
       automaton: learner.automaton ? learner.automaton.clone() : undefined
     })
     let position = state.position + 1
-    state = { position, doNext: !state.doNext, memory, learner: state.learner, showRegexDialog: false, firstTime: false }
+    state = { position, doNext: !state.doNext, memory, learner: state.learner, firstTime: false }
     return state
   }
 }

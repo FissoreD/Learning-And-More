@@ -1,5 +1,5 @@
 import Alphabet from "../../automaton/Alphabet.interface";
-import FSM from "../../automaton/FSM_interface";
+import FSM from "../../automaton/FSM.interface";
 
 export default abstract class Teacher {
   description: string;

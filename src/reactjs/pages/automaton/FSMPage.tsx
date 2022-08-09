@@ -1,7 +1,7 @@
 import React from "react";
 import { Tab, Tabs } from "react-bootstrap";
-import { setUrlFromPosition } from "../globalFunctions";
-import FSMViewer from "./FSM_Viewer";
+import { logRender, setUrlFromPosition } from "../../globalFunctions";
+import FSMViewer from "./FSMViewer";
 
 type FSM_Type = 'VPA' | 'DFA'
 const FSM_LIST: FSM_Type[] = ['DFA', 'VPA']
@@ -14,7 +14,7 @@ interface ReactState {
   }
 }
 
-export default class FSMContainer extends React.Component<ReactProp, ReactState>{
+export default class FSMPage extends React.Component<ReactProp, ReactState>{
   constructor(prop: ReactProp) {
     super(prop)
     let FSM = {
@@ -38,6 +38,8 @@ export default class FSMContainer extends React.Component<ReactProp, ReactState>
   }
 
   render(): React.ReactNode {
+    logRender("FSMContainer")
+
     return <Tabs defaultActiveKey={this.state.current}
       className="mb-3 nav-fill"
       onSelect={e => this.setAlgo(e!)}

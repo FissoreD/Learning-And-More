@@ -1,14 +1,15 @@
 import React, { RefObject } from "react";
 import { Accordion, Button, ButtonGroup, Card, Col, Row } from "react-bootstrap";
 import { Eyedropper } from "react-bootstrap-icons";
-import VPA from "../../lib/automaton/context_free/VPA";
-import FSM from "../../lib/automaton/FSM_interface";
-import DFA_NFA from "../../lib/automaton/regular/DFA_NFA";
-import { createVPA2, createVPA4 } from "../../lib/__test__/VPAforTest";
-import Dialog from "../components/Dialog";
-import GraphDotRender from "../components/DotRender";
-import VPASwitcher from "../components/VPASwitcher";
-import { FLEX_CENTER } from "../globalVars";
+import VPA from "../../../lib/automaton/context_free/VPA";
+import FSM from "../../../lib/automaton/FSM.interface";
+import DFA_NFA from "../../../lib/automaton/regular/DFA_NFA";
+import { createVPA2, createVPA4 } from "../../../lib/__test__/VPAforTest";
+import Dialog from "../../components/Dialog";
+import GraphDotRender from "../../components/DotRender";
+import VPASwitcher from "../../components/VPASwitcher";
+import { logRender } from "../../globalFunctions";
+import { FLEX_CENTER } from "../../globalVars";
 
 type Operation = "∪" | "∩" | "△" | "/" | "Det" | "~"
 const binaryOp: Operation[] = ["∪", "∩", "△", "/"]
@@ -200,8 +201,9 @@ export default class FSMViewer extends React.Component<ReactProp, ReactState>{
   }
 
   render(): React.ReactNode {
-    let { lastOperation, fsmType, a1, a2, showRegexSetter } = this.state
-    let isDFA = fsmType === "DFA"
+    logRender("FSMViewer");
+    let { lastOperation, fsmType, a1, a2, showRegexSetter } = this.state;
+    let isDFA = fsmType === "DFA";
     return <>
       {isDFA ?
         <Dialog fn={this.setRegex.bind(this)} show={showRegexSetter} /> :

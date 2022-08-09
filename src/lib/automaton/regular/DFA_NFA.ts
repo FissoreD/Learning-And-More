@@ -1,6 +1,6 @@
 import ToDot from "../../ToDot.interface";
 import { edgeDotStyle, nodeDotRounded, sameVector, shuffle, toEps } from "../../tools";
-import FSM from "../FSM_interface";
+import FSM from "../FSM.interface";
 import AlphabetDFA from "./AlphabetDFA";
 import regexToAutomaton from "./parser/RegexParser";
 import StateDFA from "./StateDFA";

@@ -1,6 +1,6 @@
 import ToDot from "../../ToDot.interface";
 import { edgeDotStyle, nodeDotRounded, shuffle, todo, toEps } from "../../tools";
-import FSM from "../FSM_interface";
+import FSM from "../FSM.interface";
 import AlphabetVPA, { ALPHABET_TYPE, ALPH_TYPE_LIST } from "./AlphabetVPA";
 import StateVPA from "./StateVPA";
 
@@ -563,7 +563,7 @@ export default class VPA implements FSM, ToDot {
     // txt += `\nlabel="${legend}"`
 
     txt += "\n}"
-    console.log(txt);
+    // console.log(txt);
 
     return txt
   }

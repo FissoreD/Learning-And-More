@@ -1,23 +1,24 @@
-import DFA_NFA from "../../../lib/automaton/regular/DFA_NFA";
-import DataStructure from "../../../lib/learning/learners/DataStructure.interface";
-import NL_star from "../../../lib/learning/learners/observation_table/NL_Star";
-import TeacherDFA from "../../../lib/learning/teachers/TeacherDFA";
-import { toEps } from "../../../lib/tools";
-import { PropReact } from "../LearnerFatherC";
-import Learner_OT_FatherC from "./Learner_OT_FatherC";
+import DFA_NFA from "../../../../lib/automaton/regular/DFA_NFA";
+import DataStructure from "../../../../lib/learning/learners/DataStructure.interface";
+import NLStar from "../../../../lib/learning/learners/observation_table/NLStar";
+import TeacherDFA from "../../../../lib/learning/teachers/TeacherDFA";
+import { toEps } from "../../../../lib/tools";
+import { PropReact } from "../LearnerViewer";
+import LearnerObsTableFatherViewer from "./LearnerObsTableFatherViewer";
 
-export default class NL_StarC extends Learner_OT_FatherC {
-  createNewLearner(regex: string | DFA_NFA): NL_star {
-    return new NL_star(new TeacherDFA({ type: regex instanceof DFA_NFA ? "Automaton" : "Regex", automaton: regex }))
+export default class NLStarViewer extends LearnerObsTableFatherViewer {
+  createNewLearner(regex: string | DFA_NFA): NLStar {
+    return new NLStar(new TeacherDFA({ type: regex instanceof DFA_NFA ? "Automaton" : "Regex", automaton: regex }))
   }
 
   dataStructureToNodeElement(ds: DataStructure) {
-    return super.dataStructureToNodeElement(ds, (this.state.learner as NL_star).primeLines)
+    return super.dataStructureToNodeElement(ds, (this.state.learner as NLStar).primeLines)
   }
 
   constructor(prop: PropReact) {
     super(prop, "E")
   }
+
   closeMessage(closeRep: string) {
     return <span>The table is not <i>closed</i> since row(<i>{closeRep}</i>) is <i>Prime</i> and is not present in <i>S</i>. "{closeRep}" will be moved from <i>SA</i> to <i>S</i>.</span >;
   }

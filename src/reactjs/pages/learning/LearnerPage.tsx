@@ -1,18 +1,18 @@
 import React from "react";
 import { Tab, Tabs } from "react-bootstrap";
-import TTT_DFA from "../../lib/learning/learners/discrimination_tree/TTT_DFA";
-import TTT_VPA from "../../lib/learning/learners/discrimination_tree/TTT_VPA";
-import L_star from "../../lib/learning/learners/observation_table/L_star";
-import NL_star from "../../lib/learning/learners/observation_table/NL_Star";
-import TeacherDFA from "../../lib/learning/teachers/TeacherDFA";
-import TeacherVPA from "../../lib/learning/teachers/TeacherVPA";
-import { createVPAxml2 } from "../../lib/__test__/VPAforTest";
-import { setUrlFromPosition } from "../globalFunctions";
-import { URL_SEPARATOR } from "../globalVars";
-import TTT_DFA_C from "./discrimination_tree/TTT_DFA_C";
-import TTT_VPA_C from "./discrimination_tree/TTT_VPA_C";
-import LStarC from "./observation_table/L_StarC";
-import NLStarC from "./observation_table/NL_StarC";
+import TttDfa from "../../../lib/learning/learners/discrimination_tree/TttDfa";
+import TttVpa from "../../../lib/learning/learners/discrimination_tree/TttVpa";
+import LStar from "../../../lib/learning/learners/observation_table/LStar";
+import NLStar from "../../../lib/learning/learners/observation_table/NLStar";
+import TeacherDFA from "../../../lib/learning/teachers/TeacherDFA";
+import TeacherVPA from "../../../lib/learning/teachers/TeacherVPA";
+import { createVPAxml2 } from "../../../lib/__test__/VPAforTest";
+import { logRender, setUrlFromPosition } from "../../globalFunctions";
+import { URL_SEPARATOR } from "../../globalVars";
+import TttDfaViewer from "./discrimination_tree/TttDfaViewer";
+import TttVpaViewer from "./discrimination_tree/TttVpaViewer";
+import LStarViewer from "./observation_table/LStarViewer";
+import NLStarC from "./observation_table/NLStarViewer";
 
 export type LearnerType = "L*" | "NL*" | "TTT-DFA" | "TTT-VPA"
 let algos: string[] = ["L*", "NL*", "TTT-DFA", "TTT-VPA"]
@@ -27,7 +27,8 @@ interface State {
 interface Prop { cnt: string }
 
 let regex = "(a+b)*a(a+b)(a+b)"
-export default class LearnerContainerC extends React.Component<Prop, State> {
+
+export default class LearnerPage extends React.Component<Prop, State> {
   constructor(prop: Prop) {
     super(prop)
 
@@ -43,11 +44,11 @@ export default class LearnerContainerC extends React.Component<Prop, State> {
 
     positions.set(algo, parseInt(sndElt) || 0)
     let algoList = {
-      "L*": <LStarC pos={positions.get("L*")!}
-        updatePosition={this.updatePosition.bind(this)} name={"L*"} learner={new L_star(teacher)} />,
-      "NL*": <NLStarC pos={positions.get("NL*")!} updatePosition={this.updatePosition.bind(this)} name={"NL*"} learner={new NL_star(teacher)} />,
-      "TTT-DFA": <TTT_DFA_C pos={positions.get("TTT-DFA")!} updatePosition={this.updatePosition.bind(this)} name={"TTT-DFA"} learner={new TTT_DFA(teacher)} />,
-      "TTT-VPA": <TTT_VPA_C pos={positions.get("TTT-VPA")!} updatePosition={this.updatePosition.bind(this)} name={"TTT-VPA"} learner={new TTT_VPA(new TeacherVPA({ automaton: createVPAxml2() }))} />
+      "L*": <LStarViewer pos={positions.get("L*")!}
+        updatePosition={this.updatePosition.bind(this)} name={"L*"} learner={new LStar(teacher)} />,
+      "NL*": <NLStarC pos={positions.get("NL*")!} updatePosition={this.updatePosition.bind(this)} name={"NL*"} learner={new NLStar(teacher)} />,
+      "TTT-DFA": <TttDfaViewer pos={positions.get("TTT-DFA")!} updatePosition={this.updatePosition.bind(this)} name={"TTT-DFA"} learner={new TttDfa(teacher)} />,
+      "TTT-VPA": <TttVpaViewer pos={positions.get("TTT-VPA")!} updatePosition={this.updatePosition.bind(this)} name={"TTT-VPA"} learner={new TttVpa(new TeacherVPA({ automaton: createVPAxml2() }))} />
     }
     this.state = {
       cnt: algo,
@@ -81,7 +82,12 @@ export default class LearnerContainerC extends React.Component<Prop, State> {
     this.setAlgo(this.state.cnt)
   }
 
+  shouldComponentUpdate(nextProps: Readonly<Prop>, nextState: Readonly<State>): boolean {
+    return nextState.cnt !== this.state.cnt
+  }
+
   render(): React.ReactElement {
+    logRender("LearnerContainer")
     return < >
       <Tabs defaultActiveKey={this.state.cnt}
         className="mb-3 nav-fill"
