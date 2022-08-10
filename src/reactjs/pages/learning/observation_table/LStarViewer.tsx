@@ -3,10 +3,7 @@ import DFA_NFA from "../../../../lib/automaton/regular/DFA_NFA";
 import { default as LStar, default as L_Star } from "../../../../lib/learning/learners/observation_table/LStar";
 import TeacherDFA from "../../../../lib/learning/teachers/TeacherDFA";
 import { toEps } from "../../../../lib/tools";
-import { setLearnerPos } from "../../../redux/actions/learnerAction";
-import { StoreLearnerInterface } from "../../../redux/storeTypes";
-import { LearnerType } from "../LearnerPage";
-import { PropReactLearnerViewer } from "../LearnerViewer";
+import { mapMethodToPropsLearner, mapStateToPropsLearner, PropReactLearnerViewer } from "../LearnerViewer";
 import LearnerObsTableFatherViewer from "./LearnerObsTableFatherViewer";
 
 class LStarViewer extends LearnerObsTableFatherViewer {
@@ -32,19 +29,5 @@ class LStarViewer extends LearnerObsTableFatherViewer {
   }
 }
 
-function mapStateToProps(state: StoreLearnerInterface) {
-  let name = "L*" as LearnerType
-  return {
-    pos: state.pos[name],
-    learner: new LStar(new TeacherDFA({ automaton: state.algos["L*"], type: "Regex" })),
-    name: name
-  }
-}
-
-function z(dispatch: Function) {
-  return {
-    updatePosition: (l: LearnerType, pos: number) => dispatch(setLearnerPos(l, pos)),
-  }
-}
-
-export default connect(mapStateToProps, z)(LStarViewer)
+export default connect(mapStateToPropsLearner(
+  (regex: string) => new LStar(new TeacherDFA({ automaton: regex, type: "Regex" })), "L*"), mapMethodToPropsLearner)(LStarViewer)

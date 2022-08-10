@@ -43,14 +43,17 @@ export class LearnerPage extends React.Component<Prop, State> {
     }
   }
 
+  shouldComponentUpdate(nextProps: Readonly<Prop>, nextState: Readonly<State>) {
+    return nextProps.currentAlgo !== this.props.currentAlgo
+  }
+
   setAlgo(algoName: string) {
     let algo = (LearnerTypeList.includes(algoName as LearnerType) ? algoName : "L*") as LearnerType
     this.props.setLearnerType(algo)
   }
 
   render(): React.ReactElement {
-    logRender("LearnerContainer")
-    console.log(this.props.currentAlgo);
+    logRender("LearnerPage")
 
     return < >
       <Tabs defaultActiveKey={this.props.currentAlgo}
@@ -71,11 +74,11 @@ function mapStateToProps(state: StoreLearnerInterface): StoreLearnerInterface {
   return state
 }
 
-function z(dispatch: Function) {
+function mapMethodToProps(dispatch: Function) {
   return {
     setLearnerType: (algo: LearnerType) => dispatch(setLearnerType(algo)),
     setPos: (algo: LearnerType, pos: number) => dispatch(setLearnerPos(algo, pos))
   }
 }
 
-export default connect(mapStateToProps, z)(LearnerPage)
+export default connect(mapStateToProps, mapMethodToProps)(LearnerPage)

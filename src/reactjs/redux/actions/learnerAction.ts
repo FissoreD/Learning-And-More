@@ -1,5 +1,4 @@
 import { Dispatch } from "@reduxjs/toolkit"
-import FSM from "../../../lib/automaton/FSM.interface"
 import { setUrlFromPosition } from "../../globalFunctions"
 import { LearnerType, LearnerTypeList } from "../../pages/learning/LearnerPage"
 import { StoreLearnerInterface } from "../storeTypes"
@@ -18,16 +17,16 @@ export const setLearnerPos = (learner: LearnerType, pos: number) => {
   }
 }
 
-export const setLearnerAlgo = (learner: LearnerType, fsm: FSM) => {
+export const setLearnerAlgo = (learner: LearnerType, regex: string) => {
   return (dispatch: Dispatch) => {
-    dispatch({ type: "setLearnerAlgo", learner, fsm })
+    dispatch({ type: "setLearnerAlgo", learner, regex })
   }
 }
 
 type ActionType =
   { type: "setLearner", learner: LearnerType } |
   { type: "setLearnerPos", learner: LearnerType, pos: number } |
-  { type: "setLearnerAlgo", learner: LearnerType, fsm: FSM }
+  { type: "setLearnerAlgo", learner: LearnerType, regex: string }
 
 export const baseLearner = (): StoreLearnerInterface => {
   let pos = Object.assign({}, ...LearnerTypeList.map(e => ({ [e]: 0 })));
@@ -38,16 +37,14 @@ export const baseLearner = (): StoreLearnerInterface => {
 
 export const updateLearner = (state: StoreLearnerInterface = baseLearner(), action: ActionType): StoreLearnerInterface => {
   // let { algos, pos } = state;
-  let { pos } = state
+  let { pos, algos } = state
   switch (action.type) {
     case "setLearner":
       return { ...state, currentAlgo: action.learner }
-    // case "setLearnerAlgo":
-    //   algos[action.learner] = action.fsm
-    //   return { ...state, algos }
+    case "setLearnerAlgo":
+      return { ...state, algos: { ...algos, [action.learner]: action.regex } }
     case "setLearnerPos":
-      // pos[action.learner] = action.pos
-      return { ...state, pos: { ...state.pos, [action.learner]: action.pos } }
+      return { ...state, pos: { ...pos, [action.learner]: action.pos } }
     default: return state
   }
 }

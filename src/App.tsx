@@ -1,20 +1,21 @@
 import React from 'react';
 import { Container, Row } from "react-bootstrap";
 import { connect } from 'react-redux';
-import { ALGO_NAVBAR_LIST, ReactState } from './index';
+import { ALGO_NAVBAR_LIST } from './index';
 import NavBar from './reactjs/components/NavBar';
-import { logRender, removeFirstUrlPath, setUrlFromPosition } from './reactjs/globalFunctions';
+import { logRender, removeFirstUrlPath } from './reactjs/globalFunctions';
 import { URL_SEPARATOR } from './reactjs/globalVars';
 import FSMPage from './reactjs/pages/automaton/FSMPage';
 import HomePage from './reactjs/pages/HomePage';
 import LearnerPage from './reactjs/pages/learning/LearnerPage';
-import { AlgosNavBarType, StoreLearnerInterface } from './reactjs/redux/storeTypes';
+import { AlgosNavBarType, StoreInterface } from './reactjs/redux/storeTypes';
 
-class App extends React.Component<StoreLearnerInterface, ReactState> {
-  constructor(prop: StoreLearnerInterface) {
+export interface ReactState { urlCnt: string }
+
+class App extends React.Component<{ cntAlgo: AlgosNavBarType }, ReactState> {
+  constructor(prop: { cntAlgo: AlgosNavBarType }) {
     super(prop);
     this.state = this.giveContent();
-    console.log(this.props, this.state);
   }
 
   giveContent(section?: AlgosNavBarType) {
@@ -28,32 +29,21 @@ class App extends React.Component<StoreLearnerInterface, ReactState> {
     return { sectionNumber, urlCnt };
   }
 
-  swicthContent(section: string): void {
-    let cnt = this.giveContent(section as AlgosNavBarType);
-    if (cnt.sectionNumber !== this.state.sectionNumber) {
-      setUrlFromPosition(ALGO_NAVBAR_LIST[cnt.sectionNumber], 0);
-      this.setState(cnt);
-    }
-  }
-
   render(): React.ReactNode {
-    logRender("Index");
+    logRender("App");
 
-    let dfaViewer = <FSMPage url={this.state.urlCnt} />;
-    let learnerSection = <LearnerPage cnt={this.state.urlCnt} />;
-    let home = <HomePage switchSection={this.swicthContent.bind(this)} />;
+    let Automaton = <FSMPage url={this.state.urlCnt} />;
+    let Learning = <LearnerPage cnt={this.state.urlCnt} />;
+    let Home = <HomePage />;
 
-    let sectionList = [home, dfaViewer, learnerSection];
+    let sectionList: { [key in AlgosNavBarType]: JSX.Element } = { Home, Automaton, Learning };
 
     return <>
-
-      <NavBar changeCnt={this.swicthContent.bind(this)} />
-      <p>{this.props.currentAlgo}</p>
-      {/* <button onClick={() => this.props.increment()}>llll</button> */}
+      <NavBar />
       <Container>
         <Row className="justify-content-center">
           <div className="col-xl-8 col-md-10">
-            {sectionList[this.state.sectionNumber]}
+            {sectionList[this.props.cntAlgo]}
           </div>
         </Row>
       </Container>
@@ -61,8 +51,8 @@ class App extends React.Component<StoreLearnerInterface, ReactState> {
   }
 }
 
-function mapStateToProps(state: StoreLearnerInterface): StoreLearnerInterface {
-  return state
+function mapStateToProps(state: StoreInterface): { cntAlgo: AlgosNavBarType } {
+  return { cntAlgo: state.currentPage }
 }
 
 

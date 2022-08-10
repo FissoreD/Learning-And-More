@@ -1,4 +1,3 @@
-import FSM from "../../lib/automaton/FSM.interface";
 import { LearnerType } from "../pages/learning/LearnerPage";
 
 export type Operation = "\u222a" | "∩" | "△" | "/" | "Det" | "~"
@@ -12,12 +11,12 @@ export interface StoreLearnerInterface {
 };
 
 export interface StoreAutomataInterface {
-  cnt: Map<FSM_Type, { a1: FSM, a2: FSM, lastOp: Operation, is_a1: boolean }>
+  cnt: { [fsm in FSM_Type]: { a1: string, a2: string, lastOp: Operation, is_a1: boolean } };
   currentType: FSM_Type
 }
 
 export interface StoreInterface {
-  learner?: StoreLearnerInterface;
-  automata?: StoreAutomataInterface;
-  currentPage?: AlgosNavBarType
+  learner: StoreLearnerInterface;
+  automata: StoreAutomataInterface;
+  currentPage: AlgosNavBarType
 }

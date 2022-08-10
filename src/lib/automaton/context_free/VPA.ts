@@ -843,7 +843,7 @@ export default class VPA implements FSM, ToDot {
 
     if (print) console.log(grammar);
     simplifyGrammar()
-    console.log(grammar.get("S"));
+    // console.log(grammar.get("S"));
 
     return grammar.has("S") && [...grammar.get("S")!].some(e => !e.match(/{[^{}]*}/g))
   }

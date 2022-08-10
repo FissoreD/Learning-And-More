@@ -1,7 +1,6 @@
 import React, { ReactElement } from "react";
 import { Button, ButtonGroup, Card } from "react-bootstrap";
 import { ArrowClockwise, ArrowCounterclockwise, CaretLeftFill, CaretRightFill } from "react-bootstrap-icons";
-import VPA from "../../../lib/automaton/context_free/VPA";
 import FSM from "../../../lib/automaton/FSM.interface";
 import DataStructure from "../../../lib/learning/learners/DataStructure.interface";
 import LearnerFather from "../../../lib/learning/learners/LearnerFather";
@@ -9,8 +8,8 @@ import Dialog from "../../components/Dialog";
 import GraphDotRender from "../../components/DotRender";
 import VPASwitcher from "../../components/VPASwitcher";
 import { logRender } from "../../globalFunctions";
-import { setLearnerPos } from "../../redux/actions/learnerAction";
-import { StoreLearnerInterface } from "../../redux/storeTypes";
+import { setLearnerAlgo, setLearnerPos } from "../../redux/actions/learnerAction";
+import { StoreInterface } from "../../redux/storeTypes";
 import { LearnerType } from "./LearnerPage";
 
 export type MessageType = "END" | "SEND-HYP" | "CE" | "CONSISTENCY" | "CLOSEDNESS" | "DISC-REF" | "HYP-STAB"
@@ -19,7 +18,8 @@ export interface PropReactLearnerViewer {
   learner: LearnerFather,
   name: LearnerType,
   pos: number,
-  updatePosition: (l: LearnerType, pos: number) => void
+  updatePosition: (l: LearnerType, pos: number) => void,
+  updateLearnerAlgo: (l: LearnerType, algo: string) => void
 }
 
 export interface StateReact {
@@ -38,6 +38,10 @@ export default abstract class LearnerViewer extends React.Component<PropReactLea
         this.createNewState(prop.learner.teacher.automaton), prop.pos
       ), firstTime: true
     };
+  }
+
+  shouldComponentUpdate(nextProps: Readonly<PropReactLearnerViewer>) {
+    return nextProps.pos !== this.props.pos
   }
 
   abstract dataStructureToNodeElement(ds: DataStructure): React.ReactElement;
@@ -80,19 +84,7 @@ export default abstract class LearnerViewer extends React.Component<PropReactLea
   }
 
   changeRegex(regex: string | undefined) {
-    if (regex) {
-      let learner = this.createNewLearner(regex)
-      let newState = this.createNewState(learner.teacher.automaton)
-      this.setState({ ...newState, learner })
-    }
-  }
-
-  changeLearner(fsm: FSM | undefined) {
-    if (fsm) {
-      let learner = this.createNewLearner(fsm)
-      let newState = this.createNewState(fsm)
-      this.setState({ ...newState, learner })
-    }
+    if (regex) { this.props.updateLearnerAlgo(this.props.name, regex) }
   }
 
   createCard(title: string, content: React.ReactElement) {
@@ -154,13 +146,13 @@ export default abstract class LearnerViewer extends React.Component<PropReactLea
   }
 
   render(): React.ReactElement {
-    logRender("LearnerFather")
+    logRender(`LearnerViewer ${this.props.name}`)
     let position = this.state.position
     let memoryCell = this.state.memory[position]
     return <div className="body-container">
       {/* Buttons sticky on top to change regex and change algo step */}
       <div className="text-end sticky-top d-flex justify-content-between">
-        <VPASwitcherButton isVpa={this.props.name === "TTT-VPA"} changeLearner={this.changeLearner.bind(this)} changeRegex={this.changeRegex.bind(this)} />
+        <VPASwitcherButton isVpa={this.props.name === "TTT-VPA"} changeRegex={this.changeRegex.bind(this)} />
         {this.createNextSetpButtonGroup()}
       </div>
       {/* Algorithms sections */}
@@ -174,7 +166,6 @@ export default abstract class LearnerViewer extends React.Component<PropReactLea
 
 interface VPASwitcherButtonProp {
   isVpa: boolean,
-  changeLearner: (l?: VPA) => void,
   changeRegex: (s?: string) => void
 }
 
@@ -191,14 +182,10 @@ class VPASwitcherButton extends React.Component<VPASwitcherButtonProp, { show: b
 
   render(): React.ReactNode {
     logRender("VPASwitcherButton")
-    let { changeLearner, changeRegex, isVpa } = this.props
-
+    let { changeRegex, isVpa } = this.props
+    let params = { show: this.state.show, fn: (l?: string) => this.hideDialogWrapper(changeRegex, l) }
     return <>
-      {/* To change regex panel */}
-      {isVpa ?
-        <VPASwitcher show={this.state.show} fn={(l?: VPA) => this.hideDialogWrapper(changeLearner, l)} /> :
-        <Dialog show={this.state.show} fn={(s?: string) => this.hideDialogWrapper(changeRegex, s)} />
-      }
+      {isVpa ? <VPASwitcher {...params} /> : <Dialog {...params} />}
       <Button className="btn-secondary" onClick={() => {
         this.setState({ show: true })
       }}> Change Teacher </Button>
@@ -206,14 +193,19 @@ class VPASwitcherButton extends React.Component<VPASwitcherButtonProp, { show: b
   }
 }
 
-function mapStateToProps(state: StoreLearnerInterface): StoreLearnerInterface {
-  return state
-}
-
-function z(dispatch: Function) {
-  return {
-    updatePosition: (learnerType: LearnerType, pos: number) =>
-      dispatch(setLearnerPos(learnerType, pos)),
+export function mapStateToPropsLearner(learnerMethod: (regex: string) => LearnerFather, name: LearnerType) {
+  return (state: StoreInterface) => {
+    return {
+      pos: state.learner.pos[name],
+      learner: learnerMethod(state.learner.algos[name]),
+      name: name
+    }
   }
 }
 
+export function mapMethodToPropsLearner(dispatch: Function) {
+  return {
+    updatePosition: (l: LearnerType, pos: number) => dispatch(setLearnerPos(l, pos)),
+    updateLearnerAlgo: (l: LearnerType, regex: string) => dispatch(setLearnerAlgo(l, regex)),
+  }
+}

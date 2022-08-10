@@ -4,14 +4,10 @@ import VPA from "../../lib/automaton/context_free/VPA";
 import { VPAList } from "../../lib/__test__/VPAforTest";
 import { logRender } from "../globalFunctions";
 
-interface Prop { fn: (a: VPA | undefined) => void, show: boolean }
-interface State { regex: string | undefined }
+interface Prop { fn: (a?: string) => void, show: boolean }
+interface State { regex?: string }
 
 export default class VPASwitcher extends React.Component<Prop, State>{
-
-  sendChosenVPA(vpa: VPA) {
-    this.props.fn(vpa)
-  }
 
   quit() {
     this.props.fn(undefined)
@@ -29,11 +25,11 @@ export default class VPASwitcher extends React.Component<Prop, State>{
     </>
   }
 
-  createCard = (title: string | number, vpa: VPA) => {
+  createCard = (position: number, vpa: VPA) => {
     return <Col sm="6">
-      <Card className="cursor h-100" onClick={() => this.props.fn(vpa)}>
+      <Card className="cursor h-100" onClick={() => this.props.fn(position + "")}>
         <Card.Body>
-          <Card.Title>VPA {title}</Card.Title>
+          <Card.Title>VPA {position}</Card.Title>
           <Card.Subtitle className="mb-2 text-muted"><pre>{vpa.grammar}</pre></Card.Subtitle>
           <Card.Text>{this.alphabetToVpa(vpa)}</Card.Text>
         </Card.Body>

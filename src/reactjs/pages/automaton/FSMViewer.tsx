@@ -4,7 +4,7 @@ import { Eyedropper } from "react-bootstrap-icons";
 import VPA from "../../../lib/automaton/context_free/VPA";
 import FSM from "../../../lib/automaton/FSM.interface";
 import DFA_NFA from "../../../lib/automaton/regular/DFA_NFA";
-import { createVPA2, createVPA4 } from "../../../lib/__test__/VPAforTest";
+import { createVPA2, createVPA4, VPAList } from "../../../lib/__test__/VPAforTest";
 import Dialog from "../../components/Dialog";
 import GraphDotRender from "../../components/DotRender";
 import VPASwitcher from "../../components/VPASwitcher";
@@ -64,7 +64,10 @@ export default class FSMViewer extends React.Component<ReactProp, ReactState>{
   }
 
   setRegex(regex: string | undefined) {
-    this.setFSM(regex ? DFA_NFA.regexToAutomaton(regex) : undefined)
+    if (this.state.fsmType === "DFA")
+      this.setFSM(regex ? DFA_NFA.regexToAutomaton(regex) : undefined)
+    else
+      this.setFSM(regex ? VPAList[parseInt(regex)] : undefined)
   }
 
   setFSM(fsm: VPA | DFA_NFA | undefined) {
@@ -205,7 +208,7 @@ export default class FSMViewer extends React.Component<ReactProp, ReactState>{
     return <>
       {isDFA ?
         <Dialog fn={this.setRegex.bind(this)} show={showRegexSetter} /> :
-        <VPASwitcher fn={this.setFSM.bind(this)} show={showRegexSetter} />}
+        <VPASwitcher fn={this.setRegex.bind(this)} show={showRegexSetter} />}
       <Row className="d-flex justify-content-center">
         <Col className="mb-3 mb-sm-0" sm={5}>{this.createCardAutomaton(a1, 1)}</Col>
         <Col sm="auto" className="d-flex text-center align-self-center justify-content-center">
