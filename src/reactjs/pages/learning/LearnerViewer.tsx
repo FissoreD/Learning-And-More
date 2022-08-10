@@ -9,13 +9,16 @@ import Dialog from "../../components/Dialog";
 import GraphDotRender from "../../components/DotRender";
 import VPASwitcher from "../../components/VPASwitcher";
 import { logRender } from "../../globalFunctions";
+import { setLearnerPos } from "../../redux/actions/learnerAction";
+import { StoreLearnerInterface } from "../../redux/storeTypes";
 import { LearnerType } from "./LearnerPage";
 
 export type MessageType = "END" | "SEND-HYP" | "CE" | "CONSISTENCY" | "CLOSEDNESS" | "DISC-REF" | "HYP-STAB"
 
-export interface PropReact {
+export interface PropReactLearnerViewer {
   learner: LearnerFather,
-  name: LearnerType, pos: number,
+  name: LearnerType,
+  pos: number,
   updatePosition: (l: LearnerType, pos: number) => void
 }
 
@@ -27,8 +30,8 @@ export interface StateReact {
   firstTime: boolean
 }
 
-export abstract class LearnerViewer extends React.Component<PropReact, StateReact>{
-  constructor(prop: PropReact) {
+export default abstract class LearnerViewer extends React.Component<PropReactLearnerViewer, StateReact>{
+  constructor(prop: PropReactLearnerViewer) {
     super(prop)
     this.state = {
       ...this.allSteps(
@@ -202,3 +205,15 @@ class VPASwitcherButton extends React.Component<VPASwitcherButtonProp, { show: b
     </>
   }
 }
+
+function mapStateToProps(state: StoreLearnerInterface): StoreLearnerInterface {
+  return state
+}
+
+function z(dispatch: Function) {
+  return {
+    updatePosition: (learnerType: LearnerType, pos: number) =>
+      dispatch(setLearnerPos(learnerType, pos)),
+  }
+}
+

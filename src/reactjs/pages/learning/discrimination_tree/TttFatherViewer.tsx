@@ -1,6 +1,6 @@
 import TTT_Father from "../../../../lib/learning/learners/discrimination_tree/TTT_Father";
 import { toEps } from "../../../../lib/tools";
-import { LearnerViewer, MessageType, StateReact } from "../LearnerViewer";
+import LearnerViewer, { MessageType, StateReact } from "../LearnerViewer";
 
 export default abstract class TttFatherViewer<LblType> extends LearnerViewer {
   nextOpChild(state: StateReact): StateReact {

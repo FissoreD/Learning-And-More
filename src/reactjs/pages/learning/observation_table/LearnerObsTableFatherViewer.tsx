@@ -2,13 +2,13 @@ import { ReactElement } from "react";
 import DataStructure from "../../../../lib/learning/learners/DataStructure.interface";
 import LearnerObsTableFather from "../../../../lib/learning/learners/observation_table/LearnerObsTableFather";
 import ObservationTable from "../../../../lib/learning/learners/observation_table/ObservationTable";
-import { LearnerViewer, MessageType, PropReact, StateReact } from "../LearnerViewer";
+import LearnerViewer, { MessageType, PropReactLearnerViewer, StateReact } from "../LearnerViewer";
 import ObservationTableViewer from "./ObservationTableViewer";
 
 export default abstract class LearnerObsTableFatherViewer extends LearnerViewer {
   tableToModifyAfterCe: string;
 
-  constructor(prop: PropReact, tableToModif: string) {
+  constructor(prop: PropReactLearnerViewer, tableToModif: string) {
     super(prop)
     this.tableToModifyAfterCe = tableToModif
   }

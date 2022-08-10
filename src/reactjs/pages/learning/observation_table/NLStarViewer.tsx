@@ -1,12 +1,16 @@
+import { connect } from "react-redux";
 import DFA_NFA from "../../../../lib/automaton/regular/DFA_NFA";
 import DataStructure from "../../../../lib/learning/learners/DataStructure.interface";
 import NLStar from "../../../../lib/learning/learners/observation_table/NLStar";
 import TeacherDFA from "../../../../lib/learning/teachers/TeacherDFA";
 import { toEps } from "../../../../lib/tools";
-import { PropReact } from "../LearnerViewer";
+import { setLearnerPos } from "../../../redux/actions/learnerAction";
+import { StoreLearnerInterface } from "../../../redux/storeTypes";
+import { LearnerType } from "../LearnerPage";
+import { PropReactLearnerViewer } from "../LearnerViewer";
 import LearnerObsTableFatherViewer from "./LearnerObsTableFatherViewer";
 
-export default class NLStarViewer extends LearnerObsTableFatherViewer {
+class NLStarViewer extends LearnerObsTableFatherViewer {
   createNewLearner(regex: string | DFA_NFA): NLStar {
     return new NLStar(new TeacherDFA({ type: regex instanceof DFA_NFA ? "Automaton" : "Regex", automaton: regex }))
   }
@@ -15,7 +19,7 @@ export default class NLStarViewer extends LearnerObsTableFatherViewer {
     return super.dataStructureToNodeElement(ds, (this.state.learner as NLStar).primeLines)
   }
 
-  constructor(prop: PropReact) {
+  constructor(prop: PropReactLearnerViewer) {
     super(prop, "E")
   }
 
@@ -31,3 +35,20 @@ export default class NLStarViewer extends LearnerObsTableFatherViewer {
       The column "{fstChar} ∘ {sndChar}" will be added in <i>E</i> since T({toEps(s1)} ∘ {newCol}) ⋢ T({toEps(s2)} ∘ {newCol})</span>
   }
 }
+
+function mapStateToProps(state: StoreLearnerInterface) {
+  let name = "NL*" as LearnerType
+  return {
+    pos: state.pos[name],
+    learner: new NLStar(new TeacherDFA({ automaton: state.algos["NL*"], type: "Regex" })),
+    name: name
+  }
+}
+
+function z(dispatch: Function) {
+  return {
+    updatePosition: (l: LearnerType, pos: number) => dispatch(setLearnerPos(l, pos)),
+  }
+}
+
+export default connect(mapStateToProps, z)(NLStarViewer)

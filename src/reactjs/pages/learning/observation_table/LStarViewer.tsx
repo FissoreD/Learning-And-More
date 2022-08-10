@@ -1,16 +1,20 @@
+import { connect } from "react-redux";
 import DFA_NFA from "../../../../lib/automaton/regular/DFA_NFA";
-import L_Star from "../../../../lib/learning/learners/observation_table/LStar";
+import { default as LStar, default as L_Star } from "../../../../lib/learning/learners/observation_table/LStar";
 import TeacherDFA from "../../../../lib/learning/teachers/TeacherDFA";
 import { toEps } from "../../../../lib/tools";
-import { PropReact } from "../LearnerViewer";
+import { setLearnerPos } from "../../../redux/actions/learnerAction";
+import { StoreLearnerInterface } from "../../../redux/storeTypes";
+import { LearnerType } from "../LearnerPage";
+import { PropReactLearnerViewer } from "../LearnerViewer";
 import LearnerObsTableFatherViewer from "./LearnerObsTableFatherViewer";
 
-export default class LStarViewer extends LearnerObsTableFatherViewer {
+class LStarViewer extends LearnerObsTableFatherViewer {
   createNewLearner(regex: string | DFA_NFA): L_Star {
     return new L_Star(new TeacherDFA({ type: regex instanceof DFA_NFA ? "Automaton" : "Regex", automaton: regex }))
   }
 
-  constructor(prop: PropReact) {
+  constructor(prop: PropReactLearnerViewer) {
     super(prop, "S")
   }
 
@@ -27,3 +31,20 @@ export default class LStarViewer extends LearnerObsTableFatherViewer {
       The column "{fstChar} ∘ {sndChar}" will be added in <i>E</i> since T({toEps(s1)} ∘ {newCol}) ≠ T({toEps(s2)} ∘ {newCol})</span>
   }
 }
+
+function mapStateToProps(state: StoreLearnerInterface) {
+  let name = "L*" as LearnerType
+  return {
+    pos: state.pos[name],
+    learner: new LStar(new TeacherDFA({ automaton: state.algos["L*"], type: "Regex" })),
+    name: name
+  }
+}
+
+function z(dispatch: Function) {
+  return {
+    updatePosition: (l: LearnerType, pos: number) => dispatch(setLearnerPos(l, pos)),
+  }
+}
+
+export default connect(mapStateToProps, z)(LStarViewer)

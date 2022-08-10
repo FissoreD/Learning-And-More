@@ -10,12 +10,10 @@ import GraphDotRender from "../../components/DotRender";
 import VPASwitcher from "../../components/VPASwitcher";
 import { logRender } from "../../globalFunctions";
 import { FLEX_CENTER } from "../../globalVars";
+import { FSM_Type, Operation } from "../../redux/storeTypes";
 
-type Operation = "∪" | "∩" | "△" | "/" | "Det" | "~"
-const binaryOp: Operation[] = ["∪", "∩", "△", "/"]
+const binaryOp: Operation[] = ["\u222a", "∩", "△", "/"]
 const unaryOp: Operation[] = ["Det", "~"]
-
-type FSM_Type = 'VPA' | 'DFA'
 
 interface ReactState {
   fsmType: FSM_Type,
@@ -59,7 +57,7 @@ export default class FSMViewer extends React.Component<ReactProp, ReactState>{
     }
     return {
       fsmType: fsmType as FSM_Type, a1, a2,
-      lastOperation: { operation: "∪", res, is_a1: true, },
+      lastOperation: { operation: "\u222a", res, is_a1: true, },
       showRegexSetter: false,
       changeRegexA1: true
     }
@@ -99,7 +97,7 @@ export default class FSMViewer extends React.Component<ReactProp, ReactState>{
     switch (operation) {
       case "/": res = a1.difference(a2); break;
       case "∩": res = a1.intersection(a2); break;
-      case "∪": res = a1.union(a2); break;
+      case "\u222a": res = a1.union(a2); break;
       case "△": res = a1.symmetricDifference(a2); break;
       case "~": res = (is_a1 ? a1 : a2).complement(); break;
       case "Det": res = a1.determinize(); break;
@@ -126,7 +124,7 @@ export default class FSMViewer extends React.Component<ReactProp, ReactState>{
 
   operationToString(op: Operation) {
     switch (op) {
-      case "∪": return "Union"
+      case "\u222a": return "Union"
       case "∩": return "Intersection"
       case "/": return "Difference"
       case "△": return "Symmetric Difference"

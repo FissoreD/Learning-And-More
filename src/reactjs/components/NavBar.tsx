@@ -1,8 +1,9 @@
 import React from "react";
 import { Container, Nav, Navbar } from "react-bootstrap";
 import { House } from "react-bootstrap-icons";
-import { AlgosNavBarType, ALGO_NAVBAR_LIST } from "../..";
+import { ALGO_NAVBAR_LIST } from "../..";
 import { logRender } from "../globalFunctions";
+import { AlgosNavBarType } from "../redux/storeTypes";
 
 interface ChangeCnt { changeCnt: (algo: AlgosNavBarType) => void; }
 

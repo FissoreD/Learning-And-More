@@ -1,68 +1,17 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.js';
 import React from 'react';
-import { Container, Row } from "react-bootstrap";
 import ReactDOM from 'react-dom/client';
-import NavBar from './reactjs/components/NavBar';
-import { logRender, removeFirstUrlPath, setUrlFromPosition } from './reactjs/globalFunctions';
-import { URL_SEPARATOR } from './reactjs/globalVars';
+import { Provider } from 'react-redux';
+import App from './App';
 import "./reactjs/index.css";
-import FSMPage from './reactjs/pages/automaton/FSMPage';
-import HomePage from './reactjs/pages/HomePage';
-import LearnerPage from './reactjs/pages/learning/LearnerPage';
+import { store } from './reactjs/redux/store';
+import { AlgosNavBarType } from './reactjs/redux/storeTypes';
 import reportWebVitals from './reactjs/reportWebVitals';
 
-interface ReactState { sectionNumber: number, urlCnt: string }
-export type AlgosNavBarType = "Home" | "Automaton" | "Learning"
+export interface ReactState { sectionNumber: number, urlCnt: string }
+
 export const ALGO_NAVBAR_LIST: AlgosNavBarType[] = ["Home", "Automaton", "Learning"]
-
-
-class App extends React.Component<{}, ReactState> {
-  constructor(prop: {}) {
-    super(prop)
-    this.state = this.giveContent()
-  }
-
-  giveContent(section?: AlgosNavBarType) {
-    let urlCnt = "";
-    if (section === undefined) {
-      let [first, ...second] = removeFirstUrlPath().split(URL_SEPARATOR)
-      urlCnt = second.join(URL_SEPARATOR)
-      section = first as AlgosNavBarType
-    }
-    let sectionNumber = Math.max(0, ALGO_NAVBAR_LIST.indexOf(section));
-    return { sectionNumber, urlCnt };
-  }
-
-  swicthContent(section: string): void {
-    let cnt = this.giveContent(section as AlgosNavBarType)
-    if (cnt.sectionNumber !== this.state.sectionNumber) {
-      setUrlFromPosition(ALGO_NAVBAR_LIST[cnt.sectionNumber], 0)
-      this.setState(cnt)
-    }
-  }
-
-  render(): React.ReactNode {
-    logRender("Index");
-
-    let dfaViewer = <FSMPage url={this.state.urlCnt} />;
-    let learnerSection = <LearnerPage cnt={this.state.urlCnt} />;
-    let home = <HomePage switchSection={this.swicthContent.bind(this)} />;
-
-    let sectionList = [home, dfaViewer, learnerSection];
-
-    return <>
-      <NavBar changeCnt={this.swicthContent.bind(this)} />
-      <Container >
-        <Row className="justify-content-center" >
-          <div className="col-xl-8 col-md-10" >
-            {sectionList[this.state.sectionNumber]}
-          </div >
-        </Row>
-      </Container>
-    </>
-  }
-}
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -70,7 +19,9 @@ const root = ReactDOM.createRoot(
 
 root.render(
   <React.StrictMode>
-    <App />
+    <Provider store={store}>
+      <App />
+    </Provider>
   </React.StrictMode>
 );
 

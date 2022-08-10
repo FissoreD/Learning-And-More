@@ -3,7 +3,7 @@ import { setUrlFromPosition } from "../globalFunctions";
 
 interface PropReact { switchSection: ((sectionName: string) => void) }
 
-export default class HomePage extends React.Component<PropReact, {}> {
+class HomePage extends React.Component<PropReact, {}> {
   constructor(prop: PropReact) {
     super(prop)
     setUrlFromPosition("", 0)
@@ -37,3 +37,5 @@ export default class HomePage extends React.Component<PropReact, {}> {
     </div>
   }
 }
+
+export default HomePage

@@ -36,5 +36,5 @@ export const downloadSvg = (fileName: string) => {
 }
 
 export const logRender = (className: string) => {
-  console.log("Rendering", className)
+  // console.log("Rendering", className)
 }
