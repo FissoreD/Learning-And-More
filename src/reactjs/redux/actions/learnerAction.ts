@@ -4,8 +4,7 @@ import { VPAList } from "../../../lib/__test__/VPAforTest"
 import { setUrlFromPosition } from "../../globalFunctions"
 import { URL_SEPARATOR } from "../../globalVars"
 import { LearnerType, LearnerTypeList } from "../../pages/learning/LearnerPage"
-import { store } from "../store"
-import { AlgosNavBarType, ALGO_NAVBAR_LIST, StoreLearnerInterface } from "../storeTypes"
+import { AlgosNavBarType, StoreLearnerInterface } from "../storeTypes"
 
 export const URL_LEARNER_TYPE_POS = 1
 export const URL_LEARNER_REGEX_POS = 2
@@ -15,12 +14,10 @@ export function setLearnerUrlFromStore(store: StoreLearnerInterface) {
   let learner = store.currentAlgo
   let regex = store.algos[learner]
   let pos = store.pos[learner]
-  setUrlFromPosition([learner, regex, pos].join(URL_SEPARATOR), URL_LEARNER_TYPE_POS)
+  setUrlFromPosition(["Learning" as AlgosNavBarType, learner, regex, pos].join(URL_SEPARATOR), 0)
 }
 
 export const setLearnerType = (learner: LearnerType) => {
-  let storeLearner = store.getState().learner;
-  setLearnerUrlFromStore(store.getState().learner);
   return (dispatch: Dispatch) => {
     dispatch({ type: "setLearner", learner })
   }
@@ -54,6 +51,8 @@ const initiate = (): StoreLearnerInterface => {
   }
 
   let returnFunctionWithUrlSet = () => {
+    console.log(2);
+
     setLearnerUrlFromStore({ algos, currentAlgo, pos })
     return { currentAlgo, pos, algos }
   }
@@ -65,7 +64,7 @@ const initiate = (): StoreLearnerInterface => {
 
   let currentAlgo: LearnerType = "L*";
   let url = window.location.search.substring(1).split(URL_SEPARATOR);
-  if (!ALGO_NAVBAR_LIST.includes(url[0] as AlgosNavBarType))
+  if (url[0] !== ("Learning" as AlgosNavBarType))
     return { currentAlgo, pos, algos }
 
   if (!LearnerTypeList.includes(url[URL_LEARNER_TYPE_POS] as LearnerType))
@@ -101,6 +100,8 @@ export const updateLearner = (state: StoreLearnerInterface = initiate(), action:
       break;
     default: return state;
   }
+  console.log(1);
+
   setLearnerUrlFromStore(state);
   return state;
 }

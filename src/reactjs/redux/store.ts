@@ -21,9 +21,11 @@ export const updateCurrentPage = (state: AlgosNavBarType | undefined, action: Ac
     } else {
       state = "Home"
     }
-    if (state !== "Learning")
-      setUrlFromPosition(state, 0)
   }
+  console.log({ ac: action.currentPage, state });
+
+  if ((action.currentPage || state) !== "Learning")
+    setUrlFromPosition((action.currentPage || state), 0)
   switch (action.type) {
     case "setCurrentPage":
       return action.currentPage
