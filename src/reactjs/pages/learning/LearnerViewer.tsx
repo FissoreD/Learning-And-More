@@ -67,7 +67,7 @@ export default abstract class LearnerViewer extends React.Component<PropReactLea
     let i = 0;
     while (pos === undefined || (pos !== undefined && i < pos)) {
       if (state.learner.finish) {
-        if (pos) { i--; } else { i = state.memory.length - 1 };
+        if (pos) { this.nextOp(state) } else { i = state.memory.length - 1 };
         break;
       };
       state = this.nextOp(state);

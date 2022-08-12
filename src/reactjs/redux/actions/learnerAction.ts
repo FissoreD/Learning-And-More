@@ -27,15 +27,12 @@ export const setLearnerType = (learner: LearnerType) => {
 }
 
 export const setLearnerPos = (learner: LearnerType, pos: number) => {
-  if (learner === store.getState().learner.currentAlgo)
-    setUrlFromPosition(pos, URL_LEARNER_STEP_POS);
   return (dispatch: Dispatch) => {
     dispatch({ type: "setLearnerPos", learner, pos });
   }
 }
 
 export const setLearnerRegex = (learner: LearnerType, regex: string) => {
-  setUrlFromPosition(`${regex}${URL_SEPARATOR}0`, URL_LEARNER_REGEX_POS);
   return (dispatch: Dispatch) => {
     dispatch({ type: "setLearnerAlgo", learner, regex })
   }
@@ -48,7 +45,7 @@ type ActionType =
 
 const initiate = (): StoreLearnerInterface => {
   const isValidRegex = () => {
-    if (currentAlgo === "TTT-VPA" && VPAList[Number(url[URL_LEARNER_REGEX_POS])] === undefined) {
+    if (currentAlgo === "TTT-VPA" && VPAList[Number(url[URL_LEARNER_REGEX_POS]) - 1] === undefined) {
       return false;
     }
     try { DFA_NFA.regexToAutomaton(url[URL_LEARNER_REGEX_POS]) }
@@ -91,14 +88,19 @@ const initiate = (): StoreLearnerInterface => {
 export const updateLearner = (state: StoreLearnerInterface = initiate(), action: ActionType): StoreLearnerInterface => {
 
   // let { algos, pos } = state;
-  let { pos, algos } = state
+  state = structuredClone(state);
   switch (action.type) {
     case "setLearner":
-      return { ...state, currentAlgo: action.learner }
+      state.currentAlgo = action.learner;
+      break;
     case "setLearnerAlgo":
-      return { ...state, algos: { ...algos, [action.learner]: action.regex } }
+      state.algos[action.learner] = action.regex;
+      break;
     case "setLearnerPos":
-      return { ...state, pos: { ...pos, [action.learner]: action.pos } }
-    default: return state
+      state.pos[action.learner] = action.pos;
+      break;
+    default: return state;
   }
+  setLearnerUrlFromStore(state);
+  return state;
 }

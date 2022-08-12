@@ -1,15 +1,11 @@
 import { combineReducers, configureStore, Dispatch } from "@reduxjs/toolkit";
 import { setUrlFromPosition } from "../globalFunctions";
 import { URL_SEPARATOR } from "../globalVars";
-import { setLearnerUrlFromStore, updateLearner } from "./actions/learnerAction";
+import { updateLearner } from "./actions/learnerAction";
 import { AlgosNavBarType, ALGO_NAVBAR_LIST } from "./storeTypes";
 
 
 export const setCurrentPage = (currentPage: AlgosNavBarType) => {
-  setUrlFromPosition(currentPage, 0)
-  if (currentPage === "Learning") {
-    setLearnerUrlFromStore(store.getState().learner)
-  }
   return (dispatch: Dispatch) => {
     dispatch({ type: "setCurrentPage", currentPage })
   }
@@ -27,7 +23,6 @@ export const updateCurrentPage = (state: AlgosNavBarType | undefined, action: Ac
     }
     if (state !== "Learning")
       setUrlFromPosition(state, 0)
-
   }
   switch (action.type) {
     case "setCurrentPage":

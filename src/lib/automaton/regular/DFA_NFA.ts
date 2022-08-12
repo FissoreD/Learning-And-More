@@ -177,8 +177,9 @@ export default class DFA_NFA implements FSM, ToDot {
     let txt = "digraph {rankdir = LR\nfixedsize=true\n"
     let triples: { [id: string]: string[] } = {}
 
-    let allStates = this.allStates().sort((a, b) => a.isInitial ? -1 : 1);
-    let bottoms = allStates.filter(s => s.isBottom())
+    let allStates = this.allStates().sort((a,) => a.isInitial ? -1 : 1);
+    // If it contains some States, they will not appear in the dot rendering
+    let bottoms: StateDFA[] = []; //allStates.filter(s => s.isBottom())
 
     for (const state of allStates) {
       if (bottoms.includes(state)) /* ignore bottom state */
