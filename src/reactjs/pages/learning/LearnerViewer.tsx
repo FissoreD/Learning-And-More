@@ -86,8 +86,8 @@ export default abstract class LearnerViewer extends React.Component<PropReactLea
   changeRegex(regex: string | undefined) {
     if (regex) {
       try {
-        this.setState({ learner: this.createNewLearner(regex) })
         this.props.updateLearnerAlgo(this.props.name, regex);
+        this.setState({ learner: this.createNewLearner(regex), position: 0 })
       } catch {
         alert(`Invalid regex : ${regex}`)
       }

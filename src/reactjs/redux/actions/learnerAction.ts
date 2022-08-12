@@ -94,6 +94,7 @@ export const updateLearner = (state: StoreLearnerInterface = initiate(), action:
       break;
     case "setLearnerAlgo":
       state.algos[action.learner] = action.regex;
+      state.pos[action.learner] = 0;
       break;
     case "setLearnerPos":
       state.pos[action.learner] = action.pos;
