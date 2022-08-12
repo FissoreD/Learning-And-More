@@ -163,7 +163,7 @@ export default abstract class LearnerViewer extends React.Component<PropReactLea
         {this.createNextSetpButtonGroup()}
       </div>
       {/* Algorithms sections */}
-      {this.createCard("Language to Learn", this.createText(this.props.regex))}
+      {this.createCard("Language to Learn", this.createText(this.state.learner.teacher.automaton.grammar))}
       {this.createCard("Message", memoryCell.message.val)}
       {memoryCell.automaton ? this.createCard("Automaton", <GraphDotRender dot={memoryCell.automaton!} />) : <></>}
       {this.createCard("Observation Table", this.dataStructureToNodeElement(memoryCell.dataStructure))}
