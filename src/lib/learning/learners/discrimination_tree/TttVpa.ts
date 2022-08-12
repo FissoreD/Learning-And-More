@@ -126,8 +126,6 @@ export default class TttVpa extends TTT_Father<StringCouple> {
         let uaState = this.automaton?.giveState(u + aHat)?.state.name
         let newNodeLabel: StringCouple = [uPrime, vHat]
         let newLeaf = u + aHat
-
-        // console.log({ ce, u: uHat, a: aHat, v: vHat, uaState, uState: uState.name, newNodeLabel, newLeaf });
         return { u: uHat.join(""), a: aHat, v: vHat, uaState, uState: uState.name, newNodeLabel, newLeaf }
       }
     }

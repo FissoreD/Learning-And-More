@@ -4,7 +4,7 @@ import DataStructure from "../../../../lib/learning/learners/DataStructure.inter
 import NLStar from "../../../../lib/learning/learners/observation_table/NLStar";
 import TeacherDFA from "../../../../lib/learning/teachers/TeacherDFA";
 import { toEps } from "../../../../lib/tools";
-import { mapMethodToPropsLearner, mapStateToPropsLearner, PropReactLearnerViewer } from "../LearnerViewer";
+import { mapDispatchToPropsLearner, mapStateToPropsLearner, PropReactLearnerViewer } from "../LearnerViewer";
 import LearnerObsTableFatherViewer from "./LearnerObsTableFatherViewer";
 
 class NLStarViewer extends LearnerObsTableFatherViewer {
@@ -34,4 +34,4 @@ class NLStarViewer extends LearnerObsTableFatherViewer {
 }
 
 export default connect(mapStateToPropsLearner(
-  (regex: string) => new NLStar(new TeacherDFA({ automaton: regex, type: "Regex" })), "NL*"), mapMethodToPropsLearner)(NLStarViewer)
+  (regex: string) => new NLStar(new TeacherDFA({ automaton: regex, type: "Regex" })), "NL*"), mapDispatchToPropsLearner)(NLStarViewer)

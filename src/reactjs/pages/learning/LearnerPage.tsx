@@ -2,8 +2,8 @@ import React from "react";
 import { Tab, Tabs } from "react-bootstrap";
 import { connect } from "react-redux";
 import { logRender } from "../../globalFunctions";
-import { setLearnerPos, setLearnerType } from "../../redux/actions/learnerAction";
-import { StoreLearnerInterface } from "../../redux/storeTypes";
+import { setLearnerType } from "../../redux/actions/learnerAction";
+import { StoreInterface, StoreLearnerInterface } from "../../redux/storeTypes";
 import TttDfaViewer from "./discrimination_tree/TttDfaViewer";
 import TttVpaViewer from "./discrimination_tree/TttVpaViewer";
 import LStarViewer from "./observation_table/LStarViewer";
@@ -20,21 +20,12 @@ interface State {
 }
 
 interface Prop extends StoreLearnerInterface {
-  cnt: string,
-  setPos(algo: LearnerType, pos: number): void,
   setLearnerType(algo: LearnerType): void
 }
 
 export class LearnerPage extends React.Component<Prop, State> {
   constructor(prop: Prop) {
     super(prop)
-
-    // let [fstElt, sndElt] = prop.cnt.split(URL_SEPARATOR) as [LearnerType, string, string[]]
-    // let algo = LearnerTypeList.includes(fstElt) ? fstElt : "L*"
-
-    // prop.setLearnerType(algo)
-    // prop.setPos(sndElt)
-
     this.state = {
       "L*": <LStarViewer />,
       "NL*": <NLStarC />,
@@ -54,7 +45,6 @@ export class LearnerPage extends React.Component<Prop, State> {
 
   render(): React.ReactElement {
     logRender("LearnerPage")
-
     return < >
       <Tabs defaultActiveKey={this.props.currentAlgo}
         className="mb-3 nav-fill"
@@ -70,15 +60,14 @@ export class LearnerPage extends React.Component<Prop, State> {
   }
 }
 
-function mapStateToProps(state: StoreLearnerInterface): StoreLearnerInterface {
-  return state
+function mapStateToProps(state: StoreInterface): StoreLearnerInterface {
+  return state.learner
 }
 
-function mapMethodToProps(dispatch: Function) {
+function mapDispatchToProps(dispatch: Function) {
   return {
     setLearnerType: (algo: LearnerType) => dispatch(setLearnerType(algo)),
-    setPos: (algo: LearnerType, pos: number) => dispatch(setLearnerPos(algo, pos))
   }
 }
 
-export default connect(mapStateToProps, mapMethodToProps)(LearnerPage)
+export default connect(mapStateToProps, mapDispatchToProps)(LearnerPage)

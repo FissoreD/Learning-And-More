@@ -69,7 +69,7 @@ export default abstract class LearnerObsTableFatherViewer extends LearnerViewer 
       automaton: learner.automaton ? learner.automaton.clone() : undefined
     })
     let position = state.position + 1
-    state = { position, doNext: !state.doNext, memory, learner: state.learner, firstTime: false }
+    state = { position, doNext: !state.doNext, memory, learner: state.learner }
     return state
   }
 }

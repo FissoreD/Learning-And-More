@@ -19,6 +19,6 @@ export const GRAPHVIZ_OPTIONS = {
   zoom: false,
 };
 
-export const URL_BASE = "Learning-Automata"
+export const URL_BASE = "Learning-And-More"
 
 export const URL_SEPARATOR = "&"

@@ -1,14 +1,13 @@
 import React from 'react';
 import { Container, Row } from "react-bootstrap";
 import { connect } from 'react-redux';
-import { ALGO_NAVBAR_LIST } from './index';
 import NavBar from './reactjs/components/NavBar';
 import { logRender, removeFirstUrlPath } from './reactjs/globalFunctions';
 import { URL_SEPARATOR } from './reactjs/globalVars';
 import FSMPage from './reactjs/pages/automaton/FSMPage';
 import HomePage from './reactjs/pages/HomePage';
 import LearnerPage from './reactjs/pages/learning/LearnerPage';
-import { AlgosNavBarType, StoreInterface } from './reactjs/redux/storeTypes';
+import { AlgosNavBarType, ALGO_NAVBAR_LIST, StoreInterface } from './reactjs/redux/storeTypes';
 
 export interface ReactState { urlCnt: string }
 
@@ -33,7 +32,7 @@ class App extends React.Component<{ cntAlgo: AlgosNavBarType }, ReactState> {
     logRender("App");
 
     let Automaton = <FSMPage url={this.state.urlCnt} />;
-    let Learning = <LearnerPage cnt={this.state.urlCnt} />;
+    let Learning = <LearnerPage />;
     let Home = <HomePage />;
 
     let sectionList: { [key in AlgosNavBarType]: JSX.Element } = { Home, Automaton, Learning };

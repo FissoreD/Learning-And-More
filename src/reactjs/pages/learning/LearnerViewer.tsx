@@ -8,16 +8,17 @@ import Dialog from "../../components/Dialog";
 import GraphDotRender from "../../components/DotRender";
 import VPASwitcher from "../../components/VPASwitcher";
 import { logRender } from "../../globalFunctions";
-import { setLearnerAlgo, setLearnerPos } from "../../redux/actions/learnerAction";
+import { setLearnerPos, setLearnerRegex } from "../../redux/actions/learnerAction";
 import { StoreInterface } from "../../redux/storeTypes";
 import { LearnerType } from "./LearnerPage";
 
-export type MessageType = "END" | "SEND-HYP" | "CE" | "CONSISTENCY" | "CLOSEDNESS" | "DISC-REF" | "HYP-STAB"
+export type MessageType = "END" | "SEND-HYP" | "CE" |
+  "CONSISTENCY" | "CLOSEDNESS" | "DISC-REF" | "HYP-STAB"
 
 export interface PropReactLearnerViewer {
   learner: LearnerFather,
   name: LearnerType,
-  pos: number,
+  pos: number, regex: string,
   updatePosition: (l: LearnerType, pos: number) => void,
   updateLearnerAlgo: (l: LearnerType, algo: string) => void
 }
@@ -26,22 +27,20 @@ export interface StateReact {
   doNext: boolean,
   memory: { dataStructure: DataStructure, automaton: FSM | undefined, message: { type: MessageType, val: JSX.Element } }[],
   position: number,
-  learner: LearnerFather,
-  firstTime: boolean
+  learner: LearnerFather
 }
 
 export default abstract class LearnerViewer extends React.Component<PropReactLearnerViewer, StateReact>{
+
   constructor(prop: PropReactLearnerViewer) {
     super(prop)
-    this.state = {
-      ...this.allSteps(
-        this.createNewState(prop.learner.teacher.automaton), prop.pos
-      ), firstTime: true
-    };
+    let state = this.allSteps(this.createNewState(prop.learner.teacher.automaton), prop.pos);
+    this.props.updatePosition(this.props.name, state.position)
+    this.state = state;
   }
 
   shouldComponentUpdate(nextProps: Readonly<PropReactLearnerViewer>) {
-    return nextProps.pos !== this.props.pos
+    return nextProps.pos !== this.props.pos || this.props.regex !== nextProps.regex;
   }
 
   abstract dataStructureToNodeElement(ds: DataStructure): React.ReactElement;
@@ -49,9 +48,9 @@ export default abstract class LearnerViewer extends React.Component<PropReactLea
 
   nextOp(state: StateReact): StateReact {
     if (state.position === state.memory.length - 1) {
-      state = this.nextOpChild(state)
+      state = this.nextOpChild(state);
     } else {
-      state.position = state.position + 1
+      state.position = state.position + 1;
     }
     return state
   }
@@ -84,7 +83,14 @@ export default abstract class LearnerViewer extends React.Component<PropReactLea
   }
 
   changeRegex(regex: string | undefined) {
-    if (regex) { this.props.updateLearnerAlgo(this.props.name, regex) }
+    if (regex) {
+      try {
+        this.setState({ learner: this.createNewLearner(regex) })
+        this.props.updateLearnerAlgo(this.props.name, regex);
+      } catch {
+        alert(`Invalid regex : ${regex}`)
+      }
+    }
   }
 
   createCard(title: string, content: React.ReactElement) {
@@ -113,7 +119,6 @@ export default abstract class LearnerViewer extends React.Component<PropReactLea
         dataStructure: learner.getDataStructure().clone(),
         automaton: undefined
       }], position: 0, learner: learner,
-      firstTime: false
     }
   }
 
@@ -147,8 +152,10 @@ export default abstract class LearnerViewer extends React.Component<PropReactLea
 
   render(): React.ReactElement {
     logRender(`LearnerViewer ${this.props.name}`)
+
     let position = this.state.position
     let memoryCell = this.state.memory[position]
+
     return <div className="body-container">
       {/* Buttons sticky on top to change regex and change algo step */}
       <div className="text-end sticky-top d-flex justify-content-between">
@@ -156,7 +163,7 @@ export default abstract class LearnerViewer extends React.Component<PropReactLea
         {this.createNextSetpButtonGroup()}
       </div>
       {/* Algorithms sections */}
-      {this.createCard("Language to Learn", this.createText(this.state.learner.teacher.regex))}
+      {this.createCard("Language to Learn", this.createText(this.props.regex))}
       {this.createCard("Message", memoryCell.message.val)}
       {memoryCell.automaton ? this.createCard("Automaton", <GraphDotRender dot={memoryCell.automaton!} />) : <></>}
       {this.createCard("Observation Table", this.dataStructureToNodeElement(memoryCell.dataStructure))}
@@ -193,19 +200,19 @@ class VPASwitcherButton extends React.Component<VPASwitcherButtonProp, { show: b
   }
 }
 
-export function mapStateToPropsLearner(learnerMethod: (regex: string) => LearnerFather, name: LearnerType) {
+export function mapStateToPropsLearner(learnerMethod: (value: string) => LearnerFather, name: LearnerType) {
   return (state: StoreInterface) => {
     return {
       pos: state.learner.pos[name],
       learner: learnerMethod(state.learner.algos[name]),
-      name: name
+      name: name, regex: state.learner.algos[name]
     }
   }
 }
 
-export function mapMethodToPropsLearner(dispatch: Function) {
+export function mapDispatchToPropsLearner(dispatch: Function) {
   return {
     updatePosition: (l: LearnerType, pos: number) => dispatch(setLearnerPos(l, pos)),
-    updateLearnerAlgo: (l: LearnerType, regex: string) => dispatch(setLearnerAlgo(l, regex)),
+    updateLearnerAlgo: (l: LearnerType, regex: string) => dispatch(setLearnerRegex(l, regex)),
   }
 }

@@ -44,7 +44,7 @@ export default abstract class TttFatherViewer<LblType> extends LearnerViewer {
       automaton: learner.makeAutomaton()!.clone()
     })
     let position = state.position + 1
-    state = { position, doNext: !state.doNext, memory, learner: state.learner, firstTime: false }
+    state = { position, doNext: !state.doNext, memory, learner: state.learner }
     return state
   }
 

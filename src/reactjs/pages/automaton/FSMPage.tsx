@@ -1,6 +1,6 @@
 import React from "react";
 import { Tab, Tabs } from "react-bootstrap";
-import { logRender, setUrlFromPosition } from "../../globalFunctions";
+import { logRender } from "../../globalFunctions";
 import FSMViewer from "./FSMViewer";
 
 type FSM_Type = 'VPA' | 'DFA'
@@ -30,7 +30,6 @@ export default class FSMPage extends React.Component<ReactProp, ReactState>{
   setAlgo(algoName: string) {
     let algo: FSM_Type = FSM_LIST.includes(algoName as FSM_Type) ? (algoName as FSM_Type) : "DFA"
     this.setState({ current: algo })
-    setUrlFromPosition(algo, 1)
   }
 
   componentDidMount() {

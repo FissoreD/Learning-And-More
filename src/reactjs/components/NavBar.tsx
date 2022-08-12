@@ -2,10 +2,9 @@ import React from "react";
 import { Container, Nav, Navbar } from "react-bootstrap";
 import { House } from "react-bootstrap-icons";
 import { connect } from "react-redux";
-import { ALGO_NAVBAR_LIST } from "../..";
 import { logRender } from "../globalFunctions";
 import { setCurrentPage } from "../redux/store";
-import { AlgosNavBarType } from "../redux/storeTypes";
+import { AlgosNavBarType, ALGO_NAVBAR_LIST } from "../redux/storeTypes";
 
 interface ChangeCnt { setCurrentPage: (algo: AlgosNavBarType) => void; }
 
@@ -35,10 +34,10 @@ class NavBar extends React.Component<ChangeCnt> {
   shouldComponentUpdate = () => false;
 }
 
-function mapMethodToProps(dispatch: Function) {
+function mapDispatchToProps(dispatch: Function) {
   return {
     setCurrentPage: (currentPage: AlgosNavBarType) => dispatch(setCurrentPage(currentPage)),
   }
 }
 
-export default connect(undefined, mapMethodToProps)(NavBar)
+export default connect(undefined, mapDispatchToProps)(NavBar)

@@ -1,17 +1,17 @@
 import React from "react";
 import { ButtonGroup } from "react-bootstrap";
-import { URL_BASE } from "./globalVars";
+import { URL_BASE, URL_SEPARATOR } from "./globalVars";
 
 export const removeFirstUrlPath = (): string => {
   return window.location.search.substring(1)
 }
 
-export const setUrlFromPosition = (tail: string, startPosition: number) => {
-  let url = removeFirstUrlPath();
-  if (url.endsWith(tail)) return;
-  let urlPieces = url.split("&").filter(e => e !== "")
+export const setUrlFromPosition = (tail: string | number, startPosition: number) => {
+  let url = removeFirstUrlPath().split(URL_SEPARATOR);
+  if (url[url.length - 1] === tail) return;
+  let urlPieces = url.filter(e => e !== "")
   window.history.pushState("", "",
-    `/${URL_BASE}?` + (startPosition > 0 ? (urlPieces.splice(0, startPosition).join("&") + "&" + tail) : tail))
+    `/${URL_BASE}?` + (startPosition > 0 ? (urlPieces.splice(0, startPosition).join(URL_SEPARATOR) + URL_SEPARATOR + tail) : tail))
 }
 
 export const createButtonGroupAlgoSwitcher = (p: { labelList: string[], currentLabel: string, onclickOp: ((algo: string) => void) }) => {

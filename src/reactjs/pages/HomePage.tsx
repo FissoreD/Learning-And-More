@@ -1,6 +1,5 @@
 import React from "react";
 import { connect } from "react-redux";
-import { setUrlFromPosition } from "../globalFunctions";
 import { setCurrentPage } from "../redux/store";
 import { AlgosNavBarType } from "../redux/storeTypes";
 
@@ -9,7 +8,6 @@ interface PropReact { setCurrentPage(sectionName: AlgosNavBarType): void }
 class HomePage extends React.Component<PropReact, {}> {
   constructor(prop: PropReact) {
     super(prop)
-    setUrlFromPosition("", 0)
   }
 
   render(): React.ReactNode {
@@ -41,10 +39,10 @@ class HomePage extends React.Component<PropReact, {}> {
   }
 }
 
-function mapMethodToProps(dispatch: Function) {
+function mapDispatchToProps(dispatch: Function) {
   return {
     setCurrentPage: (currentPage: AlgosNavBarType) => dispatch(setCurrentPage(currentPage)),
   }
 }
 
-export default connect((state: {}) => state, mapMethodToProps)(HomePage)
+export default connect(null, mapDispatchToProps)(HomePage)

@@ -6,10 +6,7 @@ import { Provider } from 'react-redux';
 import App from './App';
 import "./reactjs/index.css";
 import { store } from './reactjs/redux/store';
-import { AlgosNavBarType } from './reactjs/redux/storeTypes';
 import reportWebVitals from './reactjs/reportWebVitals';
-
-export const ALGO_NAVBAR_LIST: AlgosNavBarType[] = ["Home", "Automaton", "Learning"]
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement

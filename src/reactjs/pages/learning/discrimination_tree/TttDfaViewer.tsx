@@ -4,7 +4,7 @@ import DFA_NFA from "../../../../lib/automaton/regular/DFA_NFA";
 import DiscTreeDFA from "../../../../lib/learning/learners/discrimination_tree/DiscTreeDFA";
 import TttDfa from "../../../../lib/learning/learners/discrimination_tree/TttDfa";
 import TeacherDFA from "../../../../lib/learning/teachers/TeacherDFA";
-import { mapMethodToPropsLearner, mapStateToPropsLearner } from "../LearnerViewer";
+import { mapDispatchToPropsLearner, mapStateToPropsLearner } from "../LearnerViewer";
 import DiscriminationTreeViewer from "./DiscriminationTreeViewer";
 import TttFatherViewer from "./TttFatherViewer";
 
@@ -23,4 +23,4 @@ class TttDfaViewer extends TttFatherViewer<string> {
 }
 
 export default connect(mapStateToPropsLearner(
-  (regex: string) => new TttDfa(new TeacherDFA({ automaton: regex, type: "Regex" })), "TTT-DFA"), mapMethodToPropsLearner)(TttDfaViewer)
+  (regex: string) => new TttDfa(new TeacherDFA({ automaton: regex, type: "Regex" })), "TTT-DFA"), mapDispatchToPropsLearner)(TttDfaViewer)

@@ -1,10 +1,15 @@
 import { combineReducers, configureStore, Dispatch } from "@reduxjs/toolkit";
-import { updateLearner } from "./actions/learnerAction";
-import { AlgosNavBarType } from "./storeTypes";
+import { setUrlFromPosition } from "../globalFunctions";
+import { URL_SEPARATOR } from "../globalVars";
+import { setLearnerUrlFromStore, updateLearner } from "./actions/learnerAction";
+import { AlgosNavBarType, ALGO_NAVBAR_LIST } from "./storeTypes";
 
 
 export const setCurrentPage = (currentPage: AlgosNavBarType) => {
-  // setUrlFromPosition(currentPage, 1)
+  setUrlFromPosition(currentPage, 0)
+  if (currentPage === "Learning") {
+    setLearnerUrlFromStore(store.getState().learner)
+  }
   return (dispatch: Dispatch) => {
     dispatch({ type: "setCurrentPage", currentPage })
   }
@@ -12,7 +17,15 @@ export const setCurrentPage = (currentPage: AlgosNavBarType) => {
 
 type ActionType = { type: "setCurrentPage", currentPage: AlgosNavBarType }
 
-export const updateCurrentPage = (state: AlgosNavBarType = "Home", action: ActionType): AlgosNavBarType => {
+export const updateCurrentPage = (state: AlgosNavBarType | undefined, action: ActionType): AlgosNavBarType => {
+  if (state === undefined) {
+    let url = window.location.search.substring(1).split(URL_SEPARATOR)[0]
+    if (ALGO_NAVBAR_LIST.includes(url as AlgosNavBarType)) {
+      state = url as AlgosNavBarType
+    } else {
+      state = "Home"
+    }
+  }
   switch (action.type) {
     case "setCurrentPage":
       return action.currentPage
@@ -21,11 +34,9 @@ export const updateCurrentPage = (state: AlgosNavBarType = "Home", action: Actio
 }
 
 export let store = configureStore({
-  reducer: combineReducers({ learner: updateLearner, currentPage: updateCurrentPage })
+  reducer: combineReducers({
+    learner: updateLearner,
+    currentPage: updateCurrentPage,
+    // automaton: updateAutomaton
+  })
 })
-
-
-// store.dispatch(initiate())
-
-// store.subscribe(() => console.log(store.getState()))
-// setLearnerType("L*")
