@@ -5,7 +5,7 @@ import { setUrlFromPosition } from "../../globalFunctions"
 import { URL_SEPARATOR } from "../../globalVars"
 import { LearnerType, LearnerTypeList } from "../../pages/learning/LearnerPage"
 import { store } from "../store"
-import { StoreLearnerInterface } from "../storeTypes"
+import { AlgosNavBarType, ALGO_NAVBAR_LIST, StoreLearnerInterface } from "../storeTypes"
 
 export const URL_LEARNER_TYPE_POS = 1
 export const URL_LEARNER_REGEX_POS = 2
@@ -49,14 +49,10 @@ type ActionType =
 const initiate = (): StoreLearnerInterface => {
   const isValidRegex = () => {
     if (currentAlgo === "TTT-VPA" && VPAList[Number(url[URL_LEARNER_REGEX_POS])] === undefined) {
-      alert("The vpa index in the url is not valid, a default index has been put");
       return false;
     }
     try { DFA_NFA.regexToAutomaton(url[URL_LEARNER_REGEX_POS]) }
-    catch {
-      alert("The regex in the url is not valid, a default regex has been put");
-      return false;
-    }
+    catch { return false; }
     return true
   }
 
@@ -70,8 +66,10 @@ const initiate = (): StoreLearnerInterface => {
   // Every learner has the regex "1+(0+10)*" except for the TTT-VPA algo which uses the first algo of the VPAList
   let algos = Object.assign({}, ...LearnerTypeList.map(e => ({ [e]: e === "TTT-VPA" ? "1" : "1+(0+10)*" })))
 
-  let url = window.location.search.substring(1).split(URL_SEPARATOR);
   let currentAlgo: LearnerType = "L*";
+  let url = window.location.search.substring(1).split(URL_SEPARATOR);
+  if (!ALGO_NAVBAR_LIST.includes(url[0] as AlgosNavBarType))
+    return { currentAlgo, pos, algos }
 
   if (!LearnerTypeList.includes(url[URL_LEARNER_TYPE_POS] as LearnerType))
     return returnFunctionWithUrlSet()
