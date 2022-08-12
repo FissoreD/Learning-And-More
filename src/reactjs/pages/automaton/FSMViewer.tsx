@@ -5,11 +5,11 @@ import VPA from "../../../lib/automaton/context_free/VPA";
 import FSM from "../../../lib/automaton/FSM.interface";
 import DFA_NFA from "../../../lib/automaton/regular/DFA_NFA";
 import { createVPA2, createVPA4, VPAList } from "../../../lib/__test__/VPAforTest";
-import Dialog from "../../components/Dialog";
 import GraphDotRender from "../../components/DotRender";
+import TextDialog from "../../components/TextDialog";
 import VPASwitcher from "../../components/VPASwitcher";
 import { logRender } from "../../globalFunctions";
-import { FLEX_CENTER } from "../../globalVars";
+import { FLEX_CENTER, REGEX_FORBIDDEN_CHARS } from "../../globalVars";
 import { FSM_Type, Operation } from "../../redux/storeTypes";
 
 const binaryOp: Operation[] = ["\u222a", "∩", "△", "/"]
@@ -205,10 +205,11 @@ export default class FSMViewer extends React.Component<ReactProp, ReactState>{
     logRender("FSMViewer");
     let { lastOperation, fsmType, a1, a2, showRegexSetter } = this.state;
     let isDFA = fsmType === "DFA";
+    let params = { fn: this.setRegex.bind(this), show: showRegexSetter }
     return <>
       {isDFA ?
-        <Dialog fn={this.setRegex.bind(this)} show={showRegexSetter} /> :
-        <VPASwitcher fn={this.setRegex.bind(this)} show={showRegexSetter} />}
+        <TextDialog {...params} forbiddenChars={REGEX_FORBIDDEN_CHARS} /> :
+        <VPASwitcher {...params} />}
       <Row className="d-flex justify-content-center">
         <Col className="mb-3 mb-sm-0" sm={5}>{this.createCardAutomaton(a1, 1)}</Col>
         <Col sm="auto" className="d-flex text-center align-self-center justify-content-center">

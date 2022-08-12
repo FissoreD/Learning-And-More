@@ -4,10 +4,10 @@ import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import { logRender } from '../globalFunctions';
 
-interface Prop { fn: (a: string | undefined) => void, show: boolean }
+interface Prop { fn: (a: string | undefined) => void, show: boolean, forbiddenChars: string }
 interface State { regex: string | undefined }
 
-export default class Dialog extends React.Component<Prop, State> {
+export default class TextDialog extends React.Component<Prop, State> {
 
   constructor(prop: Prop) {
     super(prop)
@@ -36,7 +36,12 @@ export default class Dialog extends React.Component<Prop, State> {
           }}>
             <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
               <Form.Label>Enter your regex</Form.Label>
-              <Form.Control autoFocus onChange={(e) => { this.setState({ regex: e.target.value }) }} />
+              <Form.Control autoFocus onChange={(e) => {
+                let value = e.target.value
+                if (!this.props.forbiddenChars.includes(value[value.length - 1]))
+                  this.setState({ regex: value })
+                else e.target.value = value.substring(0, value.length - 1)
+              }} />
             </Form.Group>
           </Form>
         </Modal.Body>

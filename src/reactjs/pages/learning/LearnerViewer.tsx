@@ -4,10 +4,11 @@ import { ArrowClockwise, ArrowCounterclockwise, CaretLeftFill, CaretRightFill } 
 import FSM from "../../../lib/automaton/FSM.interface";
 import DataStructure from "../../../lib/learning/learners/DataStructure.interface";
 import LearnerFather from "../../../lib/learning/learners/LearnerFather";
-import Dialog from "../../components/Dialog";
 import GraphDotRender from "../../components/DotRender";
+import TextDialog from "../../components/TextDialog";
 import VPASwitcher from "../../components/VPASwitcher";
 import { logRender } from "../../globalFunctions";
+import { REGEX_FORBIDDEN_CHARS } from "../../globalVars";
 import { setLearnerPos, setLearnerRegex } from "../../redux/actions/learnerAction";
 import { StoreInterface } from "../../redux/storeTypes";
 import { LearnerType } from "./LearnerPage";
@@ -192,7 +193,7 @@ class VPASwitcherButton extends React.Component<VPASwitcherButtonProp, { show: b
     let { changeRegex, isVpa } = this.props
     let params = { show: this.state.show, fn: (l?: string) => this.hideDialogWrapper(changeRegex, l) }
     return <>
-      {isVpa ? <VPASwitcher {...params} /> : <Dialog {...params} />}
+      {isVpa ? <VPASwitcher {...params} /> : <TextDialog {...params} forbiddenChars={REGEX_FORBIDDEN_CHARS} />}
       <Button className="btn-secondary" onClick={() => {
         this.setState({ show: true })
       }}> Change Teacher </Button>

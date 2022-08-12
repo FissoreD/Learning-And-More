@@ -22,3 +22,5 @@ export const GRAPHVIZ_OPTIONS = {
 export const URL_BASE = "Learning-And-More"
 
 export const URL_SEPARATOR = "&"
+
+export const REGEX_FORBIDDEN_CHARS = "& "
