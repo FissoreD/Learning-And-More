@@ -35,7 +35,7 @@ class App extends React.Component<{ cntAlgo: AlgosNavBarType }, ReactState> {
     let Learning = <LearnerPage />;
     let Home = <HomePage />;
 
-    let sectionList: { [key in AlgosNavBarType]: JSX.Element } = { Home, Automaton, Learning };
+    let sectionList: Record<AlgosNavBarType, JSX.Element> = { Home, Automaton, Learning };
 
     return <>
       <NavBar />

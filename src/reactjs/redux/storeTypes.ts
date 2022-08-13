@@ -9,8 +9,8 @@ export const ALGO_NAVBAR_LIST: AlgosNavBarType[] = ["Home", "Automaton", "Learni
 
 
 export interface StoreLearnerInterface {
-  algos: { [learnerType in LearnerType]: string };
-  pos: { [learnerType in LearnerType]: number };
+  algos: Record<LearnerType, string>;
+  pos: Record<LearnerType, number>;
   currentAlgo: LearnerType;
 };
 

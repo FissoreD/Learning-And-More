@@ -51,8 +51,6 @@ const initiate = (): StoreLearnerInterface => {
   }
 
   let returnFunctionWithUrlSet = () => {
-    console.log(2);
-
     setLearnerUrlFromStore({ algos, currentAlgo, pos })
     return { currentAlgo, pos, algos }
   }
@@ -101,7 +99,6 @@ export const updateLearner = (state: StoreLearnerInterface = initiate(), action:
       break;
     default: return state;
   }
-  console.log(1);
 
   setLearnerUrlFromStore(state);
   return state;
