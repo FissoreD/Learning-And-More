@@ -1,0 +1,51 @@
+{
+  "1": {
+    "title": "Learning Regular Sets from Queries and Counterexamples",
+    "author": "Dana Angluin",
+    "year": 1987,
+    "description": "The L* algorithm",
+    "href": "https://people.eecs.berkeley.edu/~dawnsong/teaching/s10/papers/angluin87.pdf"
+  },
+  "2": {
+    "title": "Angluin-Style Learning of NFA",
+    "author": "Benedikt Bollig et al.",
+    "year": 2008,
+    "description": "The NL* algorithm",
+    "href": "https://www.ijcai.org/Proceedings/09/Papers/170.pdf"
+  },
+  "3": {
+    "title": "The TTT Algorithm: A Redundancy-Free Approach to Active Automata Learning",
+    "author": "Malte Isberner et al.",
+    "year": 2014,
+    "description": "The TTT(-DFA) algorithm",
+    "href": "https://learnlib.de/wp-content/uploads/2017/10/ttt.pdf"
+  },
+  "4": {
+    "title": "Foundations of Active Automata Learning: an Algorithmic Perspective",
+    "author": "Malte Isberner",
+    "year": 2015,
+    "description": "The TTT-VPA algorithm",
+    "href": "https://core.ac.uk/download/pdf/46916458.pdf"
+  },
+  "5": {
+    "title": "Visibly Pushdown Automata for Streaming XML",
+    "author": "Viraj Kumar et al.",
+    "year": 2007,
+    "description": "-",
+    "href": "https://madhu.cs.illinois.edu/www07.pdf"
+  },
+  "6": {
+    "title": "Congruences for Visibly Pushdown Languages",
+    "author": "Rajeev Alur et al.",
+    "year": 2005,
+    "description": "k-SEVPA",
+    "href": "https://repository.upenn.edu/cgi/viewcontent.cgi?article=1170&context=cis_papers"
+  },
+  "7": {
+    "title": "Visibly Pushdown Languages",
+    "author": "Rajeev Alur & P. Madhusudan",
+    "year": "2004",
+    "description": "VPA definition",
+    "href": "https://www.cis.upenn.edu/~alur/Stoc04.pdf"
+  }
+}

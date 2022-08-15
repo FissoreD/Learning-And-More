@@ -5,6 +5,7 @@ import NavBar from './reactjs/components/NavBar';
 import { logRender, removeFirstUrlPath } from './reactjs/globalFunctions';
 import { URL_SEPARATOR } from './reactjs/globalVars';
 import FSMPage from './reactjs/pages/automaton/FSMPage';
+import BibliographyPage from "./reactjs/pages/BibliographyPage";
 import HomePage from './reactjs/pages/HomePage';
 import LearnerPage from './reactjs/pages/learning/LearnerPage';
 import { AlgosNavBarType, ALGO_NAVBAR_LIST, StoreInterface } from './reactjs/redux/storeTypes';
@@ -34,8 +35,9 @@ class App extends React.Component<{ cntAlgo: AlgosNavBarType }, ReactState> {
     let Automaton = <FSMPage url={this.state.urlCnt} />;
     let Learning = <LearnerPage />;
     let Home = <HomePage />;
+    let Bibliography = <BibliographyPage />
 
-    let sectionList: Record<AlgosNavBarType, JSX.Element> = { Home, Automaton, Learning };
+    let sectionList: Record<AlgosNavBarType, JSX.Element> = { Home, Automaton, Learning, Bibliography };
 
     return <>
       <NavBar />

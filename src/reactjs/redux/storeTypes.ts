@@ -3,9 +3,9 @@ import { LearnerType } from "../pages/learning/LearnerPage";
 
 export type Operation = "\u222a" | "∩" | "△" | "/" | "Det" | "~"
 export type FSM_Type = 'VPA' | 'DFA'
-export type AlgosNavBarType = "Home" | "Automaton" | "Learning"
 
-export const ALGO_NAVBAR_LIST: AlgosNavBarType[] = ["Home", "Automaton", "Learning"]
+export const ALGO_NAVBAR_LIST = ["Home", "Automaton", "Learning", "Bibliography"] as const
+export type AlgosNavBarType = (typeof ALGO_NAVBAR_LIST)[number]
 
 
 export interface StoreLearnerInterface {

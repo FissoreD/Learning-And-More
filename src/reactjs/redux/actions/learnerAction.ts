@@ -56,9 +56,9 @@ const initiate = (): StoreLearnerInterface => {
   }
 
   // Every learner is associated to the value of zero
-  let pos = Object.assign({}, ...LearnerTypeList.map(e => ({ [e]: 0 })));
+  let pos: Record<LearnerType, number> = Object.assign({}, ...LearnerTypeList.map(e => ({ [e]: 0 })));
   // Every learner has the regex "1+(0+10)*" except for the TTT-VPA algo which uses the first algo of the VPAList
-  let algos = Object.assign({}, ...LearnerTypeList.map(e => ({ [e]: e === "TTT-VPA" ? "1" : "1+(0+10)*" })))
+  let algos: Record<LearnerType, string> = Object.assign({}, ...LearnerTypeList.map(e => ({ [e]: e === "TTT-VPA" ? "1" : "1+(0+10)*" })))
 
   let currentAlgo: LearnerType = "L*";
   let url = window.location.search.substring(1).split(URL_SEPARATOR);
