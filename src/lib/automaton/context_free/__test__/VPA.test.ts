@@ -27,12 +27,12 @@ test("State VPA creation", () => {
 
 test("Word membership VPA", () => {
   let vpa = createVPA1()
-  expect(vpa.acceptWord("AAAIBIIII")).toBeFalsy()
-  expect(vpa.acceptWord("AAAIBIIIIBB")).toBeTruthy()
-  expect(vpa.acceptWord("AAAIBIIIIB")).toBeFalsy();
-  expect(vpa.acceptWord("AAAIBIIIIBBB")).toBeFalsy();
-  expect(vpa.acceptWord("I")).toBeTruthy()
-  expect(vpa.acceptWord("AIB")).toBeTruthy()
+  expect(vpa.acceptWord("aaaibiiii")).toBeFalsy()
+  expect(vpa.acceptWord("aaaibiiiibb")).toBeTruthy()
+  expect(vpa.acceptWord("aaaibiiiib")).toBeFalsy();
+  expect(vpa.acceptWord("aaaibiiiibbb")).toBeFalsy();
+  expect(vpa.acceptWord("i")).toBeTruthy()
+  expect(vpa.acceptWord("aib")).toBeTruthy()
 })
 
 test("Deterministic VPA", () => {
@@ -76,11 +76,11 @@ describe("VPA counter-example", () => {
   test("vpa3", () => {
     let aut = createVPA3()
     /* Here counter-example are fixed */
-    expect(aut.findWordAccepted(0)).toBe("I")
-    expect(aut.findWordAccepted(1)).toBe("I")
-    expect(aut.findWordAccepted(2)).toBe("AIB")
-    expect(aut.findWordAccepted(3)).toBe("AIB")
-    expect(aut.findWordAccepted(8)).toBe("AAAAIBBBB")
+    expect(aut.findWordAccepted(0)).toBe("i")
+    expect(aut.findWordAccepted(1)).toBe("i")
+    expect(aut.findWordAccepted(2)).toBe("aib")
+    expect(aut.findWordAccepted(3)).toBe("aib")
+    expect(aut.findWordAccepted(8)).toBe("aaaaibbbb")
   })
 
   test("vpa1", () => {
@@ -95,4 +95,9 @@ describe("VPA counter-example", () => {
     let aut = createVPAxml1()
     expect(aut.isEmpty()).toBeFalsy();
   })
+})
+
+test("vpa2 is empty", () => {
+  let vpa2 = createVPA2()
+  expect(vpa2.isEmpty()).toBeFalsy();
 })

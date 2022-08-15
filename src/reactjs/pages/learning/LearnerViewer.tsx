@@ -87,7 +87,7 @@ export default abstract class LearnerViewer extends React.Component<PropReactLea
     if (regex) {
       try {
         this.props.updateLearnerAlgo(this.props.name, regex);
-        this.setState({ learner: this.createNewLearner(regex), position: 0 })
+        this.setState(this.createNewState(regex))
       } catch {
         alert(`Invalid regex : ${regex}`)
       }
@@ -111,7 +111,7 @@ export default abstract class LearnerViewer extends React.Component<PropReactLea
 
   abstract createNewLearner(fsm: FSM | string): LearnerFather;
 
-  createNewState(fsm: FSM): StateReact {
+  createNewState(fsm: string | FSM): StateReact {
     let learner = this.createNewLearner(fsm)
     return {
       doNext: true,
@@ -125,7 +125,7 @@ export default abstract class LearnerViewer extends React.Component<PropReactLea
 
   createNextSetpButtonGroup() {
     let isFirst = this.state.position === 0,
-      isLast = this.state.memory.length - 1 === this.state.position && this.state.learner.finish,
+      isLast = this.state.memory.length - 1 === this.state.position && this.state.learner.finish && this.state.position > 0,
       buttons: ({ img: ReactElement, action: (() => void), disabled: boolean })[] = [
         { img: <ArrowCounterclockwise />, action: this.reload.bind(this), disabled: isFirst },
         { img: <CaretLeftFill />, action: this.prevOp.bind(this), disabled: isFirst },

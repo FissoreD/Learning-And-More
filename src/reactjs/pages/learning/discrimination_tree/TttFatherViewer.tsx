@@ -5,11 +5,13 @@ import LearnerViewer, { MessageType, StateReact } from "../LearnerViewer";
 export default abstract class TttFatherViewer<LblType> extends LearnerViewer {
   nextOpChild(state: StateReact): StateReact {
     let learner = state.learner as TTT_Father<LblType>
-    if (learner.finish) return state;
+    // if (learner.finish) return state;
     var message: { type: MessageType, val: JSX.Element };
     let oldMsg = state.memory[state.position].message
     if (state.doNext) {
-      if (oldMsg.type === "CE") {
+      if (learner.finish) {
+        message = { type: "END", val: <span>The teacher has accepted the last conjecture</span> }
+      } else if (oldMsg.type === "CE") {
         message = { type: "HYP-STAB", val: <span>The first conjecture has been sent, but the teacher has provided the counter-example <i>{learner.lastCe?.value}</i> </span> }
       } else if (learner.toStabilizeHypothesis()) {
         message = { type: "HYP-STAB", val: <span>The counter-example should be stabilized, since the automaton does {learner.lastCe?.accepted ? "not" : ""} accept the counter-example <i>{learner.lastCe?.value}</i></span> }

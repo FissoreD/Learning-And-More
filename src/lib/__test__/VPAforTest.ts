@@ -3,34 +3,35 @@ import StateVPA from "../automaton/context_free/StateVPA"
 import VPA from "../automaton/context_free/VPA"
 
 /**
- * @returns G = A^n II* B^n
+ * @returns 
+ * G := a.H.G.b.H | i\nH := i | H.i | ɛ
  */
 export let createVPA1 = (): VPA => {
-  let alphabet = new AlphabetVPA({ CALL: ["A"], RET: ["B", "C"], INT: ["I"] })
+  let alphabet = new AlphabetVPA({ CALL: ["a"], RET: ["b"], INT: ["i"] })
   let stackAlphabet = ["0"]
   let state1 = new StateVPA({ name: "1", isAccepting: true, alphabet, stackAlphabet })
   let state2 = new StateVPA({ name: "2", isInitial: true, alphabet, stackAlphabet })
-  state1.addTransition({ symbol: "I", successor: state1 })
-  state2.addTransition({ symbol: "I", successor: state1 })
-  state1.addTransition({ symbol: "B", topStack: "0", successor: state1 })
-  state2.addTransition({ symbol: "A", topStack: "0", successor: state2 })
-  let vpa = new VPA([state1, state2], `G := A.G.B | I`)
+  state1.addTransition({ symbol: "i", successor: state1 })
+  state2.addTransition({ symbol: "i", successor: state1 })
+  state1.addTransition({ symbol: "b", topStack: "0", successor: state1 })
+  state2.addTransition({ symbol: "a", topStack: "0", successor: state2 })
+  let vpa = new VPA([state1, state2], `G := a.H.G.b.H | i\nH := i | H.i | ɛ`)
   return vpa
 }
 
 /**
  * @returns
- * G := A.H.B | I.G | I  
- * H := GG | G
+ * G := H.a.G.b.H 
+ * H := H.i | ɛ
  */
 export let createVPA2 = (): VPA => {
-  let alphabet = new AlphabetVPA({ CALL: ["A"], RET: ["B"], INT: ["I"] })
+  let alphabet = new AlphabetVPA({ CALL: ["a"], RET: ["b"], INT: ["i"] })
   let stackAlphabet = ["2"]
   let s1 = new StateVPA({ name: "3", isAccepting: true, isInitial: true, alphabet, stackAlphabet })
-  s1.addTransition({ symbol: "I", successor: s1 })
-  s1.addTransition({ symbol: "A", topStack: "2", successor: s1 })
-  s1.addTransition({ symbol: "B", topStack: "2", successor: s1 })
-  let vpa = new VPA([s1], `G := A.G.B | I.G | G`)
+  s1.addTransition({ symbol: "i", successor: s1 })
+  s1.addTransition({ symbol: "a", topStack: "2", successor: s1 })
+  s1.addTransition({ symbol: "b", topStack: "2", successor: s1 })
+  let vpa = new VPA([s1], `G := H.a.G.b.H \nH := H.i | ɛ`)
   return vpa
 }
 
@@ -38,14 +39,14 @@ export let createVPA2 = (): VPA => {
  * @returns G = A^n I B^n
  */
 export let createVPA3 = (): VPA => {
-  let alphabet = new AlphabetVPA({ CALL: ["A"], RET: ["B"], INT: ["I"] })
+  let alphabet = new AlphabetVPA({ CALL: ["a"], RET: ["b"], INT: ["i"] })
   let stackAlphabet = ["0"]
   let state1 = new StateVPA({ name: "1", isAccepting: true, alphabet, stackAlphabet })
   let state2 = new StateVPA({ name: "2", isInitial: true, alphabet, stackAlphabet })
-  state2.addTransition({ symbol: "I", successor: state1 })
-  state1.addTransition({ symbol: "B", topStack: "0", successor: state1 })
-  state2.addTransition({ symbol: "A", topStack: "0", successor: state2 })
-  let vpa = new VPA([state1, state2], `G := A.H.B | I.G | I\nH := GG | G`)
+  state2.addTransition({ symbol: "i", successor: state1 })
+  state1.addTransition({ symbol: "b", topStack: "0", successor: state1 })
+  state2.addTransition({ symbol: "a", topStack: "0", successor: state2 })
+  let vpa = new VPA([state1, state2], `G := a.H.b | i\n`)
   return vpa
 }
 
@@ -55,23 +56,23 @@ export let createVPA3 = (): VPA => {
  * H := I.H | I
  */
 export let createVPA4 = (): VPA => {
-  let alphabet = new AlphabetVPA({ CALL: ["A"], RET: ["B", "C"], INT: ["I"] })
+  let alphabet = new AlphabetVPA({ CALL: ["a"], RET: ["b", "c"], INT: ["i"] })
   let stackAlphabet = ["0"]
   let state1 = new StateVPA({ name: "1", isAccepting: true, alphabet, stackAlphabet })
   let state2 = new StateVPA({ name: "2", isInitial: true, alphabet, stackAlphabet })
-  state1.addTransition({ symbol: "I", successor: state1 })
-  state2.addTransition({ symbol: "I", successor: state1 })
-  state2.addTransition({ symbol: "B", topStack: "0", successor: state1 })
-  state1.addTransition({ symbol: "B", topStack: "0", successor: state1 })
-  state1.addTransition({ symbol: "C", topStack: "0", successor: state1 })
-  state2.addTransition({ symbol: "A", topStack: "0", successor: state2 })
-  let vpa = new VPA([state1, state2], `G := A.G.(C|B).H | AB | H\nH := I.H | I`)
+  state1.addTransition({ symbol: "i", successor: state1 })
+  state2.addTransition({ symbol: "i", successor: state1 })
+  state2.addTransition({ symbol: "b", topStack: "0", successor: state1 })
+  state1.addTransition({ symbol: "b", topStack: "0", successor: state1 })
+  state1.addTransition({ symbol: "c", topStack: "0", successor: state1 })
+  state2.addTransition({ symbol: "a", topStack: "0", successor: state2 })
+  let vpa = new VPA([state1, state2], `G := a.G.(c|b).H | a.b | H\nH := i.H | i`)
   return vpa
 }
 
-/** L = BTC w/[call=B, ret=C, int=T] */
+/** L = B.T.C */
 export let createVPAxml1 = (): VPA => {
-  let h1 = "B", notH1 = "C", text = "T"
+  let h1 = "b", notH1 = "c", text = "t"
   let alphabet = new AlphabetVPA({ CALL: [h1], RET: [notH1], INT: [text] })
   let stackAlphabet = ["0"]
 
@@ -84,7 +85,7 @@ export let createVPAxml1 = (): VPA => {
   state3.addTransition({ symbol: text, successor: state4 })
   state4.addTransition({ symbol: notH1, successor: state5, topStack: "0" })
 
-  let vpa = new VPA([state2, state3, state4, state5], `G := B.T.G`)
+  let vpa = new VPA([state2, state3, state4, state5], `G := b.t.c`)
   return vpa
 }
 
@@ -92,9 +93,9 @@ export let createVPAxml1 = (): VPA => {
 export let createVPAxml2 = (easyAlph = true): VPA => {
   let xml, notXml, h1, notH1, text;
   if (easyAlph) {
-    xml = "A"; notXml = "D"; h1 = "B"; notH1 = "C"; text = "T"
+    xml = "a"; notXml = "d"; h1 = "b"; notH1 = "c"; text = "t"
   } else {
-    xml = "<xml>"; notXml = "</xml>"; h1 = "<h1>"; notH1 = "</h1>"; text = "Text"
+    xml = "<xml>"; notXml = "</xml>"; h1 = "<h1>"; notH1 = "</h1>"; text = "text"
   }
   let alphabet = new AlphabetVPA({ CALL: [xml, h1], RET: [notXml, notH1], INT: [text] })
   let stackAlphabet = ["0", "1"]
@@ -113,7 +114,7 @@ export let createVPAxml2 = (easyAlph = true): VPA => {
   state5.addTransition({ symbol: notXml, successor: state6, topStack: "0" })
 
   let vpa = new VPA([state1, state4, state5, state6],
-    easyAlph ? `G := A.B.T.C.D` : `G := <xml>.<h1>.Text.</h1>.</xml>`
+    easyAlph ? `G := a.b.t.c.d` : `G := <xml>.<h1>.text.</h1>.</xml>`
   )
   return vpa
 }
@@ -124,7 +125,7 @@ export let createVPAxml2 = (easyAlph = true): VPA => {
  * H := X | Y
  */
 export let createVPAxml3 = (): VPA => {
-  let alphabet = new AlphabetVPA({ INT: ["T", "X", "Y", ">"], CALL: ["<A"], RET: ["</A"] })
+  let alphabet = new AlphabetVPA({ INT: ["t", " x", " y", ">"], CALL: ["<a"], RET: ["</a"] })
   let stackAlphabet = ["0"]
   let state1 = new StateVPA({ name: "1", alphabet, stackAlphabet })
   let state2 = new StateVPA({ name: "2", alphabet, stackAlphabet })
@@ -141,17 +142,19 @@ export let createVPAxml3 = (): VPA => {
   state1.addTransition({ topStack: stackAlphabet[0], successor: state4, symbol: alphabet.INT[0] })
   state4.addTransition({ topStack: stackAlphabet[0], successor: state5, symbol: alphabet.RET[0] })
   state5.addTransition({ topStack: stackAlphabet[0], successor: state4, symbol: alphabet.INT[3] })
-  let res = new VPA(states, `G := <A H>G</A>|T\nH := X | Y`)
+  let res = new VPA(states, `G := <a H>G</a>|t\nH := x | y`)
   return res
 }
 
 export const VPAList: VPA[] = [
-  createVPA3(),
   createVPA1(),
   createVPA2(),
+  createVPA3(),
   createVPA4(),
-  createVPAxml2(),
   createVPAxml1(),
+  createVPAxml2(),
   createVPAxml2(false),
   createVPAxml3()
 ]
+
+// VPAList.forEach((e, pos) => { console.log(pos); console.log(e.toDot()) })
