@@ -18,7 +18,7 @@ export default class BibliographyPage extends React.Component {
         <tbody>
           {sortedBiblio.map((e, pos) => <tr key={pos}>
             {
-              columns.map(col => <td key={col}>{col === "title" ? <a target={"_blank"} href={e.href}>{e[col]}</a> : e[col]}</td>)
+              columns.map(col => <td key={col}>{col === "title" ? <a target="_blank" rel="noreferrer" href={e.href}>{e[col]}</a> : e[col]}</td>)
             }
           </tr>)}
         </tbody>
