@@ -6,10 +6,6 @@ import { AlgosNavBarType } from "../redux/storeTypes";
 interface PropReact { setCurrentPage(sectionName: AlgosNavBarType): void }
 
 class HomePage extends React.Component<PropReact, {}> {
-  constructor(prop: PropReact) {
-    super(prop)
-  }
-
   render(): React.ReactNode {
     return <div style={{ overflow: "hidden" }}>
       <h1>Learning and More</h1>
