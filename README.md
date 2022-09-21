@@ -26,7 +26,7 @@ An other difference between these algorithms is that :
 
 One can therefore see that the *TTT-VPA* algorithms is the most powerful, since it can be used to understand more powerful grammars than regular ones (see [here](https://en.wikipedia.org/wiki/Chomsky_hierarchy)).
 
-# My implementation
+## My implementation
 The implementation that I realized, aims to provide an easy way to correctly display each step of each algorithm graphically thanks *html tables* and the *[graphviz](https://graphviz.org/)* library, useful to represents automata and binary tree.  
 The project is done entirely in *typescript* and compiled with *nodejs*. 
 
