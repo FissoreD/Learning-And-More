@@ -1,3 +1,42 @@
+# Learning and More
+
+This project provides an implementation of some algorithms of Black Box learning.  
+Inspired on Dana Angluin's learning framework, theoretical computer scientist have developed some strategies aiming to learn unknown regular languages.  
+The first algorithm, the L*, created by Mrs. Angluin in 1987 is the precursor of this branch of computer science.
+
+The logic behind this kind of learning is that a *learner* **L** is willing to learn an unknown language *U* and can communicate with a *teacher* **T** who knows *U*.  
+Two kind of interactions are allowed : 
+- Membership queries : **L** sends to **T** a word *w* and **T** answers if *w* belongs to *U*
+- Equivalence queries : **L** sends to **T** a conjecture on the form of an automaton *A* to **T**. Let *A'* be the symmetric difference between *L(A)* and *L(U)*. Then the teacher accepts the conjecture if *L(A') =* $\varnothing$ or provides a counter-example, that is a word belonging to *L(A')*, note that such a word is a word that is accepted by *L(A)* and rejected by *L(U)* or vice versa. It should be noted that the learning phase stops only when **T** accepts a conjecture: **L** has learned the **U**.
+
+This *learner-teacher* framework has been reused to create a lot of algorithms ([This page](https://wcventure.github.io/Active-Automata-Learning/#31-angluins-l-algorithm-pdfhttpspeopleeecsberkeleyedudawnsongteachings10papersangluin87pdf) lists a lot of the existing Active Learning algorithms).
+
+During my internship at the *i3s* I have studied and implemented some of them. They are available [here](https://fissored.github.io/Learning-And-More?Home). In particular, the available algorithms are:
+- L*, by Dana Angluin
+- NL*, by Bollig et al.
+- TTT (called TTT-DFA), by Isberner et al.
+- TTT-VPA, by Isberner et al.
+
+The first three algorithms learn *regular languages* and, therefore, at the end, return *regular automata*. It should be noted that L* and NL* use the *Observation Table* data structure to store the knowledge obtained through the interactions *learner-teacher* whereas the *TTT-DFA* and *TTT-VPA* use the *Discrimination Tree* data structure.
+
+An other difference between these algorithms is that :
+- L* and TTT-DFA returns at the end *minimal deterministic regular automata*;
+- NL* returns canonical residual final state automata (which are non-deterministic automata, potentially smaller than the corresponding minimal DFA)
+- TTT-VPA returns a *1-SEVPA* which is a one single entry visible pushdown automata able to learn visible pushdown grammars.
+
+One can therefore see that the *TTT-VPA* algorithms is the most powerful, since it can be used to understand more powerful grammars than regular ones (see [here](https://en.wikipedia.org/wiki/Chomsky_hierarchy)).
+
+# My implementation
+The implementation that I realized, aims to provide an easy way to correctly display each step of each algorithm graphically thanks *html tables* and the *[graphviz](https://graphviz.org/)* library, useful to represents automata and binary tree.  
+The project is done entirely in *typescript* and compiled with *nodejs*. 
+
+The source files are divided into two main folders : 
+- lib : contains all files related to the learning algorithms and are tested through unit tests.
+- reactjs : contains all files that are supposed to manage the *html* web page, to do that I use [ReactJS](https://reactjs.org/), [Redux](https://redux.js.org/) and [Bootstrap v5.0](https://getbootstrap.com/docs/5.0/getting-started/introduction/). 
+
+
+---
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
